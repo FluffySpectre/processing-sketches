@@ -1,8 +1,10 @@
 float grid = 50;
 
 Frog frog;
+Sprite[] finishedFrogs;
 MoveableSprite[] cars;
 MoveableSprite[] logs;
+Endzone[] endZones;
 
 PImage curbstoneImg;
 
@@ -10,11 +12,23 @@ void resetGame() {
   frog = new Frog(width/2-grid/2, height-grid, grid, "frog.png");
 }
 
+void restartGame() {
+  setup();
+}
+
 void setup() {
   size(500, 600);
   
   // load required images
   curbstoneImg = loadImage("curbstone.png");
+  
+  endZones = new Endzone[4];
+  endZones[0] = new Endzone(0, 0, grid, grid, "safezone.png");
+  endZones[1] = new Endzone(width*0.33-grid/2, 0, grid, grid, "safezone.png");
+  endZones[2] = new Endzone(width*0.66-grid/2, 0, grid, grid, "safezone.png");
+  endZones[3] = new Endzone(width-grid, 0, grid, grid, "safezone.png");
+  
+  finishedFrogs = new Sprite[endZones.length];
   
   cars = new MoveableSprite[11];
   
@@ -103,16 +117,36 @@ void setup() {
 
 void draw() {
   background(24, 24, 24);
-  fill(200);
-  
-  rect(0, 0, width, grid);
   
   // water
   fill(24, 24, 90);
-  rect(0, height-grid*11, width, grid*4);
+  rect(0, 0, width, grid*5);
   
   drawSafetyZone(1);
   drawSafetyZone(7);
+  
+  int endZoneIndex = 0;
+  for (Endzone endZone : endZones) {
+    endZone.render();
+    
+    if (endZone.isFree && frog.intersecting(endZone)) {
+      // if the player (frog) reached an endzone, create a new frog at this position and reset the game
+      Sprite finishedFrog = new Sprite(endZone.x, endZone.y, grid, grid, "frog.png");
+      finishedFrogs[endZoneIndex] = finishedFrog;
+      
+      endZone.isFree = false;
+      
+      resetGame();
+    }
+    
+    endZoneIndex++;
+  }
+  
+  for (Sprite frog : finishedFrogs) {
+    if (frog != null) {
+      frog.render();
+    }
+  }
   
   for (MoveableSprite car : cars) {
     car.update();
@@ -156,6 +190,8 @@ void keyPressed() {
     frog.move(-1, 0);
   } else if (keyCode == RIGHT) {
     frog.move(1, 0);
+  } else if (key == 'r') {
+    restartGame();
   }
 }
 

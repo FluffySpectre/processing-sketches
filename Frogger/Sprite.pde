@@ -1,4 +1,4 @@
-abstract class Sprite {
+class Sprite {
   float x, y, w, h;
   PImage sprite;
   
