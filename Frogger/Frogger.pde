@@ -1,5 +1,7 @@
 float grid = 50;
 
+boolean gameOver = false;
+
 Frog frog;
 Sprite[] finishedFrogs;
 MoveableSprite[] cars;
@@ -10,6 +12,10 @@ PImage curbstoneImg;
 
 void resetGame() {
   frog = new Frog(width/2-grid/2, height-grid, grid, "frog.png");
+  
+  if (gameOver) {
+    frog.isControllable = false;
+  }
 }
 
 void restartGame() {
@@ -18,6 +24,8 @@ void restartGame() {
 
 void setup() {
   size(500, 600);
+  
+  gameOver = false;
   
   // load required images
   curbstoneImg = loadImage("curbstone.png");
@@ -136,6 +144,15 @@ void draw() {
       
       endZone.isFree = false;
       
+      // check for end of game
+      boolean gameFinished = true;
+      for (Endzone ez : endZones) {
+        if (ez.isFree) gameFinished = false;
+      }
+      if (gameFinished) {
+        gameOver = true; 
+      }
+      
       resetGame();
     }
     
@@ -177,8 +194,21 @@ void draw() {
     frog.attach(null);
   }
   
-  frog.update();
-  frog.render();
+  if (frog != null) {
+    frog.update();
+    frog.render();
+  }
+  
+  // draw game over state
+  if (gameOver) {
+    fill(0);
+    rect(width/2-150, height/2-50, 300, 100);
+    fill(0, 102, 153);
+    textSize(32);
+    text("You won!", width/2-75, height/2-10);
+    textSize(16);
+    text("Press R to start again.", width/2-80, height/2+30);
+  }
 }
 
 void keyPressed() {

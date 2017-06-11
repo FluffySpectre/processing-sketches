@@ -1,5 +1,6 @@
 class Frog extends Sprite {
   MoveableSprite attached = null;
+  boolean isControllable = true;
   
   Frog(float x, float y, float w, String sprite) {
     super(x, y, w, w, sprite);
@@ -19,6 +20,8 @@ class Frog extends Sprite {
   }
   
   void move(float xDir, float yDir) {
+    if (!isControllable) return;
+    
     x += xDir * grid;
     y += yDir * grid;
   }
