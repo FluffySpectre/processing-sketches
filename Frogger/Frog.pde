@@ -1,11 +1,11 @@
-class Frog extends Rectangle {
-  Log attached = null;
+class Frog extends Sprite {
+  MoveableSprite attached = null;
   
-  Frog(float x, float y, float w) {
-    super(x, y, w, w);
+  Frog(float x, float y, float w, String sprite) {
+    super(x, y, w, w, sprite);
   }
   
-  void attach(Log log) {
+  void attach(MoveableSprite log) {
     attached = log;
   }
   
@@ -23,8 +23,7 @@ class Frog extends Rectangle {
     y += yDir * grid;
   }
   
-  void show() {
-    fill(45, 189, 58);
-    rect(x, y, w, h);
+  void render() {
+    image(sprite, x, y, w, h);
   }
 }

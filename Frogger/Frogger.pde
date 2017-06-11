@@ -1,98 +1,137 @@
 float grid = 50;
 
 Frog frog;
-Car[] cars;
-Log[] logs;
+MoveableSprite[] cars;
+MoveableSprite[] logs;
+
+PImage curbstoneImg;
 
 void resetGame() {
-  frog = new Frog(width/2-grid/2, height-grid, grid);
+  frog = new Frog(width/2-grid/2, height-grid, grid, "frog.png");
 }
 
 void setup() {
-  size(500, 500);
+  size(500, 600);
   
-  cars = new Car[8];
+  // load required images
+  curbstoneImg = loadImage("curbstone.png");
+  
+  cars = new MoveableSprite[11];
   
   int index = 0;
+  int row = 2;
   
   // ROW 1
   for (int i=0; i<2; i++) {
     float x = i * 300 + 50;
-    cars[index] = new Car(x, height-grid*2, grid*2, grid, 2);
+    cars[index] = new MoveableSprite(x, height-grid*row, grid, grid, "car_1.png", -2);
     index++;
   }
+  row++;
   
   // ROW 2
   for (int i=0; i<2; i++) {
     float x = i * 200 + 150;
-    cars[index] = new Car(x, height-grid*3, grid, grid, 3.5);
+    cars[index] = new MoveableSprite(x, height-grid*row, grid, grid, "car_2.png", 3.5);
     index++;
   }
+  row++;
   
   // ROW 3
   for (int i=0; i<4; i++) {
     float x = i * 150 + 25;
-    cars[index] = new Car(x, height-grid*4, grid, grid, 1.2);
+    cars[index] = new MoveableSprite(x, height-grid*row, grid, grid, "car_3.png", -1.2);
     index++;
   }
+  row++;
   
-  logs = new Log[7];
+  // ROW 4
+  for (int i=0; i<1; i++) {
+    float x = i * 275 + 20;
+    cars[index] = new MoveableSprite(x, height-grid*row, grid, grid, "car_4.png", 2.3);
+    index++;
+  }
+  row++;
+  
+  // ROW 4
+  for (int i=0; i<2; i++) {
+    float x = i * 300 + 50;
+    cars[index] = new MoveableSprite(x, height-grid*row, grid*3, grid, "truck.png", -0.9);
+    index++;
+  }
+  row++;
+  row++;
+  
+  logs = new MoveableSprite[10];
   
   index = 0;
   
   // ROW 5
   for (int i=0; i<2; i++) {
     float x = i * 250 + 100;
-    logs[index] = new Log(x, height-grid*6, grid*3, grid, 2.3);
+    logs[index] = new MoveableSprite(x, height-grid*row, grid*2, grid, "log_1.png", 2.3);
     index++;
   }
+  row++;
   
   // ROW 6
   for (int i=0; i<3; i++) {
     float x = i * 200 + 30;
-    logs[index] = new Log(x, height-grid*7, grid*2, grid, -1.3);
+    logs[index] = new MoveableSprite(x, height-grid*row, grid*3, grid, "log_2.png", -1.3);
     index++;
   }
+  row++;
   
   // ROW 7
   for (int i=0; i<2; i++) {
     float x = i * 400 + 10;
-    logs[index] = new Log(x, height-grid*8, grid*4, grid, 0.5);
+    logs[index] = new MoveableSprite(x, height-grid*row, grid*4, grid, "log_2.png", 0.5);
     index++;
   }
+  row++;
+  
+  // ROW 8
+  for (int i=0; i<3; i++) {
+    float x = i * 300 + 80;
+    logs[index] = new MoveableSprite(x, height-grid*row, grid*4, grid, "log_2.png", -0.8);
+    index++;
+  }
+  row++;
   
   resetGame();
 }
 
 void draw() {
-  background(0);
+  background(24, 24, 24);
   fill(200);
-  rect(0, height-grid, width, grid);
-  rect(0, height-grid*5, width, grid);
-  rect(0, 0, width, grid*2);
+  
+  rect(0, 0, width, grid);
   
   // water
-  fill(64, 164, 223);
-  rect(0, height-grid*8, width, grid*3);
+  fill(24, 24, 90);
+  rect(0, height-grid*11, width, grid*4);
   
-  for (Car car : cars) {
-    car.move();
-    car.show();
+  drawSafetyZone(1);
+  drawSafetyZone(7);
+  
+  for (MoveableSprite car : cars) {
+    car.update();
+    car.render();
     
     if (frog.intersecting(car)) {
       resetGame();
     }
   }
   
-  for (Log log : logs) {
-    log.move();
-    log.show();
+  for (MoveableSprite log : logs) {
+    log.update();
+    log.render();
   }
   
   // test for game over
-  if (frog.y < height-grid*5 && frog.y >= grid*2) {
+  if (frog.y < height-grid*7 && frog.y >= grid) {
     boolean ok = false;
-    for (Log log : logs) {
+    for (MoveableSprite log : logs) {
       if (frog.intersecting(log)) {
         ok = true;
         frog.attach(log);
@@ -105,7 +144,7 @@ void draw() {
   }
   
   frog.update();
-  frog.show();
+  frog.render();
 }
 
 void keyPressed() {
@@ -117,5 +156,11 @@ void keyPressed() {
     frog.move(-1, 0);
   } else if (keyCode == RIGHT) {
     frog.move(1, 0);
+  }
+}
+
+void drawSafetyZone(int y) {
+  for (int i=0; i<10; i++) {
+    image(curbstoneImg, i*grid, height-grid*y, grid, grid);
   }
 }
