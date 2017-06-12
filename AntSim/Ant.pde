@@ -38,4 +38,16 @@ class Ant extends Object {
     if (displayAntNames)
       text(name, position.x - 20, position.y - 15);
   }
+  
+  void sees(Food food) {
+    
+  }
+  
+  void take(Food food) {
+    
+  }
+  
+  void drop() {
+  
+  }
 }
