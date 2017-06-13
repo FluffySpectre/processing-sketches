@@ -1,30 +1,24 @@
-class Ant extends Object {
+class Ant extends SimObject {
   String name;
   int vitality = 100;
   float lifetime = 60;
   float speed = 2;
+  AntHill antHill;
   
-  private float lastFrameMillis = 0;
-  
-  Ant(String name, PVector position, PVector rotation, PVector scale, float speed) {
+  Ant(String name, PVector position, PVector rotation, PVector scale, float speed, AntHill antHill) {
     super(position, rotation, scale);
     
     this.name = name;
     this.speed = speed;
-    
-    lastFrameMillis = millis();
+    this.antHill = antHill;
   }
   
-  void update() {
-    float deltaTime = (millis() - lastFrameMillis) / 1000;
-    
+  void update(float deltaTime) {
     lifetime -= deltaTime;
     if (lifetime < 0) lifetime = 0;
     
     position.x += rotation.x * speed;
     position.y += rotation.y * speed;
-    
-    lastFrameMillis = millis();
   }
   
   void render() {
@@ -39,10 +33,40 @@ class Ant extends Object {
       text(name, position.x - 20, position.y - 15);
   }
   
+  void setMarker(float radius, java.lang.Object payload) {
+    antHill.setMarkerAtPosition(this, position, radius, payload);
+  }
+  
+  void setMarker(float radius) {
+    antHill.setMarkerAtPosition(this, position, radius, null);
+  }
+  
+  // MOVING
+  void moveTo(PVector target) {
+    turnTo(target);
+    
+  }
+  
+  void moveAwayFrom(PVector target) {
+    
+  }
+  
+  // TURNING
+  void turnTo(PVector target) {
+    PVector dir = PVector.sub(target, position);
+    rotation = dir.normalize();
+  }
+  
+  void turnAround() {
+    
+  }
+  
+  // SENSING
   void sees(Food food) {
     
   }
   
+  // FOOD
   void take(Food food) {
     
   }

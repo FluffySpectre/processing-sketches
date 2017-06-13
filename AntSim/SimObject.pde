@@ -1,15 +1,15 @@
-class Object {
+abstract class SimObject {
   PVector position;
   PVector rotation;
   PVector scale;
   
-  Object(PVector position, PVector rotation, PVector scale) {
+  SimObject(PVector position, PVector rotation, PVector scale) {
     this.position = position;
     this.rotation = rotation;
     this.scale = scale;
   }
   
-  boolean intersecting(Object other) {
+  boolean intersecting(SimObject other) {
     return !(position.x >= other.position.x + other.scale.x
             || position.x + scale.x <= other.position.x
             || position.y >= other.position.y + other.scale.y
@@ -23,10 +23,6 @@ class Object {
             || position.y + scale.y <= 0);
   }
   
-  void turnTo(PVector target) {
-    PVector dir = PVector.sub(target, position);
-    rotation = dir.normalize();
-  }
-  
+  void update(float deltaTime) {}
   void render() {}
 }

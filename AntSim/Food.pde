@@ -1,4 +1,4 @@
-class Food extends Object {
+class Food extends SimObject {
   Food(PVector position, PVector rotation, PVector scale) {
     super(position, rotation, scale);
   }
