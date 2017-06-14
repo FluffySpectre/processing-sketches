@@ -36,7 +36,7 @@ class AntHill extends SimObject {
       ant.render();
       
       if (ant.hitsWalls()) {
-        ant.turnTo(new PVector(random(-1, 1), random(-1, 1)));
+        ant.rotation.rotate(radians(180));
       }
       
       time += deltaTime;

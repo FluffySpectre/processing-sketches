@@ -17,6 +17,8 @@ class Ant extends SimObject {
     lifetime -= deltaTime;
     if (lifetime < 0) lifetime = 0;
     
+    rotation.rotate(radians(random(-10, 10)));
+    
     position.x += rotation.x * speed;
     position.y += rotation.y * speed;
   }
