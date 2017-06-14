@@ -1,4 +1,4 @@
-class Ant extends SimObject {
+abstract class Ant extends SimObject {
   String name;
   int vitality = 100;
   float lifetime = 42;
@@ -10,8 +10,10 @@ class Ant extends SimObject {
   float speedModificator = 1;
   int carryFood = 0;
   float markerTimer = 0;
+  color col;
+  boolean canMove = true;
   
-  float foodSenseRadius = 40;
+  float visionSenseRange = 40;
   float targetReachDist = 5;
   float carryFoodModificator = 0.5;
   int maxCarryAmount = 5;
@@ -22,6 +24,8 @@ class Ant extends SimObject {
     this.name = name;
     this.speed = speed;
     this.antHill = antHill;
+    
+    col = color(20);
   }
   
   void update(float deltaTime) {
@@ -32,6 +36,8 @@ class Ant extends SimObject {
     
     updateVision();
     updateSmelling();
+    
+    if (!canMove) return;
     
     if (target != null) {
       PVector t = target.position;
@@ -74,8 +80,10 @@ class Ant extends SimObject {
     pushMatrix();
     translate(position.x, position.y);
     rotate(rotation.heading());
-    fill(20);
+    noStroke();
+    fill(col);
     rect(0, 0, scale.x, scale.y);
+    stroke(150);
     
     if (carryFood > 0) {
       fill(250);
@@ -99,88 +107,68 @@ class Ant extends SimObject {
     antHill.setMarkerAtPosition(this, position, radius, direction);
   }
   
-  void setMarker(float radius) {
-    antHill.setMarkerAtPosition(this, position, radius, null);
-  }
-  
   // MOVING
-  void moveTo(PVector target) {
+  final void moveTo(PVector target) {
     moveTo(target);
-    
+    canMove = true;
   }
   
-  void moveAwayFrom(PVector target) {
-    
+  final void moveHome() {
+    target = antHill;
+    canMove = true;
+  }
+  
+  final void stop() {
+    target = null;
+    canMove = false;
   }
   
   // TURNING
-  void turnTo(PVector target) {
+  final void turnTo(PVector target) {
     PVector dir = PVector.sub(target, position);
     rotation = dir.normalize();
   }
   
-  void turnAround() {
-    
-  }
-  
-  void targetReached(Food food) {
-    carryFood = food.pickup(maxCarryAmount);
-    if (carryFood == 0) lastTarget = null;
-    else lastTarget = food;
-    
-    target = antHill;
-    speedModificator = carryFoodModificator;
-    
-    //println("FOOD REACHED!!!: " + carryFood);
-  }
-  
-  void targetReached(AntHill antHill) {
-    //println("HILL!!!");
-    foodCollected += carryFood;
-    
-    if (lastTarget != null)
-      target = lastTarget;
-    else 
-      target = null;
-    
-    speedModificator = 1;
-    carryFood = 0;
-  }
-  
-  // SENSING
-  void sees(Food food) {
-    if (target == null) {
-      println("SEES FOOD!!!");
-      target = food;
-    }
-  }
-  
-  void smells(Marker marker) {
-    if (target == null) {
-      target = marker.direction;
-      
-      //println("SMELLS MARKER!!!");
-    }
+  final void turnAround() {
+    rotation.rotate(radians(180));
   }
   
   // FOOD
-  void take(Food food) {
-    
+  final void take(Food food) {
+    carryFood = food.pickup(maxCarryAmount);
+    if (carryFood == 0) lastTarget = null;
+    else lastTarget = food;
+    speedModificator = carryFoodModificator;
   }
   
-  void drop() {
-  
+  final void drop() {
+    carryFood = 0;
   }
+  
+  // NAV
+  void targetReached(Food food) {}
+  void targetReached(AntHill antHill) {}
+  
+  // SENSING
+  void sees(Food food) {}
+  void sees(Bug bug) {}
+  void smells(Marker marker) {}
   
   private void updateVision() {
     for (Food f : food) {
-      if (position.dist(f.position) < foodSenseRadius) {
+      if (position.dist(f.position) < visionSenseRange) {
         sees(f);
+      }
+    }
+    
+    for (Bug b : bugs) {
+      if (position.dist(b.position) < visionSenseRange) {
+        sees(b);
       }
     }
   }
   
-  void updateSmelling() {
+  private void updateSmelling() {
     for (Marker m : antHill.marker) {
       if (position.dist(m.position) < m.radius) {
         smells(m);

@@ -5,6 +5,9 @@ class AntHill extends SimObject {
   float antSpawnTime;
   int antCount = 0;
   
+  final float collectorAntProbability = 0.5;
+  final float warriorAntProbabilty = 0.2;
+  
   String[] antNames = new String[] {
     "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
   };
@@ -14,17 +17,18 @@ class AntHill extends SimObject {
   }
   
   void spawnAnt() {
-    String antName = antNames[Math.round(random(antNames.length-1))];
-    
-    Ant ant = new Ant(antName, new PVector(position.x, position.y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
-    ants.add(ant);
-    antCount++;
+    spawnAntAtPos(position.x, position.y);
   }
   
-  void spawnAntAtPos(int x, int y) {
+  void spawnAntAtPos(float x, float y) {
     String antName = antNames[Math.round(random(antNames.length-1))];
     
-    Ant ant = new Ant(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
+    Ant ant;
+    if ((int)random(2) == 1) {
+      ant = new CollectorAnt(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
+    } else {
+      ant = new WarriorAnt(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
+    }
     ants.add(ant);
     antCount++;
   }
