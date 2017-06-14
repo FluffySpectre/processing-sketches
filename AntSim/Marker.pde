@@ -1,14 +1,14 @@
 class Marker extends SimObject {
   float radius;
   float startRadius;
-  java.lang.Object payload;
+  SimObject direction;
   
-  Marker(PVector position, PVector rotation, PVector scale, float radius, java.lang.Object payload) {
+  Marker(PVector position, PVector rotation, PVector scale, float radius, SimObject direction) {
     super(position, rotation, scale);
     
     this.radius = radius;
     this.startRadius = radius;
-    this.payload = payload;
+    this.direction = direction;
   }
   
   void update(float deltaTime) {

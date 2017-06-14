@@ -2,6 +2,8 @@ class AntHill extends SimObject {
   ArrayList<Ant> ants = new ArrayList<Ant>();
   ArrayList<Marker> marker = new ArrayList<Marker>();
   float time;
+  float antSpawnTime;
+  int antCount = 0;
   
   String[] antNames = new String[] {
     "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
@@ -16,19 +18,35 @@ class AntHill extends SimObject {
     
     Ant ant = new Ant(antName, new PVector(position.x, position.y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
     ants.add(ant);
+    antCount++;
+  }
+  
+  void spawnAntAtPos(int x, int y) {
+    String antName = antNames[Math.round(random(antNames.length-1))];
+    
+    Ant ant = new Ant(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
+    ants.add(ant);
+    antCount++;
   }
   
   void removeAnt(Ant ant) {
     ants.remove(ant);
+    antCount--;
   }
   
-  void setMarkerAtPosition(Ant ant, PVector position, float radius, java.lang.Object payload) {
-    Marker m = new Marker(new PVector(position.x, position.y), new PVector(0, 0), new PVector(1, 1), radius, payload);
+  void setMarkerAtPosition(Ant ant, PVector position, float radius, SimObject direction) {
+    Marker m = new Marker(new PVector(position.x, position.y), new PVector(0, 0), new PVector(1, 1), radius, direction);
     marker.add(m);
   }
   
   void update(float deltaTime) {
     ArrayList<Ant> deadAnts = new ArrayList<Ant>();
+    
+    antSpawnTime += deltaTime;
+    if (antCount < maxAnts && antSpawnTime > antSpawnDelay) {
+      spawnAnt();
+      antSpawnTime = 0;
+    }
     
     // update ants
     for (Ant ant : ants) {
@@ -39,10 +57,11 @@ class AntHill extends SimObject {
         ant.rotation.rotate(radians(180));
       }
       
-      time += deltaTime;
-      if (time > 5) {
-        ant.setMarker(random(40));
-        time = 0;
+      for (Bug b : bugs) {
+        if (ant.intersecting(b)) {
+           ant.lifetime = 0;
+           killedAntsThroughBugs++;
+        }
       }
       
       //ant.turnTo(new PVector(mouseX, mouseY));
@@ -55,9 +74,7 @@ class AntHill extends SimObject {
     // remove dead ants from the game and add new instead
     if (deadAnts.size() > 0) {
       ants.removeAll(deadAnts);
-      
-      for (int i=0; i<deadAnts.size(); i++)
-        spawnAnt();
+      antCount -= deadAnts.size();
     }
     
     // update marker
