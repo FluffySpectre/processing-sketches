@@ -1,4 +1,4 @@
-class AntHill extends SimObject {
+class AntColony extends SimObject {
   ArrayList<Ant> ants = new ArrayList<Ant>();
   ArrayList<Marker> marker = new ArrayList<Marker>();
   float time;
@@ -12,7 +12,7 @@ class AntHill extends SimObject {
     "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
   };
   
-  AntHill(PVector position, PVector rotation, PVector scale) {
+  AntColony(PVector position, PVector rotation, PVector scale, SimSettings simSettings) {
     super(position, rotation, scale);
   }
   

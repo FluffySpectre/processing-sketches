@@ -1,5 +1,7 @@
 class CollectorAnt extends Ant {
-  CollectorAnt(String name, PVector position, PVector rotation, PVector scale, float speed, AntHill antHill) {
+  float markerTimer = 0;
+  
+  CollectorAnt(String name, PVector position, PVector rotation, PVector scale, float speed, AntColony antHill) {
     super(name, position, rotation, scale, speed, antHill);
   }
   
@@ -23,7 +25,7 @@ class CollectorAnt extends Ant {
     moveHome();
   }
   
-  void targetReached(AntHill antHill) {
+  void targetReached(AntColony antHill) {
     //println("HILL!!!");
     foodCollected += carryFood;
     
@@ -34,5 +36,16 @@ class CollectorAnt extends Ant {
     
     speedModificator = 1;
     carryFood = 0;
+  }
+  
+  void tick(float deltaTime) {
+    markerTimer += deltaTime;
+    if (carryFood > 0 && lastTarget != null && markerTimer > 0.5) {
+      markerTimer = 0;
+      //PVector behind = new PVector(rotation.x, rotation.y);
+      //behind.rotate(radians(180));
+      //behind.normalize();
+      setMarker(10, lastTarget);
+    }
   }
 }

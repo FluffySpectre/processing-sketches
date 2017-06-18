@@ -1,26 +1,17 @@
-abstract class Ant extends SimObject {
-  String name;
-  int vitality = 100;
-  float lifetime = 999;
-  float speed = 2;
-  int attackStrength = 10;
-  AntHill antHill;
+abstract class Ant extends Insect {
+  AntColony antHill;
   SimObject target = null;
   SimObject lastTarget = null;
   boolean targetReached = false;
-  float speedModificator = 1;
   int carryFood = 0;
-  float markerTimer = 0;
-  color col;
   boolean canMove = true;
   
-  float visionSenseRange = 40;
   float targetReachDist = 5;
   float carryFoodModificator = 0.5;
   int maxCarryAmount = 5;
  
-  Ant(String name, PVector position, PVector rotation, PVector scale, float speed, AntHill antHill) {
-    super(position, rotation, scale);
+  Ant(String name, PVector position, PVector rotation, PVector scale, float speed, AntColony antHill) {
+    super(name, position, rotation, scale);
     
     this.name = name;
     this.speed = speed;
@@ -29,15 +20,7 @@ abstract class Ant extends SimObject {
     col = color(20);
   }
   
-  void update(float deltaTime) {
-    lifetime -= deltaTime;
-    if (lifetime < 0) lifetime = 0;
-    
-    if (lifetime == 0 || vitality == 0) return;
-    
-    updateVision();
-    updateSmelling();
-    
+  final void move() {
     if (!canMove) return;
     
     if (target != null) {
@@ -47,7 +30,8 @@ abstract class Ant extends SimObject {
         targetReached = false;
         turnTo(t);
       
-        move();
+        position.x += rotation.x * speed * speedModificator;
+        position.y += rotation.y * speed * speedModificator;
       } else {
         // STOP!
         if (!targetReached) {
@@ -56,24 +40,16 @@ abstract class Ant extends SimObject {
           if (target != null) {
             if (target instanceof Food) {
               targetReached((Food)target);
-            } else if (target instanceof AntHill) {
-              targetReached((AntHill)antHill);
+            } else if (target instanceof AntColony) {
+              targetReached((AntColony)antHill);
             }
           }
         }
       }
     } else {
       rotation.rotate(radians(random(-10, 10)));
-      move();
-    }
-    
-    markerTimer += deltaTime;
-    if (carryFood > 0 && lastTarget != null && markerTimer > 0.5) {
-      markerTimer = 0;
-      //PVector behind = new PVector(rotation.x, rotation.y);
-      //behind.rotate(radians(180));
-      //behind.normalize();
-      setMarker(10, lastTarget);
+      position.x += rotation.x * speed * speedModificator;
+      position.y += rotation.y * speed * speedModificator;
     }
   }
   
@@ -97,11 +73,6 @@ abstract class Ant extends SimObject {
       fill(20);
       text(name, position.x - 20, position.y - 15);
     }
-  }
-  
-  void move() {
-    position.x += rotation.x * speed * speedModificator;
-    position.y += rotation.y * speed * speedModificator;
   }
   
   void setMarker(float radius, SimObject direction) {
@@ -148,32 +119,10 @@ abstract class Ant extends SimObject {
   
   // NAV
   void targetReached(Food food) {}
-  void targetReached(AntHill antHill) {}
+  void targetReached(AntColony antHill) {}
   
   // SENSING
   void sees(Food food) {}
   void sees(Bug bug) {}
   void smells(Marker marker) {}
-  
-  private void updateVision() {
-    for (Food f : food) {
-      if (position.dist(f.position) < visionSenseRange) {
-        sees(f);
-      }
-    }
-    
-    for (Bug b : bugs) {
-      if (position.dist(b.position) < visionSenseRange) {
-        sees(b);
-      }
-    }
-  }
-  
-  private void updateSmelling() {
-    for (Marker m : antHill.marker) {
-      if (position.dist(m.position) < m.radius) {
-        smells(m);
-      }
-    }
-  }
 }

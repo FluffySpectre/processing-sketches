@@ -1,9 +1,9 @@
-class Bug extends SimObject {
+class Bug extends Insect {
   float speed = 1.1;
   int vitality = 200;
   
   Bug(PVector position, PVector rotation, PVector scale) {
-    super(position, rotation, scale);
+    super("Bug", position, rotation, scale);
   }
   
   void update(float deltaTime) {
