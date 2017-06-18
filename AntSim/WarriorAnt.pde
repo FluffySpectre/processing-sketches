@@ -6,6 +6,6 @@ class WarriorAnt extends Ant {
   }
   
   void sees(Bug bug) {
-    stop();
+    moveTo(bug);
   }
 }
