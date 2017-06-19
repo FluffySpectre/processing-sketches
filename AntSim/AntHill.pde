@@ -63,7 +63,7 @@ class AntHill extends SimObject {
       
       for (Bug b : bugs) {
         if (ant.intersecting(b)) {
-           ant.lifetime = 0;
+           ant.vitality = 0;
            killedAntsThroughBugs++;
            
            // hit the bug
@@ -77,7 +77,7 @@ class AntHill extends SimObject {
       
       //ant.turnTo(new PVector(mouseX, mouseY));
       
-      if (ant.lifetime <= 0) {
+      if (ant.lifetime <= 0 || ant.vitality <= 0) {
         deadAnts.add(ant);
       }
     }
@@ -91,7 +91,6 @@ class AntHill extends SimObject {
     // remove dead bugs from the game and add new instead
     if (deadBugs.size() > 0) {
       bugs.removeAll(deadBugs);
-      //bugCount -= deadBugs.size();
     }
     
     // update marker

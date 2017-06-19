@@ -1,10 +1,9 @@
 abstract class Ant extends SimObject {
   String name;
   int vitality = 100;
-  float lifetime = 42;
+  float lifetime = 999;
   float speed = 2;
-  float attackStrength = 10;
-  
+  int attackStrength = 10;
   AntHill antHill;
   SimObject target = null;
   SimObject lastTarget = null;
@@ -34,7 +33,7 @@ abstract class Ant extends SimObject {
     lifetime -= deltaTime;
     if (lifetime < 0) lifetime = 0;
     
-    if (lifetime == 0) return;
+    if (lifetime == 0 || vitality == 0) return;
     
     updateVision();
     updateSmelling();
@@ -93,7 +92,7 @@ abstract class Ant extends SimObject {
     
     popMatrix();
     
-    if (displayAntNames) {
+    if (displayLabels) {
       fill(20);
       text(name, position.x - 20, position.y - 15);
     }

@@ -20,9 +20,9 @@ class Bug extends SimObject {
     rect(0, 0, scale.x, scale.y);
     popMatrix();
     
-    if (displayAntNames) {
+    if (displayLabels) {
       fill(20);
-      text(vitality, position.x - 15, position.y - 15);
+      text(vitality, position.x - 20, position.y - 15);
     }
   }
   

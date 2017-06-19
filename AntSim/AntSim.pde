@@ -1,12 +1,15 @@
-boolean displayAntNames = false;
-float antSpawnDelay = 0.1;
-int maxAnts = 30;
+boolean displayLabels = true;
+float antSpawnDelay = 1;
+float bugSpawnDelay = 2;
+int maxAnts = 25;
+int maxBugs = 3;
 
 AntHill antHill;
 ArrayList<Food> food = new ArrayList<Food>();
 ArrayList<Bug> bugs = new ArrayList<Bug>();
 float lastFrameMillis = 0;
-
+float bugSpawnTime = 0.0;
+  
 //stats
 int foodCollected = 0;
 int killedAntsThroughBugs = 0;
@@ -23,9 +26,8 @@ void setup() {
     spawnSugarHill();
   }
   
-  for (int i=0; i<3; i++) {
-    Bug b = new Bug(getRandomPoint(), getRandomRotation(), new PVector(10, 6));
-    bugs.add(b);
+  for (int i=0; i<maxBugs; i++) {
+    spawnBug();
   }
 }
 
@@ -36,6 +38,17 @@ void draw() {
   
   antHill.update(deltaTime);
   antHill.render();
+  
+  if (bugs.size() < maxBugs) {
+    bugSpawnTime += deltaTime;  
+    
+    if (bugSpawnTime > bugSpawnDelay) {
+      spawnBug();
+      bugSpawnTime = 0;
+    }
+  } else {
+    bugSpawnTime = 0;
+  }
   
   for (Bug b : bugs) {
     b.update(deltaTime);
@@ -85,6 +98,11 @@ void spawnSugarHill() {
   PVector fScale = new PVector(10 + amount * 0.08, 10 + amount * 0.08);
   Food f = new Food(getRandomPoint(), new PVector(0, 0), fScale, amount);
   food.add(f);
+}
+
+void spawnBug() {
+  Bug b = new Bug(getRandomPoint(), getRandomRotation(), new PVector(10, 6));
+  bugs.add(b);
 }
 
 PVector getRandomPoint() {
