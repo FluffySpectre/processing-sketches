@@ -46,10 +46,12 @@ class SimSettings {
   // bugs
   int maxBugs = 3;
   float bugSpawnDelay = 2;
+  float bugTurnSpeed = 1;
   
   // ants
   int maxAnts = 25;
   float antSpawnDelay = 1;
+  float antTurnSpeed = 2;
   float antSenseRange = 40;
   float antInteractionRange = 2;
   String[] antNames = new String[] { "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin" };

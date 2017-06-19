@@ -12,7 +12,7 @@ class AntColony extends SimObject {
     "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
   };
   
-  AntColony(PVector position, PVector rotation, PVector scale, SimSettings simSettings) {
+  AntColony(PVector position, PVector rotation, PVector scale) {
     super(position, rotation, scale);
   }
   

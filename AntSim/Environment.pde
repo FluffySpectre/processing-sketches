@@ -94,6 +94,10 @@ class Environment {
     }
   }
   
+  private ProximityRecord findInsectsInProximity() {
+    
+  }
+  
   void spawnSugarHill() {
     int amount = (int)random(50, 250);
     PVector fScale = new PVector(10 + amount * 0.08, 10 + amount * 0.08);
@@ -112,5 +116,12 @@ class Environment {
   
   PVector getRandomRotation() {
     return new PVector(random(-1, 1), random(-1, 1));
+  }
+  
+  class ProximityRecord {
+    Ant closestFriend;
+    int numFriends = 0;
+    Bug closestBug;
+    int numBugs = 0;
   }
 }

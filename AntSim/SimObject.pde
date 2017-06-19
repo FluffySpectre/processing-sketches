@@ -2,9 +2,8 @@ abstract class SimObject {
   PVector position;
   PVector rotation;
   PVector scale;
-  SimSettings simSettings;
   
-  SimObject(PVector position, PVector rotation, PVector scale, SimSettings simSettings) {
+  SimObject(PVector position, PVector rotation, PVector scale) {
     this.position = position;
     this.rotation = rotation;
     this.scale = scale;
