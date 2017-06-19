@@ -5,8 +5,7 @@ class AntHill extends SimObject {
   float antSpawnTime;
   int antCount = 0;
   
-  final float collectorAntProbability = 0.5;
-  final float warriorAntProbabilty = 0.2;
+  final float warriorAntProbabilty = 0.05;
   
   String[] antNames = new String[] {
     "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
@@ -24,10 +23,10 @@ class AntHill extends SimObject {
     String antName = antNames[Math.round(random(antNames.length-1))];
     
     Ant ant;
-    if ((int)random(2) == 1) {
-      ant = new CollectorAnt(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
-    } else {
+    if (random(1) < warriorAntProbabilty) {
       ant = new WarriorAnt(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
+    } else {
+      ant = new CollectorAnt(antName, new PVector(x, y), new PVector(random(-1, 1), random(-1, 1)), new PVector(5, 2), random(1.3, 2), this);
     }
     ants.add(ant);
     antCount++;
@@ -45,6 +44,7 @@ class AntHill extends SimObject {
   
   void update(float deltaTime) {
     ArrayList<Ant> deadAnts = new ArrayList<Ant>();
+    ArrayList<Bug> deadBugs = new ArrayList<Bug>();
     
     antSpawnTime += deltaTime;
     if (antCount < maxAnts && antSpawnTime > antSpawnDelay) {
@@ -65,6 +65,13 @@ class AntHill extends SimObject {
         if (ant.intersecting(b)) {
            ant.lifetime = 0;
            killedAntsThroughBugs++;
+           
+           // hit the bug
+           b.vitality -= ant.attackStrength;
+           if (b.vitality <= 0) {
+             deadBugs.add(b);
+             killedBugs++;
+           }
         }
       }
       
@@ -79,6 +86,12 @@ class AntHill extends SimObject {
     if (deadAnts.size() > 0) {
       ants.removeAll(deadAnts);
       antCount -= deadAnts.size();
+    }
+    
+    // remove dead bugs from the game and add new instead
+    if (deadBugs.size() > 0) {
+      bugs.removeAll(deadBugs);
+      //bugCount -= deadBugs.size();
     }
     
     // update marker

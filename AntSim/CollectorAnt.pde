@@ -5,14 +5,14 @@ class CollectorAnt extends Ant {
   
   void sees(Food food) {
     if (target == null) {
-      println("SEES FOOD!!!");
+      //println("SEES FOOD!!!");
       target = food;
     }
   }
   
   void smells(Marker marker) {
     if (target == null) {
-      target = marker.direction;
+      //target = marker.direction;
       
       //println("SMELLS MARKER!!!");
     }

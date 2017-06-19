@@ -1,5 +1,7 @@
 class Bug extends SimObject {
   float speed = 1.1;
+  int vitality = 100;
+  int maxVitality = 100;
   
   Bug(PVector position, PVector rotation, PVector scale) {
     super(position, rotation, scale);
@@ -19,13 +21,14 @@ class Bug extends SimObject {
     popMatrix();
     
     if (displayAntNames) {
-      //fill(20);
-      //text(name, position.x - 20, position.y - 15);
+      fill(20);
+      text(vitality, position.x - 15, position.y - 15);
     }
   }
   
   void move() {
-    position.x += rotation.x * speed;
-    position.y += rotation.y * speed;
+    float vitalityFactor = 0.1 + (float)vitality / (float)maxVitality;
+    position.x += rotation.x * speed * vitalityFactor;
+    position.y += rotation.y * speed * vitalityFactor;
   }
 }

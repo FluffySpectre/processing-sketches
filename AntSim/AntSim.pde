@@ -1,6 +1,6 @@
-boolean displayAntNames = true;
-float antSpawnDelay = 2;
-int maxAnts = 15;
+boolean displayAntNames = false;
+float antSpawnDelay = 0.1;
+int maxAnts = 30;
 
 AntHill antHill;
 ArrayList<Food> food = new ArrayList<Food>();
@@ -10,6 +10,7 @@ float lastFrameMillis = 0;
 //stats
 int foodCollected = 0;
 int killedAntsThroughBugs = 0;
+int killedBugs = 0;
 
 void setup() {
   size(500, 500);
@@ -64,12 +65,13 @@ void draw() {
   }
   
   // draw stats
-  fill(220, 220, 220, 200);
-  rect(0, 0, 150, 70);
+  fill(220, 220, 220, 150);
+  rect(0, 0, 150, 90);
   fill(0, 100, 0);
-  text("Ants alive: " + antHill.antCount, 10, 20);
-  text("Ants killed: " + killedAntsThroughBugs, 10, 40);
+  text("Ants alive:        " + antHill.antCount, 10, 20);
+  text("Ants killed:       " + killedAntsThroughBugs, 10, 40);
   text("Food collected: " + foodCollected, 10, 60);
+  text("Bugs killed:       " + killedBugs, 10, 80);
   
   lastFrameMillis = millis();
 }
