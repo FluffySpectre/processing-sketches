@@ -12,8 +12,6 @@ class Food extends SimObject {
   int pickup(int amount) {
     int pickAmount = Math.min(amount, this.amount);
     this.amount -= pickAmount;
-    
-    
     return pickAmount;
   }
   

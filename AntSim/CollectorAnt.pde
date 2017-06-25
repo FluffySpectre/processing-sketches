@@ -10,6 +10,13 @@ class CollectorAnt extends Ant {
     }
   }
   
+  void sees(Fruit fruit) {
+    if (target == null) {
+      //println("SEES FOOD!!!");
+      target = fruit;
+    }
+  }
+  
   void smells(Marker marker) {
     if (target == null) {
       //target = marker.direction;
@@ -33,6 +40,6 @@ class CollectorAnt extends Ant {
       target = null;
     
     speedModificator = 1;
-    carryFood = 0;
+    drop();
   }
 }

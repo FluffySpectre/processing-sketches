@@ -13,10 +13,13 @@ abstract class Ant extends SimObject {
   float markerTimer = 0;
   color col;
   boolean canMove = true;
+  ArrayList<Marker> smelledMarkers = new ArrayList<Marker>();
+  Fruit carryFruit = null;
   
   float visionSenseRange = 40;
   float targetReachDist = 5;
   float carryFoodModificator = 0.5;
+  float carryFruitModificator = 0.1;
   int maxCarryAmount = 5;
  
   Ant(String name, PVector position, PVector rotation, PVector scale, float speed, AntHill antHill) {
@@ -70,10 +73,10 @@ abstract class Ant extends SimObject {
     markerTimer += deltaTime;
     if (carryFood > 0 && lastTarget != null && markerTimer > 0.5) {
       markerTimer = 0;
-      //PVector behind = new PVector(rotation.x, rotation.y);
-      //behind.rotate(radians(180));
-      //behind.normalize();
-      setMarker(10, lastTarget);
+      PVector behind = new PVector(rotation.x, rotation.y);
+      behind.rotate(radians(180));
+      behind.normalize();
+      setMarker(10, behind);
     }
   }
   
@@ -104,7 +107,7 @@ abstract class Ant extends SimObject {
     position.y += rotation.y * speed * speedModificator;
   }
   
-  void setMarker(float radius, SimObject direction) {
+  void setMarker(float radius, PVector direction) {
     antHill.setMarkerAtPosition(this, position, radius, direction);
   }
   
@@ -136,14 +139,30 @@ abstract class Ant extends SimObject {
   
   // FOOD
   final void take(Food food) {
-    carryFood = food.pickup(maxCarryAmount);
-    if (carryFood == 0) lastTarget = null;
-    else lastTarget = food;
-    speedModificator = carryFoodModificator;
+    if (food instanceof Fruit) {
+      Fruit f = (Fruit)food;
+      carryFood = f.amount;
+      f.pickup(this);
+      carryFruit = f;
+      
+      speedModificator = carryFruitModificator;
+      
+    } else {
+      carryFood = food.pickup(maxCarryAmount);
+      if (carryFood == 0) lastTarget = null;
+      else lastTarget = food;
+      
+      speedModificator = carryFoodModificator;
+    }
   }
   
   final void drop() {
     carryFood = 0;
+    
+    if (carryFruit != null) {
+      carryFruit.drop(this);
+      carryFruit = null;
+    }
   }
   
   // NAV
@@ -152,13 +171,17 @@ abstract class Ant extends SimObject {
   
   // SENSING
   void sees(Food food) {}
+  void sees(Fruit fruit) {}
   void sees(Bug bug) {}
   void smells(Marker marker) {}
   
   private void updateVision() {
     for (Food f : food) {
       if (position.dist(f.position) < visionSenseRange) {
-        sees(f);
+        if (f instanceof Fruit)
+          sees((Fruit)f);
+        else 
+          sees(f);
       }
     }
     
@@ -171,7 +194,8 @@ abstract class Ant extends SimObject {
   
   private void updateSmelling() {
     for (Marker m : antHill.marker) {
-      if (position.dist(m.position) < m.radius) {
+      if (position.dist(m.position) < visionSenseRange && !smelledMarkers.contains(m)) {
+        smelledMarkers.add(m);
         smells(m);
       }
     }

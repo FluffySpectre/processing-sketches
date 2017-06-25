@@ -39,15 +39,12 @@ class AntHill extends SimObject {
     antCount--;
   }
   
-  void setMarkerAtPosition(Ant ant, PVector position, float radius, SimObject direction) {
+  void setMarkerAtPosition(Ant ant, PVector position, float radius, PVector direction) {
     Marker m = new Marker(new PVector(position.x, position.y), new PVector(0, 0), new PVector(1, 1), radius, direction);
     marker.add(m);
   }
   
   void update(float deltaTime) {
-    ArrayList<Ant> deadAnts = new ArrayList<Ant>();
-    ArrayList<Bug> deadBugs = new ArrayList<Bug>();
-    
     antSpawnTime += deltaTime;
     if (antCount < maxAnts && antSpawnTime > antSpawnDelay) {
       spawnAnt();
@@ -55,7 +52,9 @@ class AntHill extends SimObject {
     }
     
     // update ants
-    for (Ant ant : ants) {
+    for (int i=ants.size()-1; i>=0; i--) {
+      Ant ant = ants.get(i);
+      
       ant.update(deltaTime);
       ant.render();
       
@@ -63,7 +62,9 @@ class AntHill extends SimObject {
         ant.rotation.rotate(radians(180));
       }
       
-      for (Bug b : bugs) {
+      for (int j=bugs.size()-1; j>=0; j--) {
+        Bug b = bugs.get(j);
+        
         if (ant.intersecting(b)) {
            ant.vitality = 0;
            killedAntsThroughBugs++;
@@ -71,7 +72,7 @@ class AntHill extends SimObject {
            b.vitality -= ant.attackStrength;
            if (b.vitality <= 0) {
              killedBugs++;
-             deadBugs.add(b);
+             bugs.remove(j);
            }
         }
       }
@@ -79,34 +80,19 @@ class AntHill extends SimObject {
       //ant.turnTo(new PVector(mouseX, mouseY));
       
       if (ant.lifetime <= 0 || ant.vitality <= 0) {
-        deadAnts.add(ant);
+        removeAnt(ant);
       }
     }
     
-    // remove dead ants from the game and add new instead
-    if (deadAnts.size() > 0) {
-      ants.removeAll(deadAnts);
-      antCount -= deadAnts.size();
-    }
-    
-    if (deadBugs.size() > 0) {
-      bugs.removeAll(deadBugs);
-    }
-    
     // update marker
-    ArrayList<Marker> deadMarker = new ArrayList<Marker>();
-    for (Marker m : marker) {
+    for (int i=marker.size()-1; i>=0; i--) {
+      Marker m = marker.get(i);
       m.update(deltaTime);
       m.render();
       
       if (m.radius <= 0) {
-        deadMarker.add(m);
+        marker.remove(i);
       }
-    }
-    
-    // remove invisible marker from the game
-    if (deadMarker.size() > 0) {
-      marker.removeAll(deadMarker);
     }
   }
   

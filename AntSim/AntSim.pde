@@ -1,8 +1,10 @@
-boolean displayLabels = true;
+boolean displayLabels = false;
+boolean displayMarkerDirections = false;
 float antSpawnDelay = 1;
 float bugSpawnDelay = 2;
 int maxAnts = 25;
 int maxBugs = 3;
+float antHillRadius = 100;
 
 AntHill antHill;
 ArrayList<Food> food = new ArrayList<Food>();
@@ -26,6 +28,10 @@ void setup() {
     spawnSugarHill();
   }
   
+  /*for (int i=0; i<2; i++) {
+    spawnFruit();
+  }*/
+  
   for (int i=0; i<maxBugs; i++) {
     spawnBug();
   }
@@ -35,9 +41,6 @@ void draw() {
   float deltaTime = (millis() - lastFrameMillis) / 1000;
   
   background(245, 222, 179);
-  
-  antHill.update(deltaTime);
-  antHill.render();
   
   if (bugs.size() < maxBugs) {
     bugSpawnTime += deltaTime;  
@@ -59,22 +62,23 @@ void draw() {
     }
   }
   
-  ArrayList<Food> emptyFood = new ArrayList<Food>();
-  for (Food f : food) {
+  antHill.update(deltaTime);
+  antHill.render();
+  
+  for (int i=food.size()-1; i>=0; i--) {
+    Food f = food.get(i);
+    
+    f.update(deltaTime);
     f.render();
     
     if (f.amount == 0) {
-      emptyFood.add(f);
+      food.remove(i);
+      
+      if (f instanceof Fruit)
+        spawnFruit();
+      else 
+        spawnSugarHill();
     }
-  }
-  if (emptyFood.size() > 0) {
-    food.removeAll(emptyFood);
-    
-    for (int i=0; i<emptyFood.size(); i++) {
-      spawnSugarHill();
-    }
-    
-    emptyFood = null;
   }
   
   // draw stats
@@ -100,13 +104,23 @@ void spawnSugarHill() {
   food.add(f);
 }
 
+void spawnFruit() {
+  int amount = 500;
+  Fruit f = new Fruit(getRandomPoint(), new PVector(0, 0), new PVector(20, 20), amount);
+  food.add(f);
+}
+
 void spawnBug() {
   Bug b = new Bug(getRandomPoint(), getRandomRotation(), new PVector(10, 6));
   bugs.add(b);
 }
 
 PVector getRandomPoint() {
-  return new PVector(random(20, 500-20), random(20, 500-20));
+  PVector rp = new PVector(random(20, 500-20), random(20, 500-20));
+  while (rp.dist(antHill.position) < antHillRadius) {
+    rp = new PVector(random(20, 500-20), random(20, 500-20));
+  }
+  return rp;
 }
 
 PVector getRandomRotation() {
