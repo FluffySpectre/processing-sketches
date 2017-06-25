@@ -82,13 +82,13 @@ void draw() {
   }
   
   // draw stats
-  fill(220, 220, 220, 200);
+  fill(220, 220, 220, 150);
   rect(0, 0, 150, 90);
   fill(0, 100, 0);
-  text("Ants alive: " + antHill.antCount, 10, 20);
-  text("Ants killed: " + killedAntsThroughBugs, 10, 40);
+  text("Ants alive:        " + antHill.antCount, 10, 20);
+  text("Ants killed:       " + killedAntsThroughBugs, 10, 40);
   text("Food collected: " + foodCollected, 10, 60);
-  text("Bugs killed: " + killedBugs, 10, 80);
+  text("Bugs killed:       " + killedBugs, 10, 80);
   
   lastFrameMillis = millis();
 }

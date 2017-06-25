@@ -1,6 +1,7 @@
 class Bug extends SimObject {
   float speed = 1.1;
-  int vitality = 200;
+  int vitality = 100;
+  int maxVitality = 100;
   
   Bug(PVector position, PVector rotation, PVector scale) {
     super(position, rotation, scale);
@@ -26,7 +27,8 @@ class Bug extends SimObject {
   }
   
   void move() {
-    position.x += rotation.x * speed;
-    position.y += rotation.y * speed;
+    float vitalityFactor = 0.1 + (float)vitality / (float)maxVitality;
+    position.x += rotation.x * speed * vitalityFactor;
+    position.y += rotation.y * speed * vitalityFactor;
   }
 }

@@ -56,16 +56,15 @@ abstract class Ant extends SimObject {
         if (!targetReached) {
           targetReached = true;
           
-          if (target != null) {
-            if (target instanceof Food) {
-              targetReached((Food)target);
-            } else if (target instanceof AntHill) {
-              targetReached((AntHill)antHill);
-            }
+          if (target instanceof Food) {
+            targetReached((Food)target);
+          } else if (target instanceof AntHill) {
+            targetReached((AntHill)antHill);
           }
         }
       }
     } else {
+      // we have no target, so just roam on the playground
       rotation.rotate(radians(random(-10, 10)));
       move();
     }
