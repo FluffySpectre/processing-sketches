@@ -16,6 +16,7 @@ class Food extends SimObject {
   }
   
   void render() {
+    stroke(100);
     fill(250);
     ellipse(position.x, position.y, scale.x * ((float)amount / (float)maxAmount), scale.y * ((float)amount / (float)maxAmount));
   }

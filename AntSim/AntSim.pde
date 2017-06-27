@@ -5,17 +5,22 @@ float bugSpawnDelay = 2;
 int maxAnts = 25;
 int maxBugs = 3;
 float antHillRadius = 100;
+float fruitBaseSpeed = 0.1;
+int maxSimTime = 180;
 
 AntHill antHill;
 ArrayList<Food> food = new ArrayList<Food>();
 ArrayList<Bug> bugs = new ArrayList<Bug>();
 float lastFrameMillis = 0;
 float bugSpawnTime = 0.0;
-  
+float simTime = 0;
+boolean gameOver = false;
+
 //stats
 int foodCollected = 0;
 int killedAntsThroughBugs = 0;
 int killedBugs = 0;
+int totalscore = 0;
 
 void setup() {
   size(500, 500);
@@ -24,13 +29,13 @@ void setup() {
   
   antHill = new AntHill(new PVector(250, 250), new PVector(0, 0), new PVector(50, 50));
   
-  for (int i=0; i<3; i++) {
+  for (int i=0; i<4; i++) {
     spawnSugarHill();
   }
   
-  /*for (int i=0; i<2; i++) {
+  for (int i=0; i<3; i++) {
     spawnFruit();
-  }*/
+  }
   
   for (int i=0; i<maxBugs; i++) {
     spawnBug();
@@ -39,6 +44,11 @@ void setup() {
 
 void draw() {
   float deltaTime = (millis() - lastFrameMillis) / 1000;
+  simTime += deltaTime;
+  if (simTime >= maxSimTime) {
+    gameOver();
+  }
+  if (gameOver) return;
   
   background(245, 222, 179);
   
@@ -63,7 +73,6 @@ void draw() {
   }
   
   antHill.update(deltaTime);
-  antHill.render();
   
   for (int i=food.size()-1; i>=0; i--) {
     Food f = food.get(i);
@@ -81,14 +90,17 @@ void draw() {
     }
   }
   
+  antHill.render();
+  
   // draw stats
   fill(220, 220, 220, 150);
-  rect(0, 0, 150, 90);
+  rect(0, 0, 150, 110);
   fill(0, 100, 0);
-  text("Ants alive:        " + antHill.antCount, 10, 20);
-  text("Ants killed:       " + killedAntsThroughBugs, 10, 40);
-  text("Food collected: " + foodCollected, 10, 60);
-  text("Bugs killed:       " + killedBugs, 10, 80);
+  text("Sim time:          " + (int)simTime + "/" + maxSimTime + "s", 10, 20);
+  text("Ants alive:        " + antHill.antCount, 10, 40);
+  text("Ants killed:       " + killedAntsThroughBugs, 10, 60);
+  text("Food collected: " + foodCollected, 10, 80);
+  text("Bugs killed:       " + killedBugs, 10, 100);
   
   lastFrameMillis = millis();
 }
@@ -125,4 +137,8 @@ PVector getRandomPoint() {
 
 PVector getRandomRotation() {
   return new PVector(random(-1, 1), random(-1, 1));
+}
+
+void gameOver() {
+  gameOver = true;
 }

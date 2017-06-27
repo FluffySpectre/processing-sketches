@@ -36,7 +36,7 @@ abstract class Ant extends SimObject {
     lifetime -= deltaTime;
     if (lifetime < 0) lifetime = 0;
     
-    if (lifetime == 0 || vitality == 0) return;
+    if (lifetime == 0 || vitality == 0 || carryFruit != null) return;
     
     updateVision();
     updateSmelling();
@@ -143,8 +143,6 @@ abstract class Ant extends SimObject {
       carryFood = f.amount;
       f.pickup(this);
       carryFruit = f;
-      
-      speedModificator = carryFruitModificator;
       
     } else {
       carryFood = food.pickup(maxCarryAmount);

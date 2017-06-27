@@ -1,43 +1,43 @@
 class Fruit extends Food {
-  Ant carrier = null;
-  int numCarriers = 0;
+  float targetReachDist = 5;
+  ArrayList<Ant> carriers = new ArrayList<Ant>();
   
   Fruit(PVector position, PVector rotation, PVector scale, int amount) {
     super(position, rotation, scale, amount);
   }
   
-  boolean pickup(Ant ant) {
-    numCarriers++;
-    if (carrier == null) {
-      carrier = ant;
-      return true;
-    }
-    
-    carrier.speedModificator *= 2;
-    
-    return false;
+  void pickup(Ant ant) {
+    println("PICKUP!");
+    carriers.add(ant);
   }
   
   void drop(Ant ant) {
-    numCarriers--;
-    if (ant == carrier) {
-      carrier = null;
-    }
-    carrier.speedModificator /= 2;
+    if (carriers.contains(ant))
+      carriers.remove(ant);
   }
   
   void update(float deltaTime) {
-    if (carrier != null) {
-      //float newSpeed = carrier.speedModificator * numCarriers;
-      //carrier.speedModificator = newSpeed;
-      
-      rotation = carrier.rotation;
-      position.x += rotation.x * carrier.speed * carrier.speedModificator;
-      position.y += rotation.y * carrier.speed * carrier.speedModificator;
+    if (carriers.size() == 0) return;
+    
+    // calculate current position towards the anthill
+    rotation = PVector.sub(carriers.get(0).antHill.position, position).normalize();
+    position.x += rotation.x * fruitBaseSpeed * carriers.size();
+    position.y += rotation.y * fruitBaseSpeed * carriers.size();
+    
+    // set the current direction and velocity for all carriers too
+    for (Ant ant : carriers) {
+      ant.position = position;
+      ant.rotation = rotation;
+    }
+    
+    if (PVector.dist(position, carriers.get(0).antHill.position) < targetReachDist) {
+      foodCollected += amount;
+      amount = 0;
     }
   }
   
   void render() {
+    stroke(100);
     fill(10, 230, 10);
     ellipse(position.x, position.y, scale.x, scale.y);
   }
