@@ -157,7 +157,7 @@ abstract class Ant extends SimObject {
     carryFood = 0;
     
     if (carryFruit != null) {
-      carryFruit.drop(this);
+      //carryFruit.drop(this);
       carryFruit = null;
     }
   }

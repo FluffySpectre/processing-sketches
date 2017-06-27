@@ -27,7 +27,7 @@ void setup() {
   
   lastFrameMillis = millis();
   
-  antHill = new AntHill(new PVector(250, 250), new PVector(0, 0), new PVector(50, 50));
+  antHill = new AntHill(new PVector(width/2, height/2), new PVector(0, 0), new PVector(50, 50));
   
   for (int i=0; i<4; i++) {
     spawnSugarHill();

@@ -7,7 +7,6 @@ class Fruit extends Food {
   }
   
   void pickup(Ant ant) {
-    println("PICKUP!");
     carriers.add(ant);
   }
   
@@ -26,13 +25,20 @@ class Fruit extends Food {
     
     // set the current direction and velocity for all carriers too
     for (Ant ant : carriers) {
-      ant.position = position;
-      ant.rotation = rotation;
+      ant.position = position.copy();
+      ant.rotation = rotation.copy();
+      ant.target = null;
     }
     
     if (PVector.dist(position, carriers.get(0).antHill.position) < targetReachDist) {
       foodCollected += amount;
       amount = 0;
+      
+      for (Ant ant : carriers) {
+        ant.drop(); 
+      }
+      
+      carriers.clear();
     }
   }
   
