@@ -93,8 +93,8 @@ void draw() {
   antHill.render();
   
   // draw stats
-  fill(220, 220, 220, 150);
-  rect(0, 0, 150, 110);
+  fill(220, 220, 220, 120);
+  rect(0, 0, 180, 110);
   fill(0, 100, 0);
   text("Sim time:          " + (int)simTime + "/" + maxSimTime + "s", 10, 20);
   text("Ants alive:        " + antHill.antCount, 10, 40);
