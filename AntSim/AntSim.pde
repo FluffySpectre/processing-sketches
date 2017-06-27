@@ -23,7 +23,7 @@ int killedBugs = 0;
 int totalscore = 0;
 
 void setup() {
-  size(500, 500);
+  size(800, 800);
   
   lastFrameMillis = millis();
   
@@ -128,9 +128,9 @@ void spawnBug() {
 }
 
 PVector getRandomPoint() {
-  PVector rp = new PVector(random(20, 500-20), random(20, 500-20));
+  PVector rp = new PVector(random(20, width-20), random(20, height-20));
   while (rp.dist(antHill.position) < antHillRadius) {
-    rp = new PVector(random(20, 500-20), random(20, 500-20));
+    rp = new PVector(random(20, width-20), random(20, height-20));
   }
   return rp;
 }
