@@ -5,10 +5,10 @@ class AntHill extends SimObject {
   float antSpawnTime;
   int antCount = 0;
   
-  final float warriorAntProbabilty = 0.05;
+  final float warriorAntProbabilty = 0.2;
   
   String[] antNames = new String[] {
-    "Magda", "Horst", "Wilhelm", "Bernhard", "Anna", "Joachim", "Hannelore", "Björn", "Anja", "Carsten", "Benjamin"
+    "Anke", "Matthias", "Roland", "Bernhard", "Werner", "Joachim", "Petra", "Björn", "Anja", "Carsten", "Benjamin", "Timon", "Yannik", "Maike", "Jens", "Dennis", "Christine", "Sebastian", "Tim"
   };
   
   AntHill(PVector position, PVector rotation, PVector scale) {
