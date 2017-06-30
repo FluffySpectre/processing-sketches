@@ -3,11 +3,17 @@ class Environment {
   ArrayList<Food> food = new ArrayList<Food>();
   ArrayList<Bug> bugs = new ArrayList<Bug>();
   
+  Regulator foodSpawnRegulator, bugSpawnRegulator;
+  
   float bugSpawnTime = 0.0;
   SimSettings simSettings;
   
   Environment(SimSettings simSettings) {
     this.simSettings = simSettings;
+    
+    // setup spawn regulators
+    foodSpawnRegulator = new Regulator(simSettings.foodSpawnRate);
+    bugSpawnRegulator = new Regulator(simSettings.bugSpawnRate);
     
     antHill = new AntColony(new PVector(250, 250), new PVector(0, 0), new PVector(50, 50));
     
@@ -94,8 +100,27 @@ class Environment {
     }
   }
   
-  private ProximityRecord findInsectsInProximity() {
+  private ProximityRecord senseProximity(Ant ant) {
+    ProximityRecord pr = new ProximityRecord();
+    for (Insect insect : insects) {
+      if (ant.position.dist(insect.position) < antSenseRange) {
+        if (insect instanceof Ant) 
+          nearAnts.add(insect);
+      }
+    }
     
+    float nearestDist = float.maxValue;
+    for (Food f : food) {
+      float d = ant.position.dist(f.position);
+      if (d < antSenseRange) {
+        if (d < nearestDist) {
+          proximityRecord.nearestFood = f;
+          nearestDist = d;
+        }
+      }
+    }
+    
+    return proximityRecords;
   }
   
   void spawnSugarHill() {
