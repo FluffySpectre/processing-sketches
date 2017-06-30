@@ -1,5 +1,7 @@
 boolean displayLabels = false;
 boolean displayMarkerDirections = false;
+boolean displayAntSenseRange = false;
+
 float antSpawnDelay = 1;
 float bugSpawnDelay = 2;
 int maxAnts = 40;

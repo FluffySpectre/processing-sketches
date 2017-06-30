@@ -93,6 +93,13 @@ abstract class Ant extends SimObject {
       rect(0, 0, 5, 5);
     }
     
+    if (displayAntSenseRange) {
+      // draw sense radius
+      noStroke();
+      fill(150, 0, 150, 50);
+      ellipse(scale.x/2, scale.y/2, visionSenseRange, visionSenseRange);
+    }
+    
     popMatrix();
     
     if (displayLabels) {
