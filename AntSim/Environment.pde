@@ -120,7 +120,7 @@ class Environment {
       }
     }
     
-    return proximityRecords;
+    return pr;
   }
   
   void spawnSugarHill() {
