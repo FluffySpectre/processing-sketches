@@ -3,7 +3,7 @@ class Regulator {
   private float interval;
   
   Regulator(float interval) {
-    this.interval = inzerval;
+    this.interval = interval;
     this.lastTimeActive = millis();
   }
   
