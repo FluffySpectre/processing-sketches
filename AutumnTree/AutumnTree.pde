@@ -5,6 +5,9 @@ float animSpeed = 0.025;
 float maxWhiggleAngle = 45.5;
 float minWhiggleAngle = 44.5;
 float nextLeafSpawn, leafSpawnDelay = 1500;
+float leafAlpha = 1;
+float timeForTreeReset;
+boolean resetTree;
 
 ArrayList<Leaf> leafs = new ArrayList<Leaf>();
 
@@ -20,6 +23,19 @@ void draw() {
   pushMatrix();
   translate(width/2, height);
   
+  if (timeForTreeReset > 0 && millis() > timeForTreeReset) {
+    timeForTreeReset = millis() + 99999;
+    resetTree = true;
+  }
+  if (resetTree) {
+    leafAlpha += 0.005;
+    if (leafAlpha >= 1.0) {
+      leafAlpha = 1.0;
+      resetTree = false;
+      timeForTreeReset = 0;
+    }
+  }
+  
   // draw the tree and animate it
   branch(150);
   animateTree();
@@ -30,9 +46,16 @@ void draw() {
   rect(0, height-20, width, 20);
   
   // spawn some falling leafs, by random...
-  if (millis() > nextLeafSpawn) {
+  if (timeForTreeReset == 0 && millis() > nextLeafSpawn) {
     leafs.add(new Leaf(random(100, width-100), random(200, 300)));
     nextLeafSpawn = millis() + leafSpawnDelay;
+    
+    leafAlpha -= 0.01;
+    if (leafAlpha < 0) {
+      leafAlpha = 0;
+      timeForTreeReset = millis() + 15000;
+      resetTree = false;
+    }
   }
   
   // update the falling leafs
@@ -66,9 +89,9 @@ void branch(float len) {
     // draw leaves
     pushMatrix();
     noStroke();
-    fill(255, 0, 0, 128);
+    fill(255, 0, 0, 128*leafAlpha);
     ellipse(0, 0, 15, 15);
-    fill(255, 255, 0, 200);
+    fill(255, 255, 0, 200*leafAlpha);
     ellipse(0, 0, 6, 6);
     popMatrix();
   }

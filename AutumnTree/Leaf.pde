@@ -1,5 +1,5 @@
 class Leaf {
-  private final float lifetime = 20000;
+  private final float lifetime = 60000;
   private float x, y;
   private float gravity = 1;
   private float a = 0.0;
