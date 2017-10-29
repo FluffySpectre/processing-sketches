@@ -1,26 +1,37 @@
 class Leaf {
+  private final float lifetime = 20000;
   private float x, y;
   private float gravity = 1;
-  public boolean liesDown;
-  public float lifetime = 20000;
-  public float timeOfGroundHit;
+  private float a = 0.0;
+  private float inc = TWO_PI/80.0;
+  private float timeOfGroundHit;
   
-  public Leaf(float initialX, float initialY) {
-    x = initialX;
-    y = initialY;
+  public Leaf(float x, float y) {
+    this.x = x;
+    this.y = y;
   }
-   
-  float a = 0.0;
-  float inc = TWO_PI/25.0;
-  public void render() {
-    if (!liesDown) {
+  
+  public void update() {
+    if (timeOfGroundHit == 0 && hitsTheGround()) {
+      y = height-20-2.5;
+      timeOfGroundHit = millis();
+    }
+    
+    if (timeOfGroundHit == 0) {
       // update position by applying some gravity (Maybe some rotation too ???)
       y += gravity;
       
-      x += random(-1, 1) + sin(a) * 2.0;
-      a = a + inc;
+      float s = sin(a);
+      x += 0 + s * 2.0;
+      a += inc;
+      
+      // reset the counter if a full circle was reached
+      if (a > TWO_PI)
+        a = 0;
     }
-    
+  }
+  
+  public void render() {
     // draw this leaf
     pushMatrix();
     fill(255, 0, 0, 128);
@@ -28,23 +39,15 @@ class Leaf {
     popMatrix();
   }
   
-  public void lieDown() {
-    if (liesDown) return;
-    
-   // println("Lie down called!");
-    y = 147;
-    liesDown = true;
-    timeOfGroundHit = millis();
-  }
-  
-  public boolean isDead() {
-    if (y > 147)
+  public boolean hitsTheGround() {
+    if (y >= height-20-2.5)
       return true;
     return false;
   }
   
-  public boolean clear() {
-    //println(millis() + " - " + (timeOfGroundHit + lifetime));
+  public boolean isDead() {
+    if (timeOfGroundHit == 0) 
+      return false;
     if (millis() > timeOfGroundHit + lifetime)
       return true;
     return false;
