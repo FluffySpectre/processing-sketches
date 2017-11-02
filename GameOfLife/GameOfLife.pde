@@ -26,6 +26,19 @@ void draw() {
   if (runSim) {
     generate();
     numGenerations++;
+  } else {
+    // use the mouse 
+    if (mousePressed) {
+      int x = mouseX/w;
+      int y = mouseY/w;
+      
+      if (mouseButton == LEFT) {
+        grid[x][y] = 1;
+      }
+      if (mouseButton == RIGHT) {
+        grid[x][y] = 0;
+      }
+    }
   }
   
   // draw the grid
@@ -107,12 +120,4 @@ void keyPressed() {
     if (!runSim) 
       reset();
   }
-}
-
-void mousePressed() {
-  int x = mouseX/w;
-  int y = mouseY/w;
-  
-  if (grid[x][y] == 0) grid[x][y] = 1;
-  else grid[x][y] = 0;
 }
