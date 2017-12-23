@@ -24,8 +24,12 @@ void draw() {
   //noStroke();
   
   if (runSim) {
-    generate();
+    boolean somethingChanged = generate();
     numGenerations++;
+    // check for end of simulation
+    if (!somethingChanged) {
+      runSim = false;
+    }
   } else {
     // use the mouse 
     if (mousePressed) {
@@ -51,6 +55,7 @@ void draw() {
       if (cellState == 0) fill(51); 
       else fill(255);
       
+      //ellipse(x*w, y*w, w, w);
       rect(x*w, y*w, w, w);
     }
   }
@@ -62,30 +67,23 @@ void draw() {
 }
 
 void randomizeGrid() {
-  for (int x=1; x<columns-1; x++) {
-    for (int y=1; y<rows-1; y++) {
+  for (int x=0; x<columns; x++) {
+    for (int y=0; y<rows; y++) {
       grid[x][y] = int(random(2));
     }
   }
 }
 
-void generate() {
+boolean generate() {
   int[][] next = new int[columns][rows];
   boolean somethingChanged = false;
   
-  for (int x=1; x<columns-1; x++) {
-    for (int y=1; y<rows-1; y++) {
+  for (int x=0; x<columns; x++) {
+    for (int y=0; y<rows; y++) {
       int cellState = grid[x][y];
       
       // count neighbors of this cell
-      int neighbors = 0;
-      for (int i=-1; i<=1; i++) {
-        for (int j=-1; j<=1; j++) {
-          neighbors += grid[x+i][y+j];
-        }
-      }
-      // remove ourself
-      neighbors -= cellState;
+      int neighbors = countNeighbors(grid, x, y);
       
       // apply rules
       int nextState = 0;
@@ -102,12 +100,24 @@ void generate() {
     }
   }
   
-  // check for end of simulation
-  if (!somethingChanged) {
-    runSim = false;
-  }
-  
   grid = next;
+  
+  return somethingChanged;
+}
+
+int countNeighbors(int[][] grid, int x, int y) {
+  int neighbors = 0;
+  for (int i=-1; i<=1; i++) {
+    for (int j=-1; j<=1; j++) {
+      int col = (x + i + columns) % columns;
+      int row = (y + j + rows) % rows;
+      neighbors += grid[col][row];
+    }
+  }
+  // remove ourself
+  neighbors -= grid[x][y];
+  
+  return neighbors;
 }
 
 void keyPressed() {
