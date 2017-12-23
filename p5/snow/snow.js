@@ -10,8 +10,8 @@ var snowSpeed = 0.6;
 
 var shootingStars = [];
 var santa; 
-var smallHouse;
 var houses = [];
+var nextShootingStar;
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
@@ -25,23 +25,23 @@ function setup() {
     direction[i] = round(random(0, 1));
   }
   
-  //shootingStars.push(new ShootingStar(200, 200));
-  
   santa = new Santa();
   houses.push(new SmallHouse(100, height*(4/5)-60));
   houses.push(new SmallHouse(180, height*(4/5)-60));
   houses.push(new SmallHouse(260, height*(4/5)-60));
+  
+  nextShootingStar = millis() + random(30000, 80000);
 }
 
 function draw() {
   background(0,30,80);
-  fill(snowColor);
-  rect(0,height*(4/5),width,height/5);
-  drawSnowMan();
-  drawTree();
-  drawMoon();
   
-  /*for(var i=shootingStars.length-1; i>=0; i--) {
+  if (millis() > nextShootingStar) {
+    shootingStars.push(new ShootingStar(floor(random(50, width-100)), 0));
+    nextShootingStar = millis() + random(30000, 80000);
+  }
+  
+  for(var i=shootingStars.length-1; i>=0; i--) {
     var s = shootingStars[i];
     s.update();
     s.render();
@@ -49,7 +49,14 @@ function draw() {
     if (s.isDead()) {
       shootingStars.splice(i, 1);
     }
-  }*/
+  }
+  
+  fill(snowColor);
+  rect(0,height*(4/5),width,height/5);
+  
+  drawSnowMan();
+  drawTree();
+  drawMoon();
   
   santa.update();
   santa.render();
