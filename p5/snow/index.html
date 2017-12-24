@@ -4,6 +4,7 @@
 
   <!-- PLEASE NO CHANGES BELOW THIS LINE (UNTIL I SAY SO) -->
   <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
+  <script language="javascript" type="text/javascript" src="libraries/p5.dom.js"></script>
   <script language="javascript" type="text/javascript" src="Particle.js"></script>
   <script language="javascript" type="text/javascript" src="ParticleSystem.js"></script>
   <script language="javascript" type="text/javascript" src="PresentParticle.js"></script>
@@ -16,7 +17,20 @@
 
   <!-- This line removes any default padding and style. 
        You might only need one of these values set. -->
-  <style> body {padding: 0; margin: 0;} </style>
+  <style> 
+    body {padding: 0; margin: 0;} 
+    
+    @font-face {
+      font-family: myFont;
+      src: url(assets/font.ttf);
+    }
+      
+    .poem-text {
+      font-size: 48px;
+      color: #fff;
+      font-family: myFont;
+    }
+  </style>
 </head>
 
 <body>

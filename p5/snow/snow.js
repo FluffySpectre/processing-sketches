@@ -12,11 +12,28 @@ var shootingStars = [];
 var santa; 
 var houses = [];
 var nextShootingStar;
+var bellSound;
+
+function preload() {
+  soundFormats('mp3');
+  bellSound = loadSound('assets/bells.mp3');
+}
+
+function setRandomPoem() {
+  
+}
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   frameRate(30);
   noStroke();
+  
+  var p = createP('Voller Sanftmut sind die Mienen<br>und voll Güte ist die Seele,<br>sie sind stets bereit zu dienen,<br>deshalb nennt man sie Kamele.').size(width/2, height/2);
+  p.center();
+  p.addClass('poem-text');
+  
+  bellSound.setVolume(1);
+  bellSound.play();
   
   for(var i = 0; i < quantity; i++) {
     flakeSize[i] = round(random(minFlakeSize, maxFlakeSize));
@@ -69,6 +86,8 @@ function draw() {
   
   
   drawSnow();
+  
+  drawRandomPoetry();
 }
 
 function drawSnow() {
@@ -92,7 +111,7 @@ function drawSnow() {
 }
 
 function drawSnowMan() {
-  var centerX = width*0.75;
+  var centerX = width*0.93;
   var centerY = height - 200;
   var offsetHand = 30;
   strokeWeight(1);
@@ -139,7 +158,7 @@ function drawSnowMan() {
 }
 
 function drawTree() {
-  var centerX = width/2;
+  var centerX = width*0.8;
   var centerY = height/2;
   
   push();
@@ -160,7 +179,8 @@ function drawTree() {
   
   // star
   noStroke();
-  fill(255, 236, 23);
+  //fill(255, 236, 23);
+  fill(255, 255, 0);
   triangle(-25, 45, 0, 0, 25, 45);
   translate(0, 17);
   triangle(-25, 0, 0, 45, 25, 0);
@@ -181,5 +201,15 @@ function drawMoon() {
   ellipse(0, 0, 100, 100);
   fill(0,30,80);
   ellipse(40, 0, 100, 100);
+  pop();
+}
+
+function drawRandomPoetry() {
+  push();
+  noStroke();
+  fill(0, 150);
+  rect(0, 0, width, height);
+  fill(255, 200);
+  //text('Hier könnte ein wundervolles Weihnachtsgedicht stehen', width/2, height/2);
   pop();
 }
