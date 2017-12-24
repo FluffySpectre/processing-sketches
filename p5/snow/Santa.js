@@ -5,13 +5,13 @@ function Santa() {
   this.y = 150;
   this.speed = 10;
   this.dir = 1;
-  this.nextMove = millis() + random(5000, 15000);
+  this.nextMove = millis() + random(8000, 20000);
   this.isMoving = false;
   this.sprite = loadImage('assets/santa.png');
   this.spriteLeft = loadImage('assets/santa_left.png');
   this.particles = new ParticleSystem(createVector(this.x, this.y));
   this.losePresentParticles = new ParticleSystem(createVector(this.x, this.y));
-  this.nextLoss = millis() + random(2000, 4000);
+  this.nextLoss = millis() + random(1000, 3000);
   this.noseOn = false;
   
   this.update = function() {
@@ -27,7 +27,7 @@ function Santa() {
           (this.dir == -1 && this.x < -this.w)) {
         this.dir *= -1;
         this.isMoving = false;
-        this.nextMove = millis() + random(5000, 15000);
+        this.nextMove = millis() + random(8000, 20000);
       } 
       
       if (frameCount%10 == 0) {
@@ -52,7 +52,7 @@ function Santa() {
       else if (this.dir == -1) this.losePresentParticles.origin = createVector(this.x+this.w, this.y);
       if (this.isMoving)
         this.losePresentParticles.addParticle(new PresentParticle(this.losePresentParticles.origin));
-      this.nextLoss = millis() + random(2000, 4000);
+      this.nextLoss = millis() + random(1000, 3000);
     }
     this.losePresentParticles.run();
     
