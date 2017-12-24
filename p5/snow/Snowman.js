@@ -1,9 +1,18 @@
 function Snowman(x, y) {
   this.x = x;
   this.y = y;
+  this.nextBlink = 0;
+  this.blinking = 0;
   
   this.update = function() {
-    
+    if (millis() > this.nextBlink) {
+      if (this.blinking == 2) {
+        this.blinking = 0;
+        this.nextBlink = millis() + random(500, 4000);
+      } else {
+        this.blinking++;
+      }
+    }
   };
   
   this.render = function() {
@@ -26,9 +35,11 @@ function Snowman(x, y) {
     translate(this.x,this.y-50);
     ellipse(0,0,60,60);
     // eyes
-    fill(30);
-    ellipse(-10, -10, 10, 10);
-    ellipse(10, -10, 10, 10);
+    if (this.blinking == 0) {
+      fill(30);
+      ellipse(-10, -10, 10, 10);
+      ellipse(10, -10, 10, 10);
+    }
     // nose
     fill(255,165,0);
     ellipse(0, 0, 5, 5);
