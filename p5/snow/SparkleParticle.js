@@ -19,7 +19,7 @@ SparkleParticle.prototype.display = function() {
   translate(this.position.x, this.position.y);
   rotate(this.theta);
   stroke(255, 200, 0, this.lifespan);
-  line(-2.5,0,2.5,0);
-  line(0,-2.5,0,2.5);
+  line(-3,0,3,0);
+  line(0,-3,0,3);
   pop();
 }

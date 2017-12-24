@@ -11,7 +11,8 @@ function Santa() {
   this.spriteLeft = loadImage('assets/santa_left.png');
   this.particles = new ParticleSystem(createVector(this.x, this.y));
   this.losePresentParticles = new ParticleSystem(createVector(this.x, this.y));
-  this.nextLoss = millis() + random(3000, 5000);
+  this.nextLoss = millis() + random(2000, 4000);
+  this.noseOn = false;
   
   this.update = function() {
     if (!this.isMoving && millis() >= this.nextMove) {
@@ -28,6 +29,10 @@ function Santa() {
         this.isMoving = false;
         this.nextMove = millis() + random(5000, 15000);
       } 
+      
+      if (frameCount%10 == 0) {
+        this.noseOn = !this.noseOn;
+      }
     }
   };
   
@@ -47,14 +52,23 @@ function Santa() {
       else if (this.dir == -1) this.losePresentParticles.origin = createVector(this.x+this.w, this.y);
       if (this.isMoving)
         this.losePresentParticles.addParticle(new PresentParticle(this.losePresentParticles.origin));
-      this.nextLoss = millis() + random(3000, 5000);
+      this.nextLoss = millis() + random(2000, 4000);
     }
     this.losePresentParticles.run();
     
     if (this.dir == 1) {
       image(this.sprite, this.x, this.y, this.w, this.h);
+      
+      fill(255, 0, 0);
+      noStroke();
+      if (this.noseOn)
+        ellipse(this.x+this.w-15, this.y+67, 10, 10);
     } else {
       image(this.spriteLeft, this.x, this.y, this.w, this.h);
+      fill(255, 0, 0);
+      noStroke();
+      if (this.noseOn)
+        ellipse(this.x+15, this.y+67, 10, 10);
     }
     
     pop();

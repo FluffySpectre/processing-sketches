@@ -11,7 +11,7 @@ PresentParticle.prototype.constructor = PresentParticle;
 PresentParticle.prototype.update = function() {
   Particle.prototype.update.call(this);
   
-  this.theta += (this.velocity.x * this.velocity.mag()) / 50.0;
+  this.theta += (this.velocity.x * this.velocity.mag()) / 40.0;
 }
 
 PresentParticle.prototype.display = function() {

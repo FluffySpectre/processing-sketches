@@ -25,7 +25,6 @@ function ShootingStar(x, y) {
     
     noStroke();
     fill(255, 200, 0);
-    //line(this.x, this.y, this.x2, this.y2);
     ellipse(this.x2, this.y2, 10, 10);
     pop();
   };
