@@ -12,15 +12,43 @@ var shootingStars = [];
 var santa; 
 var houses = [];
 var nextShootingStar;
+
+var nextPoemTime = 0;
 var bellSound;
+var currentPoemIndex = 0;
+var poemElement;
+var poems = [
+  'Voller Sanftmut sind die Mienen<br>und voll Güte ist die Seele,<br>sie sind stets bereit zu dienen,<br>deshalb nennt man sie Kamele.',
+  'Frieden auf Erden bliebe bestehen,<br>wenn die Besinnung von Weihnachten nicht würde gehen.',
+  'Weihnachten ist eine sehr schöne Zeit,<br>sie soll Euch bringen Freude, Glück und Zufriedenheit.',
+  'Kerzenschein und Christlaterne<br>leuchten hell die Weihnacht\' ein.<br>Glocken läuten nah und ferne,<br>Friede soll auf Erden sein.',
+  'Bei Tannenduft und Kerzenschein<br>möge alles fröhlich und friedlich sein.',
+  'Fichten, Lametta, Kugeln und Lichter,<br>Bratäpfelduft und frohe Gesichter,<br>Freude am Schenken - das Herz wird so weit.<br>Ich wünsch allen: Eine fröhliche Weihnachtszeit!',
+  'Zeit für Liebe und Gefühl,<br>heute bleibt´s nur draußen kühl.<br>Kerzenschein und Plätzchenduft -<br>Weihnachten liegt in der Luft.',
+  'Nun leuchten helle Weihnachtskerzen<br>und zaubern Glück und Freud’ in allen Herzen.',
+  'Geschenke kaufen, gutes Essen,<br>darüber sollten wir eines nicht vergessen,<br>den Sinn der Weihnacht, Zeit zum Lieben und zum Danken haben<br>und uns freuen über diese einfachen Gaben.',
+  'Die Glocken läuten zur Heiligen Nacht,<br>ein jeder sich auf den Weg in die Kirche macht.<br>Doch Weihnachten sollte jeden Tag in den Herzen sein,<br>nicht nur bei Plätzchenduft und Kerzenschein.',
+  'Eisenbahn und Puppenhaus, Puzzle, Bücher oder Spiele,<br>Wünsche hab ich ganz schön viele.<br>Auf das Christkind ist Verlass, das weiß ich ganz bestimmt,<br>jetzt muss ich nur noch artig sein, damit´s kein böses Ende nimmt.',
+  'Bratäpfel knistern im Ofen, der Punsch kocht auf dem Herd,<br>wir sitzen in der guten Stube und sind so unbeschwert.<br>Schau, war da nicht ein Blitzen und ein Leuchten, ein Kind mit Flügeln im weißen Kleid?<br>Das Christkind kommt uns wieder besuchen wie jedes Jahr zur Weihnachtszeit.',
+  'Hörst Du die Glocke so zierlich und hell?<br>Lass uns ins Wohnzimmer eilen schnell.<br>Dort steht der schöne Weihnachtsbaum<br>und erfüllt mit Tannenduft den ganzen Raum.',
+  'Winterzeit ist Weihnachtszeit<br>und die Herzen werden weit.<br>Harmonie wohin man blickt, friedliches Beisammensein.<br>Ach könnte das doch immer so sein.',
+  'Kannst Du Dich erinnern an die Weihnachten deiner Kindheit?<br>Die Jungs im Anzug, die Mädchen im schönen Kleid,<br>knisternde Spannung und scheinbar endlose Zeit,<br>bis zur Bescherung schien es unendlich weit.'
+];
 
 function preload() {
-  soundFormats('mp3');
+  soundFormats('mp3', 'ogg');
   bellSound = loadSound('assets/bells.mp3');
 }
 
-function setRandomPoem() {
+function nextPoem() {
+  currentPoemIndex++;
+  if (currentPoemIndex >= poems.length)
+    currentPoemIndex = 0;
+  poemElement.html(poems[currentPoemIndex]);
   
+  // play some jingle
+  bellSound.setVolume(1);
+  bellSound.play();
 }
 
 function setup() {
@@ -28,13 +56,10 @@ function setup() {
   frameRate(30);
   noStroke();
   
-  var p = createP('Voller Sanftmut sind die Mienen<br>und voll Güte ist die Seele,<br>sie sind stets bereit zu dienen,<br>deshalb nennt man sie Kamele.').size(width/2, height/2);
-  p.center();
-  p.addClass('poem-text');
-  
-  bellSound.setVolume(1);
-  bellSound.play();
-  
+  poemElement = createP('').size(width/2, height/2);
+  poemElement.center();
+  poemElement.addClass('poem-text');
+
   for(var i = 0; i < quantity; i++) {
     flakeSize[i] = round(random(minFlakeSize, maxFlakeSize));
     xPosition[i] = random(0, width);
@@ -52,6 +77,11 @@ function setup() {
 
 function draw() {
   background(0,30,80);
+  
+  if (millis() > nextPoemTime) {
+    nextPoem();
+    nextPoemTime = millis() + 1000*60*15;
+  }
   
   if (millis() > nextShootingStar) {
     shootingStars.push(new ShootingStar(floor(random(50, width-100)), 0));
@@ -82,11 +112,8 @@ function draw() {
     h.update();
     h.render();
   }
-  
-  
-  
-  drawSnow();
-  
+
+  drawSnow();  
   drawRandomPoetry();
 }
 
@@ -185,8 +212,6 @@ function drawTree() {
   translate(0, 17);
   triangle(-25, 0, 0, 45, 25, 0);
   
-  
-  
   pop();
 }
 
@@ -207,9 +232,7 @@ function drawMoon() {
 function drawRandomPoetry() {
   push();
   noStroke();
-  fill(0, 150);
+  fill(0, 130);
   rect(0, 0, width, height);
-  fill(255, 200);
-  //text('Hier könnte ein wundervolles Weihnachtsgedicht stehen', width/2, height/2);
   pop();
 }
