@@ -4,6 +4,11 @@ function Snowman(x, y) {
   this.nextBlink = 0;
   this.blinking = 0;
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     if (millis() > this.nextBlink) {
       if (this.blinking == 2) {
@@ -61,7 +66,6 @@ function Snowman(x, y) {
     pop();
   };
 }
-
 
 
 

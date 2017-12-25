@@ -6,6 +6,11 @@ function Moon(x, y) {
   this.eyeTargetX = 0;
   this.nextTargetChange = 0;
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     //this.eyePosX = map(mouseX, 0, width, -5, 5);
     //this.eyePosY = map(mouseY, 0, height, -5, 5);
@@ -21,7 +26,7 @@ function Moon(x, y) {
       if (this.eyePosX > 10) this.eyePosX = 10;
     } else if (this.eyePosX > this.eyeTargetX) {
       this.eyePosX -= 0.5;
-      if (this.eyePosX < 0) this.eyePosX = 0;
+      if (this.eyePosX < 0) this.eyePosX = 0; 
     }
   };
   
@@ -35,10 +40,10 @@ function Moon(x, y) {
     ellipse(40, 0, 130, 130);
     
     // eye
-    fill(50, 50, 50);
+    fill(200);
     translate(-44, -10);
     ellipse(0, 0, 30, 30);
-    fill(255);
+    fill(50, 50, 50);
     ellipse(map(this.eyePosX, 0, 10, -6, 6), this.eyePosY, 12, 12);
     pop();
   };

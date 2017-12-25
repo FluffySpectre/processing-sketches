@@ -1,13 +1,10 @@
-var quantity = 300;
-var xPosition = [];
-var yPosition = [];
-var flakeSize = [];
-var direction = [];
+var quantity = 250;
 var minFlakeSize = 1;
 var maxFlakeSize = 6;
 var snowColor = 220;
 var snowSpeed = 0.6;
 
+var snowSystem;
 var shootingStars = [];
 var moon;
 var santa; 
@@ -27,12 +24,11 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   frameRate(30);
   noStroke();
-
+  
+  // setup snow
+  snowSystem = new ParticleSystem(createVector(0, 0));
   for(var i = 0; i < quantity; i++) {
-    flakeSize[i] = round(random(minFlakeSize, maxFlakeSize));
-    xPosition[i] = random(0, width);
-    yPosition[i] = random(0, height);
-    direction[i] = round(random(0, 1));
+    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), random(0, height))));
   }
   
   moon = new Moon(width/4, 200);
@@ -49,22 +45,17 @@ function setup() {
 }
 
 function draw() {
-  background(0,30,80);
+  background(0, 30, 80);
   
-  moon.update();
-  moon.render();
+  moon.run();
   
   if (millis() > nextShootingStar) {
     shootingStars.push(new ShootingStar(floor(random(50, width-100)), 0));
     nextShootingStar = millis() + random(30000, 80000);
   }
-  
-  for(var i=shootingStars.length-1; i>=0; i--) {
-    var s = shootingStars[i];
-    s.update();
-    s.render();
-    
-    if (s.isDead()) {
+  for (var i=shootingStars.length-1; i>=0; i--) {
+    shootingStars[i].run();
+    if (shootingStars[i].isDead()) {
       shootingStars.splice(i, 1);
     }
   }
@@ -72,43 +63,18 @@ function draw() {
   fill(snowColor);
   rect(0,height*(4/5),width,height/5);
   
-  snowman.update();
-  snowman.render();
-  
-  tree.update();
-  tree.render();
-  
-  santa.update();
-  santa.render();
+  snowman.run();
+  tree.run();
+  santa.run();
   
   for (var i=0; i<houses.length; i++) {
-    var h = houses[i];
-    h.update();
-    h.render();
+    houses[i].run();
   }
-
-  drawSnow();  
   
-  poetryOverlay.update();
-  poetryOverlay.render();
-}
-
-function drawSnow() {
-  for(var i = 0; i < xPosition.length; i++) {
-    
-    ellipse(xPosition[i], yPosition[i], flakeSize[i], flakeSize[i]);
-    
-    if(direction[i] == 0) {
-      xPosition[i] += map(flakeSize[i], minFlakeSize, maxFlakeSize, .1, .5);
-    } else {
-      xPosition[i] -= map(flakeSize[i], minFlakeSize, maxFlakeSize, .1, .5);
-    }
-    
-    yPosition[i] += (flakeSize[i] + direction[i]) * snowSpeed; 
-    
-    if(xPosition[i] > width + flakeSize[i] || xPosition[i] < -flakeSize[i] || yPosition[i] > height + flakeSize[i]) {
-      xPosition[i] = random(0, width);
-      yPosition[i] = -flakeSize[i];
-    } 
+  snowSystem.run();
+  while (snowSystem.particles.length < quantity) {
+    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), -10)));
   }
+  
+  poetryOverlay.run();
 }

@@ -27,6 +27,11 @@ function PoetryOverlay(bSound) {
   this.poemElement.center();
   this.poemElement.addClass('poem-text');
 
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+
   this.update = function() {
     if (millis() > this.nextPoemTime) {
       this.nextPoem();
@@ -37,7 +42,7 @@ function PoetryOverlay(bSound) {
   this.render = function() {
     push();
     noStroke();
-    fill(0, 150);
+    fill(0, 130);
     rect(0, 0, width, height);
     pop();
   };

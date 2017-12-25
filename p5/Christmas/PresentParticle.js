@@ -14,7 +14,7 @@ PresentParticle.prototype.update = function() {
   this.theta += (this.velocity.x * this.velocity.mag()) / 30.0;
 }
 
-PresentParticle.prototype.display = function() {
+PresentParticle.prototype.render = function() {
   push();
   translate(this.position.x, this.position.y);
   rotate(this.theta);

@@ -13,9 +13,8 @@ SparkleParticle.prototype.update = function() {
   this.theta += (this.velocity.x * this.velocity.mag()) / 10.0;
 }
 
-SparkleParticle.prototype.display = function() {
+SparkleParticle.prototype.render = function() {
   push();
-  
   translate(this.position.x, this.position.y);
   rotate(this.theta);
   stroke(255, 200, 0, this.lifespan);

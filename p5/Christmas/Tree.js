@@ -4,6 +4,11 @@ function Tree(x, y) {
   this.haloOffset = 10;
   this.angle = 0;
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     this.haloOffset = map(sin(this.angle), -1, 1, -5, 5);
     this.angle += 0.2;

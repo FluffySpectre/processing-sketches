@@ -7,29 +7,25 @@ var Particle = function(position) {
 
 Particle.prototype.run = function() {
   this.update();
-  this.display();
+  this.render();
 };
 
-// Method to update position
-Particle.prototype.update = function(){
+Particle.prototype.update = function() {
   this.velocity.add(this.acceleration);
   this.position.add(this.velocity);
   this.lifespan -= 2;
 };
 
-// Method to display
-Particle.prototype.display = function() {
+Particle.prototype.render = function() {
   stroke(200, this.lifespan);
   strokeWeight(2);
   fill(127, this.lifespan);
   ellipse(this.position.x, this.position.y, 12, 12);
 };
 
-// Is the particle still useful?
-Particle.prototype.isDead = function(){
+Particle.prototype.isDead = function() {
   if (this.lifespan < 0) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 };

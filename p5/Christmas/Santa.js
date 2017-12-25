@@ -14,6 +14,11 @@ function Santa() {
   this.nextLoss = millis() + random(1000, 3000);
   this.noseOn = false;
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     if (!this.isMoving && millis() >= this.nextMove) {
       this.isMoving = true;

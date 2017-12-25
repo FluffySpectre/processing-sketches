@@ -5,6 +5,11 @@ function SmallHouse(x, y) {
   this.nextLightSwitch = millis() + random(6000, 20000);
   this.lightStates = [false, false];
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     if (millis() > this.nextLightSwitch) {
       for (var i=0; i<this.lightStates.length; i++) {

@@ -1,3 +1,20 @@
+/*function ShootingStarParticle(origin) {
+  Particle.call(this, origin);
+  
+  
+};
+
+ShootingStarParticle.prototype = Object.create(Particle.prototype);
+ShootingStarParticle.prototype.constructor = ShootingStarParticle;
+
+ShootingStarParticle.prototype.update = function() {
+  
+};
+
+ShootingStarParticle.prototype.render = function() {
+  
+};*/
+
 function ShootingStar(x, y) {
   this.x = x;
   this.y = y;
@@ -9,6 +26,11 @@ function ShootingStar(x, y) {
   this.lifetime = 10;
   this.particles = new ParticleSystem(createVector(this.x, this.y));
   
+  this.run = function() {
+    this.update();
+    this.render();
+  };
+  
   this.update = function() {
     this.lifetime -= 1/30;
       
@@ -18,7 +40,6 @@ function ShootingStar(x, y) {
   
   this.render = function() {
     push();
-    
     this.particles.origin = createVector(this.x2, this.y2);
     this.particles.addParticle(new SparkleParticle(this.particles.origin));
     this.particles.run();
