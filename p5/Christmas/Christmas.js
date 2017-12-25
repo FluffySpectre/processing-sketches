@@ -1,8 +1,10 @@
-var quantity = 250;
-var minFlakeSize = 1;
-var maxFlakeSize = 6;
+var quantity = 200;
+var minFlakeSize = 2;
+var maxFlakeSize = 20;
 var snowColor = 220;
-var snowSpeed = 0.6;
+var snowSpeed = 0.3;
+var snowFlakeSpritesheet;
+var snowFlakeTextures = [];
 
 var snowSystem;
 var shootingStars = [];
@@ -18,6 +20,9 @@ var bellSound;
 function preload() {
   soundFormats('mp3', 'ogg');
   bellSound = loadSound('assets/bells.mp3');
+  
+  // load snow flake spritesheet
+  snowFlakeSpritesheet = loadImage('assets/snowflakes.png');
 }
 
 function setup() {
@@ -25,10 +30,16 @@ function setup() {
   frameRate(30);
   noStroke();
   
+  // cut the different textures out of the spritesheet
+  for (var x = 0; x < snowFlakeSpritesheet.width; x += 43) {
+    var img = snowFlakeSpritesheet.get(x, 0, 43, 43);
+    snowFlakeTextures.push(img);
+  }
+  
   // setup snow
   snowSystem = new ParticleSystem(createVector(0, 0));
   for(var i = 0; i < quantity; i++) {
-    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), random(0, height))));
+    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), random(0, height)), random(snowFlakeTextures)));
   }
   
   moon = new Moon(width/4, 200);
@@ -73,7 +84,7 @@ function draw() {
   
   snowSystem.run();
   while (snowSystem.particles.length < quantity) {
-    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), -10)));
+    snowSystem.addParticle(new SnowParticle(createVector(random(0, width), -43), random(snowFlakeTextures)));
   }
   
   poetryOverlay.run();
