@@ -1,7 +1,7 @@
 function PoetryOverlay(bSound) {
   this.nextPoemTime = 0;
   this.bellSound = bSound;
-  this.currentPoemIndex = 0;
+  this.currentPoemIndex = -1;
   this.poemElement;
   this.poems = [
     'Voller Sanftmut sind die Mienen<br>und voll Güte ist die Seele,<br>sie sind stets bereit zu dienen,<br>deshalb nennt man sie Kamele.',
