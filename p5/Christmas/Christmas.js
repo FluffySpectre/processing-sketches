@@ -61,8 +61,7 @@ function draw() {
   moon.run();
   
   if (millis() > nextShootingStar) {
-    shootingStars.push(new ShootingStar(floor(random(50, width-100)), 0));
-    nextShootingStar = millis() + random(30000, 80000);
+    spawnShootingStar();
   }
   for (var i=shootingStars.length-1; i>=0; i--) {
     shootingStars[i].run();
@@ -88,4 +87,19 @@ function draw() {
   }
   
   poetryOverlay.run();
+}
+
+function spawnShootingStar() {
+  shootingStars.push(new ShootingStar(floor(random(50, width-100)), 0));
+  nextShootingStar = millis() + random(30000, 80000);
+}
+
+// for debbugging
+function keyPressed() {
+  if (key == ' ') {
+    poetryOverlay.nextPoem();
+  }
+  if (key == '1') {
+    spawnShootingStar();
+  }
 }

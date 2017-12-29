@@ -35,7 +35,6 @@ function PoetryOverlay(bSound) {
   this.update = function() {
     if (millis() > this.nextPoemTime) {
       this.nextPoem();
-      this.nextPoemTime = millis() + 1000*60*15;
     }
   };
   
@@ -56,5 +55,7 @@ function PoetryOverlay(bSound) {
     // play some jingle
     this.bellSound.setVolume(1);
     this.bellSound.play();
+    
+    this.nextPoemTime = millis() + 1000*60*15;
   };
 }
