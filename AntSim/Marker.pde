@@ -1,31 +1,39 @@
 class Marker extends SimObject {
   float radius;
-  float startRadius;
   PVector direction;
+  float maxRadius;
+  float spreadSpeed;
+  boolean isDead;
   
   Marker(PVector position, PVector rotation, PVector scale, float radius, PVector direction) {
     super(position, rotation, scale);
     
-    this.radius = radius;
-    this.startRadius = radius;
+    this.maxRadius = radius;
     this.direction = direction;
+    
+    // calculate spreadspeed
+    spreadSpeed = radius / 4;
   }
   
-  void update(float deltaTime) {
-    final float tweaker = 0.1;
-    radius -=  tweaker * startRadius * deltaTime;
-    if (radius < 0) radius = 0;
+  void update(float deltaTime) {   
+    if (isDead) return;
+    
+    radius += spreadSpeed * deltaTime;
+    if (radius > maxRadius)
+      isDead = true;
   }
   
   void render() {
+    if (isDead) return;
+    
     noStroke();
-    fill(240, 240, 10, 120);
+    fill(240, 240, 10, map(radius, 0, maxRadius, 128, 0));
     ellipse(position.x, position.y, radius*2, radius*2);
     
     if (displayMarkerDirections) {
       // draw an arrow in the direction this marker is pointing
       PVector dir = PVector.add(position, direction);
-      arrow(position.x, position.y, dir.x, dir.y, (radius / startRadius) * 255.0);
+      arrow(position.x, position.y, dir.x, dir.y, map(radius, 0, maxRadius, 255, 0));
     }
   }
   

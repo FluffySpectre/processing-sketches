@@ -89,7 +89,7 @@ class AntHill extends SimObject {
       m.update(deltaTime);
       m.render();
       
-      if (m.radius <= 0) {
+      if (m.isDead) {
         marker.remove(i);
       }
     }

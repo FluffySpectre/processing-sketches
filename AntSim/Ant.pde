@@ -75,7 +75,7 @@ abstract class Ant extends SimObject {
       PVector behind = new PVector(rotation.x, rotation.y);
       behind.rotate(radians(180));
       behind.normalize();
-      setMarker(10, behind);
+      setMarker(30, behind);
     }
   }
   
