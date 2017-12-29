@@ -64,9 +64,17 @@ function Snowman(x, y) {
     line(this.x-80,this.y-offsetHand,this.x-40,this.y - 15);
     line(this.x+80,this.y-offsetHand,this.x+40,this.y - 15);
     pop();
+    
+    // hat
+    push();
+    translate(this.x-30, this.y-80);
+    noStroke();
+    fill(55);
+    rect(0, 0, 60, 5);
+    rect(15, -40, 30, 40);
+    pop();
   };
 }
-
 
 
 
