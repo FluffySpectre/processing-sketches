@@ -41,11 +41,16 @@ class Vehicle {
   void render() {
     // draw triangle
     pushMatrix();
-    rectMode(CENTER);
     translate(pos.x, pos.y);
     rotate(vel.heading());
+    
     fill(255);
-    rect(0, 0, 30, 10);
+    noStroke();
+    beginShape();
+    vertex(15, 0);
+    vertex(-15, 5);
+    vertex(-15, -5);
+    endShape(CLOSE);
     popMatrix();
   }
   
