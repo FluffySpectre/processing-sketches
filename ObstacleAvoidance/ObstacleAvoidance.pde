@@ -4,6 +4,7 @@ float multSeekForce = 0.1;
 float multAvoidanceForce = 0.8;
 float maxAvoidanceForce = 50.0;
 float viewDistance = 100.0;
+int numFeelers = 8;
 int numObstacles = 25;
 
 Vehicle v;
@@ -38,6 +39,13 @@ void draw() {
   v.setTarget(targetPos);
   v.update();
   v.render();
+  
+  // DEBUGGING
+  for (PVector f : v.feelers) {
+    stroke(0, 255, 0);
+    noFill();
+    point(f.x, f.y);
+  }
 }
 
 void keyPressed() {

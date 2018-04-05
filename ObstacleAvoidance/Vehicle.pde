@@ -23,8 +23,6 @@ class Vehicle {
   void update() {
     // calculate steering forces
     PVector steer = new PVector();
-    //steer = calculateForce();
-    
     steer.add(seek(target));
     steer.add(obstacleAvoidance());
     steer.setMag(maxSteeringForce);
@@ -33,7 +31,6 @@ class Vehicle {
     
     vel.add(acc);
     vel.setMag(maxVelocity);
-
     pos.add(vel);
     acc.mult(0);
   }
@@ -101,21 +98,21 @@ class Vehicle {
     return PVector.sub(dir, vel);
   }
   
+  PVector[] feelers = new PVector[0];
   PVector obstacleAvoidance() {
     PVector avoidanceForce = new PVector();
     
     // calculate feeler positions
-    float feelerLength = viewDistance;
-    PVector[] feelers = new PVector[50];
+    float feelerLength = viewDistance / numFeelers;
+    feelers = new PVector[numFeelers];
     for (int i=0; i<feelers.length; i++) {
       PVector feeler1 = pos.copy();
-      PVector normVel = PVector.mult(vel.normalize(null), feelerLength);
+      PVector normVel = PVector.mult(vel.normalize(null), i*feelerLength);
       feeler1.add(normVel);
       feelers[i] = feeler1;
-      feelerLength *= 0.9;
     }
     
-    // check, if there is a obstacle in fr 
+    // check, if there is a obstacle in front
     Obstacle o = getMostImportantObstacle(feelers);
     if (o != null) {
       avoidanceForce.x = f.x - o.pos.x;
