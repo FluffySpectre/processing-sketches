@@ -5,6 +5,7 @@ class Vehicle {
   PVector target;
   float mass = 8;
   PVector f = new PVector();
+  PVector[] feelers = new PVector[0];
   
   Vehicle(float x, float y) {
     pos = new PVector(x, y);
@@ -51,46 +52,6 @@ class Vehicle {
     popMatrix();
   }
   
-  /*PVector calculateForce() {
-    PVector steer = new PVector();
-    
-    PVector seekForce = seek(target);
-    seekForce.mult(multSeekForce);
-    if (!accumulateForce(steer, seekForce)) 
-      return steer;
-    
-    PVector obstacleAvoidanceForce = obstacleAvoidance();
-    obstacleAvoidanceForce.mult(multAvoidanceForce);
-    if (!accumulateForce(steer, obstacleAvoidanceForce)) 
-      return steer;
-      
-    return steer;
-  }*/
-  
-  /*boolean accumulateForce(PVector steer, PVector forceToAdd) {
-    //calculate how much steering force the vehicle has used so far
-    float MagnitudeSoFar = steer.mag();
-    //calculate how much steering force remains to be used by this vehicle
-    float MagnitudeRemaining = maxSteeringForce - MagnitudeSoFar;
-    //return false if there is no more force left to use
-    if (MagnitudeRemaining <= 0.0) return false;
-    //calculate the magnitude of the force we want to add
-    float MagnitudeToAdd = forceToAdd.mag();
-    
-    if (MagnitudeToAdd < MagnitudeRemaining)
-    {
-      steer.add(forceToAdd);
-    }
-    else
-    {
-      //add it to the steering force
-      PVector normForce = forceToAdd.normalize();
-      PVector s = PVector.mult(normForce, MagnitudeRemaining);
-      steer.add(s);
-    }
-    return true;
-  }*/
-  
   // STEERING BEHAVIOURS
   PVector seek(PVector target) {
     PVector dir = PVector.sub(target, pos);
@@ -98,7 +59,6 @@ class Vehicle {
     return PVector.sub(dir, vel);
   }
   
-  PVector[] feelers = new PVector[0];
   PVector obstacleAvoidance() {
     PVector avoidanceForce = new PVector();
     
@@ -106,10 +66,10 @@ class Vehicle {
     float feelerLength = viewDistance / numFeelers;
     feelers = new PVector[numFeelers];
     for (int i=0; i<feelers.length; i++) {
-      PVector feeler1 = pos.copy();
+      PVector feeler = pos.copy();
       PVector normVel = PVector.mult(vel.normalize(null), i*feelerLength);
-      feeler1.add(normVel);
-      feelers[i] = feeler1;
+      feeler.add(normVel);
+      feelers[i] = feeler;
     }
     
     // check, if there is a obstacle in front
