@@ -16,7 +16,7 @@ var bugs = [];
 var lastFrameMillis = 0;
 var bugSpawnTime = 0.0;
 var simTime = 0;
-var gameOver = false;
+var gameOver_ = false;
 
 //stats
 var foodCollected = 0;
@@ -51,7 +51,7 @@ function draw() {
   if (simTime >= maxSimTime) {
     gameOver();
   }
-  if (gameOver) return;
+  if (gameOver_) return;
   
   background(245, 222, 179);
   
@@ -143,5 +143,5 @@ function getRandomRotation() {
 }
 
 function gameOver() {
-  gameOver = true;
+  gameOver_ = true;
 }
