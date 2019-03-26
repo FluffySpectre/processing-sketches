@@ -190,7 +190,7 @@ class Ant extends SimObject {
 
     updateSmelling() {
         for (let m of this.antHill.marker) {
-            if (this.position.dist(m.position) < this.visionSenseRange && this.smelledMarkers.indexOf(m) === -1) {
+            if (this.position.dist(m.position) <= m.radius && this.smelledMarkers.indexOf(m) === -1) {
                 this.smelledMarkers.push(m);
                 this.smellsMarker(m);
             }

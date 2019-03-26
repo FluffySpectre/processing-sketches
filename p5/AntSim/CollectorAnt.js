@@ -15,13 +15,20 @@ class CollectorAnt extends Ant {
 
     smellsMarker(marker) {
         if (this.target == null) {
-            //this.target = marker.direction;
+            //this.target = marker.target;
         }
     }
 
     foodReached(food) {
-        this.take(food);
-        this.moveHome();
+        if (food) 
+            this.take(food);
+        else
+            this.target = null;
+
+        if (this.carryFood > 0)
+            this.moveHome();
+        else 
+            this.target = null;
     }
 
     homeReached(target) {

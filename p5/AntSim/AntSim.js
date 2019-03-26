@@ -2,20 +2,20 @@ var displayLabels = false;
 var displayMarkerDirections = false;
 var displayAntSenseRange = false;
 
-var antSpawnDelay = 0.25;
+var antSpawnDelay = 0.05;
 var bugSpawnDelay = 2;
 var maxAnts = 50;
 var maxBugs = 3;
 var antHillRadius = 100;
 var fruitBaseSpeed = 0.1;
-var maxSimTime = 999;
+var maxSimSteps = 9999;
 
 var antHill;
 var food = [];
 var bugs = [];
 var lastFrameMillis = 0;
 var bugSpawnTime = 0.0;
-var simTime = 0;
+var simSteps = 0;
 var gameOver_ = false;
 
 //stats
@@ -25,8 +25,8 @@ var killedBugs = 0;
 var totalscore = 0;
 
 function setup() {
-  createCanvas(displayWidth, displayHeight);
-  
+  createCanvas(1024, 768);
+
   lastFrameMillis = millis();
   
   antHill = new AntHill(createVector(width/2, height/2), createVector(0, 0), createVector(50, 50));
@@ -47,8 +47,8 @@ function setup() {
 
 function draw() {
   const deltaTime = (millis() - lastFrameMillis) / 1000;
-  simTime += deltaTime;
-  if (simTime >= maxSimTime) {
+  simSteps++;
+  if (simSteps > maxSimSteps) {
     gameOver();
   }
   if (gameOver_) return;
@@ -99,7 +99,7 @@ function draw() {
   fill(220, 220, 220, 120);
   rect(0, 0, 180, 110);
   fill(0, 100, 0);
-  text("Sim time:          " + Math.floor(simTime) + "/" + maxSimTime + "s", 10, 20);
+  text("Sim steps:        " + simSteps + " / " + maxSimSteps + "", 10, 20);
   text("Ants alive:        " + antHill.antCount, 10, 40);
   text("Ants killed:       " + killedAntsThroughBugs, 10, 60);
   text("Food collected: " + foodCollected, 10, 80);
@@ -110,6 +110,12 @@ function draw() {
 
 function mousePressed() {
   antHill.spawnAntAtPos(mouseX, mouseY);
+}
+
+function keyPressed() {
+  if (key === '1') displayLabels = !displayLabels;
+  if (key === '2') displayMarkerDirections = !displayMarkerDirections;
+  if (key === '3') displayAntSenseRange = !displayAntSenseRange;
 }
 
 function spawnSugarHill() {
