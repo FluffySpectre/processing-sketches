@@ -14,10 +14,10 @@ class Bug extends SimObject {
   
   void render() {
     pushMatrix();
-    translate(position.x, position.y);
+    translate(position.x+scale.x/2, position.y+scale.y/2);
     rotate(rotation.heading());
     fill(0, 0, 230);
-    rect(0, 0, scale.x, scale.y);
+    rect(-scale.x/2, -scale.y/2, scale.x, scale.y);
     popMatrix();
     
     if (displayLabels) {
