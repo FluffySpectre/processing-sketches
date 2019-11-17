@@ -3,10 +3,13 @@ float maxSteeringForce = 1.0;
 float multSeekForce = 0.1;
 float multAvoidanceForce = 0.8;
 float maxAvoidanceForce = 50.0;
+float maxSeparationForce = 100.0;
 float viewDistance = 100.0;
 int numFeelers = 8;
-int numObstacles = 25;
+int numObstacles = 20;
+int numVehicles = 10;
 
+Vehicle[] vehicles;
 Vehicle v;
 Obstacle[] obstacles;
 PVector targetPos;
@@ -16,8 +19,11 @@ void setup() {
   size(1024, 480);
   targetPos = new PVector(width/2, height/2);
   
-  v = new Vehicle(20, height/2);
-  
+  vehicles = new Vehicle[numVehicles];
+  for (int i=0; i<numVehicles; i++) {
+    vehicles[i] = new Vehicle(random(0, width), random(0, height));
+  }
+
   generateObstacles();
 }
 
@@ -36,16 +42,20 @@ void draw() {
     o.render();
   }
   
-  v.setTarget(targetPos);
-  v.update();
-  v.render();
-  
-  // DEBUGGING
-  for (PVector f : v.feelers) {
-    stroke(0, 255, 0);
-    noFill();
-    point(f.x, f.y);
+  for (Vehicle v : vehicles) {
+    v.setTarget(targetPos);
+    v.update();
+    v.render();
+    
+    // DEBUGGING
+    for (PVector f : v.feelers) {
+      stroke(0, 255, 0);
+      noFill();
+      point(f.x, f.y);
+    }
   }
+  
+  
 }
 
 void keyPressed() {

@@ -6,6 +6,7 @@ class Vehicle {
   float mass = 8;
   PVector f = new PVector();
   PVector[] feelers = new PVector[0];
+  float perceptionRadius = 120;
   
   Vehicle(float x, float y) {
     pos = new PVector(x, y);
@@ -26,6 +27,7 @@ class Vehicle {
     PVector steer = new PVector();
     steer.add(seek(target));
     steer.add(obstacleAvoidance());
+    steer.add(separation(vehicles));
     steer.setMag(maxSteeringForce);
     steer.div(mass);
     applyForce(steer);
@@ -49,6 +51,12 @@ class Vehicle {
     vertex(-15, 5);
     vertex(-15, -5);
     endShape(CLOSE);
+    
+    // draw perception radius
+    //stroke(255, 100);
+    //noFill();
+    //ellipse(0, 0, perceptionRadius, perceptionRadius); 
+    
     popMatrix();
   }
   
@@ -85,6 +93,27 @@ class Vehicle {
     }
     
     return avoidanceForce;
+  }
+  
+  PVector separation(Vehicle[] vehicles) {
+    PVector steering = new PVector();
+    int total = 0;
+    for (Vehicle other: vehicles) {
+      float d = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+      if (other != this && d < perceptionRadius) {
+        PVector diff = PVector.sub(this.pos, other.pos);
+        diff.div(d * d);
+        steering.add(diff);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering.div(total);
+      steering.setMag(maxVelocity);
+      steering.sub(this.vel);
+      steering.limit(maxSeparationForce);
+    }
+    return steering;
   }
   
   boolean lineHitsObstacle(PVector[] feeler, Obstacle obstacle) {
