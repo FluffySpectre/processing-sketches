@@ -32,7 +32,7 @@ class CollectorAnt extends Ant {
     }
 
     homeReached(target) {
-        if (target instanceof AntHill) {
+        if (this.carryFood > 0) {
             foodCollected += this.carryFood;
 
             if (this.lastTarget != null)
