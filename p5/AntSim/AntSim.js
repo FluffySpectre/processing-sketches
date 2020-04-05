@@ -116,23 +116,29 @@ function keyPressed() {
   if (key === '1') displayLabels = !displayLabels;
   if (key === '2') displayMarkerDirections = !displayMarkerDirections;
   if (key === '3') displayAntSenseRange = !displayAntSenseRange;
+  if (key === '4') spawnSugarHill(mouseX, mouseY);
+  if (key === '5') spawnFruit(mouseX, mouseY);
+  if (key === '6') spawnBug(mouseX, mouseY);
 }
 
-function spawnSugarHill() {
+function spawnSugarHill(x, y) {
+  let pos = x && y ? createVector(x, y) : getRandomPoint();
   let amount = Math.floor(random(50, 250));
   let fScale = createVector(10 + amount * 0.08, 10 + amount * 0.08);
-  let f = new Food(getRandomPoint(), createVector(0, 0), fScale, amount);
+  let f = new Food(pos, createVector(0, 0), fScale, amount);
   food.push(f);
 }
 
-function spawnFruit() {
+function spawnFruit(x, y) {
+  let pos = x && y ? createVector(x, y) : getRandomPoint();
   let amount = 500;
-  let f = new Fruit(getRandomPoint(), createVector(0, 0), createVector(20, 20), amount);
+  let f = new Fruit(pos, createVector(0, 0), createVector(20, 20), amount);
   food.push(f);
 }
 
-function spawnBug() {
-  let b = new Bug(getRandomPoint(), getRandomRotation(), createVector(10, 6));
+function spawnBug(x, y) {
+  let pos = x && y ? createVector(x, y) : getRandomPoint();
+  let b = new Bug(pos, getRandomRotation(), createVector(10, 6));
   bugs.push(b);
 }
 
