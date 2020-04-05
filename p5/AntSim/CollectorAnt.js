@@ -4,12 +4,12 @@ class CollectorAnt extends Ant {
     }
 
     seesFood(food) {
-        if (!this.target)
+        if (this.carryFood === 0)
             this.target = food;
     }
 
     seesFruit(fruit) {
-        if (!this.target)
+        if (this.carryFood === 0)
             this.target = fruit;
     }
 
