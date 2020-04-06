@@ -68,7 +68,7 @@ class Ant extends SimObject {
             let behind = createVector(this.rotation.x, this.rotation.y);
             behind.rotate(radians(180));
             behind.normalize();
-            this.setMarker(30, behind);
+            this.setMarker(30, behind, this.lastTarget);
         }
     }
 
@@ -106,8 +106,8 @@ class Ant extends SimObject {
         this.position.y += this.rotation.y * this.speed * this.speedModificator;
     }
 
-    setMarker(radius, direction) {
-        this.antHill.setMarkerAtPosition(this, this.position, radius, direction);
+    setMarker(radius, direction, target) {
+        this.antHill.setMarkerAtPosition(this, this.position, radius, direction, target);
     }
 
     // MOVING

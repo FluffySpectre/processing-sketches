@@ -14,8 +14,11 @@ class CollectorAnt extends Ant {
     }
 
     smellsMarker(marker) {
-        if (this.target == null) {
-            //this.target = marker.target;
+        if (this.carryFood === 0) {
+            if (marker.target)
+                this.target = marker.target;
+            else 
+                this.target = null;
         }
     }
 

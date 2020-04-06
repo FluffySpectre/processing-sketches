@@ -37,8 +37,8 @@ class AntHill extends SimObject {
         this.antCount--;
     }
 
-    setMarkerAtPosition(ant, position, radius, direction) {
-        let m = new Marker(createVector(position.x, position.y), createVector(0, 0), createVector(1, 1), radius, direction);
+    setMarkerAtPosition(ant, position, radius, direction, target) {
+        let m = new Marker(createVector(position.x, position.y), createVector(0, 0), createVector(1, 1), radius, direction, target);
         this.marker.push(m);
     }
 

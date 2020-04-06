@@ -1,9 +1,10 @@
 class Marker extends SimObject {
-    constructor(position, rotation, scale, radius, direction) {
+    constructor(position, rotation, scale, radius, direction, target) {
         super(position, rotation, scale);
 
         this.maxRadius = radius;
         this.direction = direction;
+        this.target = target;
         
         // calculate spreadspeed
         this.spreadSpeed = radius / 4;
