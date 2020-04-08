@@ -1,4 +1,4 @@
-class Ant extends SimObject {
+class BaseAnt extends SimObject {
     constructor(name, position, rotation, scale, speed, antHill) {
         super(position, rotation, scale);
 
@@ -29,42 +29,14 @@ class Ant extends SimObject {
         this.lifetime -= deltaTime;
         if (this.lifetime < 0) this.lifetime = 0;
 
-        if (this.lifetime == 0 || this.vitality == 0 || this.carryFruit != null) return;
+        if (this.lifetime == 0 || this.vitality == 0) return;
 
         this.updateVision();
         this.updateSmelling();
-
-        if (!this.canMove) return;
-
-        if (this.target != null) {
-            let t = this.target.position;
-
-            if (this.position.dist(t) > this.targetReachDist) {
-                this.targetReached = false;
-                this.turnTo(t);
-
-                this.move();
-            } else {
-                // STOP!
-                if (!this.targetReached) {
-                    this.targetReached = true;
-
-                    if (this.target instanceof AntHill)
-                        this.homeReached(this.target);
-                    else if (this.target instanceof Food)
-                        this.foodReached(this.target);
-                } else {
-                    this.target = null;
-                }
-            }
-        } else {
-            // we have no target, so just roam on the playground
-            this.rotation.rotate(radians(random(-10, 10)));
-            this.move();
-        }
+        this.updateMovement();    
 
         this.markerTimer += deltaTime;
-        if (this.carryFood > 0 && this.lastTarget != null && this.markerTimer > 0.5) {
+        if (this.carryFood > 0 && this.markerTimer > 0.5) {
             this.markerTimer = 0;
             let behind = createVector(this.rotation.x, this.rotation.y);
             behind.rotate(radians(180));
@@ -143,6 +115,7 @@ class Ant extends SimObject {
             this.carryFood = food.amount;
             food.pickup(this);
             this.carryFruit = food;
+            this.lastTarget = food;
 
         } else {
             this.carryFood = food.pickup(this.maxCarryAmount);
@@ -154,20 +127,17 @@ class Ant extends SimObject {
     }
 
     drop() {
+        this.canMove = true;
         this.carryFood = 0;
-
-        if (this.carryFruit != null) {
-            //carryFruit.drop(this);
-            this.carryFruit = null;
-        }
+        this.carryFruit = null;
     }
 
     // NAV
     foodReached(food) {}
-    homeReached(antHill) {}
+    homeReached() {}
 
     // SENSING
-    seesFood(food) {}
+    seesSugar(sugar) {}
     seesFruit(fruit) {}
     seesBug(bug) {}
     smellsMarker(marker) {}
@@ -178,7 +148,7 @@ class Ant extends SimObject {
                 if (f instanceof Fruit)
                     this.seesFruit(f);
                 else
-                    this.seesFood(f);
+                    this.seesSugar(f);
             }
         }
 
@@ -195,6 +165,36 @@ class Ant extends SimObject {
                 this.smelledMarkers.push(m);
                 this.smellsMarker(m);
             }
+        }
+    }
+
+    updateMovement() {
+        if (!this.canMove) return;
+
+        if (this.target != null) {
+            let t = this.target.position;
+
+            if (this.position.dist(t) > this.targetReachDist) {
+                this.targetReached = false;
+                this.turnTo(t);
+                this.move();
+            } else {
+                // STOP!
+                if (!this.targetReached) {
+                    this.targetReached = true;
+
+                    if (this.target === this.antHill)
+                        this.homeReached();
+                    else if (this.target instanceof Food)
+                        this.foodReached(this.target);
+                } else {
+                    this.target = null;
+                }
+            }
+        } else {
+            // we have no target, so just roam on the playground
+            this.rotation.rotate(radians(random(-10, 10)));
+            this.move();
         }
     }
 }

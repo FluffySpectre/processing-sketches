@@ -129,7 +129,7 @@ function spawnSugarHill(x, y) {
   let pos = x && y ? createVector(x, y) : getRandomPoint();
   let amount = Math.floor(random(50, 250));
   let fScale = createVector(10 + amount * 0.08, 10 + amount * 0.08);
-  let f = new Food(pos, createVector(0, 0), fScale, amount);
+  let f = new Sugar(pos, createVector(0, 0), fScale, amount);
   food.push(f);
 }
 

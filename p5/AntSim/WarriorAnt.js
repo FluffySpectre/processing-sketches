@@ -1,4 +1,4 @@
-class WarriorAnt extends Ant {
+class WarriorAnt extends BaseAnt {
     constructor(name, position, rotation, scale, speed, antHill) {
         super(name, position, rotation, scale, speed, antHill);
 

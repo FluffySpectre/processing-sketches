@@ -1,11 +1,11 @@
-class CollectorAnt extends Ant {
+class CollectorAnt extends BaseAnt {
     constructor(name, position, rotation, scale, speed, antHill) {
         super(name, position, rotation, scale, speed, antHill);
     }
 
-    seesFood(food) {
+    seesSugar(sugar) {
         if (this.carryFood === 0)
-            this.target = food;
+            this.target = sugar;
     }
 
     seesFruit(fruit) {
@@ -34,7 +34,7 @@ class CollectorAnt extends Ant {
             this.target = null;
     }
 
-    homeReached(target) {
+    homeReached() {
         if (this.carryFood > 0) {
             foodCollected += this.carryFood;
 
