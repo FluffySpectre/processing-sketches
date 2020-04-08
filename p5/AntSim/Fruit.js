@@ -4,6 +4,7 @@ class Fruit extends Food {
 
         this.carriers = [];
         this.targetReachDist = 5;
+        this.maxCarriers = 5;
     }
 
     pickup(ant) {

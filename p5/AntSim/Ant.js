@@ -54,6 +54,8 @@ class Ant extends SimObject {
                         this.homeReached(this.target);
                     else if (this.target instanceof Food)
                         this.foodReached(this.target);
+                } else {
+                    this.target = null;
                 }
             }
         } else {

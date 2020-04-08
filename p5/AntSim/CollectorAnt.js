@@ -9,7 +9,7 @@ class CollectorAnt extends Ant {
     }
 
     seesFruit(fruit) {
-        if (this.carryFood === 0)
+        if (this.carryFood === 0 && fruit.carriers.length < fruit.maxCarriers)
             this.target = fruit;
     }
 
