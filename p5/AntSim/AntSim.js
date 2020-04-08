@@ -9,6 +9,7 @@ var maxBugs = 3;
 var antHillRadius = 100;
 var fruitBaseSpeed = 0.1;
 var maxSimSteps = 9999;
+var showStats = true;
 
 var antHill;
 var food = [];
@@ -25,7 +26,7 @@ var killedBugs = 0;
 var totalscore = 0;
 
 function setup() {
-  createCanvas(1024, 768);
+  createCanvas(windowWidth, windowHeight);
 
   lastFrameMillis = millis();
   
@@ -95,15 +96,17 @@ function draw() {
   
   antHill.render();
   
-  // draw stats
-  fill(220, 220, 220, 120);
-  rect(0, 0, 180, 110);
-  fill(0, 100, 0);
-  text("Sim steps:        " + simSteps + " / " + maxSimSteps + "", 10, 20);
-  text("Ants alive:        " + antHill.antCount, 10, 40);
-  text("Ants killed:       " + killedAntsThroughBugs, 10, 60);
-  text("Food collected: " + foodCollected, 10, 80);
-  text("Bugs killed:       " + killedBugs, 10, 100);
+  if (showStats) {
+    // draw stats
+    fill(220, 220, 220, 120);
+    rect(0, 0, 180, 110);
+    fill(0, 100, 0);
+    text("Sim steps:        " + simSteps + " / " + maxSimSteps + "", 10, 20);
+    text("Ants alive:        " + antHill.antCount, 10, 40);
+    text("Ants killed:       " + killedAntsThroughBugs, 10, 60);
+    text("Food collected: " + foodCollected, 10, 80);
+    text("Bugs killed:       " + killedBugs, 10, 100);
+  }
   
   lastFrameMillis = millis();
 }
@@ -119,6 +122,7 @@ function keyPressed() {
   if (key === '4') spawnSugarHill(mouseX, mouseY);
   if (key === '5') spawnFruit(mouseX, mouseY);
   if (key === '6') spawnBug(mouseX, mouseY);
+  if (key === 's') showStats = !showStats;
 }
 
 function spawnSugarHill(x, y) {
