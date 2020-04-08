@@ -11,7 +11,7 @@ class AntHill extends SimObject {
         this.warriorAntProbabilty = 0.2;
 
         this.antNames = [
-            'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Petra', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Maike', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Tim'
+            'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Gabi', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Matthias LT', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Seddy', 'Tim', 'Manuel'
         ];
     }
 
