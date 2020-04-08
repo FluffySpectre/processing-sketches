@@ -5,6 +5,7 @@ class Fruit extends Food {
         this.carriers = [];
         this.targetReachDist = 5;
         this.maxCarriers = 5;
+        this.markerTimer = 0;
     }
 
     pickup(ant) {
@@ -40,6 +41,12 @@ class Fruit extends Food {
             }
 
             this.carriers = [];
+        }
+
+        this.markerTimer += deltaTime;
+        if (this.carriers.length < this.maxCarriers && this.carriers.length > 0 && this.markerTimer > 0.5) {
+            this.markerTimer = 0;
+            this.carriers[0].setMarker(50, createVector(0, 0), this);
         }
     }
 

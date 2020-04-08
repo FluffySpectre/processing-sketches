@@ -22,7 +22,6 @@ class Ant extends SimObject {
         this.visionSenseRange = 40;
         this.targetReachDist = 5;
         this.carryFoodModificator = 0.5;
-        this.carryFruitModificator = 0.1;
         this.maxCarryAmount = 5;
     }
 
