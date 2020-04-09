@@ -1,0 +1,213 @@
+class BaseAnt extends SimObject {
+    constructor() {
+        super(createVector(), createVector(), createVector());
+
+        this.caste = this.getCaste();
+
+        this.col = color(20);
+    }
+
+    init(name, position, rotation, scale, speed, antHill) {
+        this.name = name;
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.speed = speed;
+        this.antHill = antHill;
+        this.vitality = 100;
+        this.lifetime = 999;
+        
+        this.attackStrength = 10;
+       
+        this.target = null;
+        this.lastTarget = null;
+        this.targetReached = false;
+        this.speedModificator = 1;
+        this.carryFood = 0;
+        this.markerTimer = 0;
+        
+        this.canMove = true;
+        this.smelledMarkers = [];
+        this.carryFruit = null;
+
+        this.visionSenseRange = 40;
+        this.targetReachDist = 5;
+        this.carryFoodModificator = 0.5;
+        this.maxCarryAmount = 5;
+    }
+
+    getCaste() { return ''; }
+
+    update(deltaTime) {
+        this.lifetime -= deltaTime;
+        if (this.lifetime < 0) this.lifetime = 0;
+
+        if (this.lifetime == 0 || this.vitality == 0) return;
+
+        this.updateVision();
+        this.updateSmelling();
+        this.updateMovement();    
+
+        this.markerTimer += deltaTime;
+        if (this.carryFood > 0 && this.markerTimer > 0.5) {
+            this.markerTimer = 0;
+            let behind = createVector(this.rotation.x, this.rotation.y);
+            behind.rotate(radians(180));
+            behind.normalize();
+            this.setMarker(30, behind, this.lastTarget);
+        }
+    }
+
+    render() {
+        push();
+        translate(this.position.x, this.position.y);
+        rotate(this.rotation.heading());
+        noStroke();
+        fill(this.col);
+        rect(0, 0, this.scale.x, this.scale.y);
+        stroke(150);
+
+        if (this.carryFood > 0) {
+            fill(250);
+            rect(0, 0, 5, 5);
+        }
+
+        if (displayAntSenseRange) {
+            // draw sense radius
+            noStroke();
+            fill(150, 0, 150, 50);
+            ellipse(this.scale.x / 2, this.scale.y / 2, this.visionSenseRange, this.visionSenseRange);
+        }
+
+        pop();
+
+        if (displayLabels) {
+            fill(20);
+            text(this.name, this.position.x - 20, this.position.y - 15);
+        }
+    }
+
+    move() {
+        this.position.x += this.rotation.x * this.speed * this.speedModificator;
+        this.position.y += this.rotation.y * this.speed * this.speedModificator;
+    }
+
+    setMarker(radius, direction, target) {
+        this.antHill.setMarkerAtPosition(this, this.position, radius, direction, target);
+    }
+
+    // MOVING
+    moveTo(target) {
+        this.target = target;
+        this.canMove = true;
+    }
+
+    moveHome() {
+        this.target = this.antHill;
+        this.canMove = true;
+    }
+
+    stop() {
+        this.target = null;
+        this.canMove = false;
+    }
+
+    // TURNING
+    turnTo(target) {
+        let dir = p5.Vector.sub(target, this.position);
+        this.rotation = dir.normalize();
+    }
+
+    turnAround() {
+        this.rotation.rotate(radians(180));
+    }
+
+    // FOOD
+    take(food) {
+        if (food instanceof Fruit) {
+            this.carryFood = food.amount;
+            food.pickup(this);
+            this.carryFruit = food;
+            this.lastTarget = food;
+
+        } else {
+            this.carryFood = food.pickup(this.maxCarryAmount);
+            if (this.carryFood == 0) this.lastTarget = null;
+            else this.lastTarget = food;
+
+            this.speedModificator = this.carryFoodModificator;
+        }
+    }
+
+    drop() {
+        this.canMove = true;
+        this.carryFood = 0;
+        this.carryFruit = null;
+    }
+
+    // NAV
+    foodReached(food) {}
+    homeReached() {}
+
+    // SENSING
+    seesSugar(sugar) {}
+    seesFruit(fruit) {}
+    seesBug(bug) {}
+    smellsMarker(marker) {}
+
+    updateVision() {
+        for (let f of food) {
+            if (this.position.dist(f.position) < this.visionSenseRange) {
+                if (f instanceof Fruit)
+                    this.seesFruit(f);
+                else
+                    this.seesSugar(f);
+            }
+        }
+
+        for (let b of bugs) {
+            if (this.position.dist(b.position) < this.visionSenseRange) {
+                this.seesBug(b);
+            }
+        }
+    }
+
+    updateSmelling() {
+        for (let m of this.antHill.marker) {
+            if (this.position.dist(m.position) <= m.radius && this.smelledMarkers.indexOf(m) === -1) {
+                this.smelledMarkers.push(m);
+                this.smellsMarker(m);
+            }
+        }
+    }
+
+    updateMovement() {
+        if (!this.canMove) return;
+
+        if (this.target != null) {
+            let t = this.target.position;
+
+            if (this.position.dist(t) > this.targetReachDist) {
+                this.targetReached = false;
+                this.turnTo(t);
+                this.move();
+            } else {
+                // STOP!
+                if (!this.targetReached) {
+                    this.targetReached = true;
+
+                    if (this.target === this.antHill)
+                        this.homeReached();
+                    else if (this.target instanceof Food)
+                        this.foodReached(this.target);
+                } else {
+                    this.target = null;
+                }
+            }
+        } else {
+            // we have no target, so just roam on the playground
+            this.rotation.rotate(radians(random(-10, 10)));
+            this.move();
+        }
+    }
+}

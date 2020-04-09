@@ -1,0 +1,32 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" data-name="vs/editor/editor.main"
+    href="./node_modules/monaco-editor/min/vs/editor/editor.main.css">
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <div id="editorContainer"></div>
+  <div id="simContainer"></div>
+
+  <button id="runButton" onclick="run()">RUN</button>
+
+  <label class="upload-btn">
+    <input type="file" id="codeUpload" style="display:none" accept=".js" onchange="codeUploaded()">
+    Load File
+  </label>
+
+  <script>var require = { paths: { 'vs': './node_modules/monaco-editor/min/vs' } };</script>
+  <script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
+  <script src="./node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+  <script src="./node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+
+  <script src="./index.js"></script>
+</body>
+
+</html>

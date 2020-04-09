@@ -1,0 +1,36 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#editorContainer {
+    position: absolute;
+    left: 0;
+    top: 2rem;
+    width: 50%;
+    height: calc(100% - 2rem);
+}
+
+#simContainer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
+
+#runButton {
+    position: absolute;
+    left: calc(50% - 3rem);
+    top: 0;
+    width: 3rem;
+    height: 2rem;
+    color: white;
+    background-color: green;
+}
+
+.upload-btn {
+    color: black;
+    height: 2rem;
+    background-color: darkgray;
+}
