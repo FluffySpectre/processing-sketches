@@ -4,74 +4,40 @@ var COLONY_INFO = {
 };
 
 class PlayerAnt extends BaseAnt {
-    constructor() {
-        super();
-
-        if (this.caste === 'warrior') {
-            this.col = color(255, 0, 0);
-        } else {
-            this.col = color(20);
-        }
+    // EVENTS
+    // awakes() {}
+    waits() {
+        this.turnByDegrees(random(0, 360));
+        this.goForward(50);
     }
+    // spotsBug(bug) {}
+    spotsSugar(sugar) {
+        this.think('Mhhm, Zucker!');
 
-    getCaste() {
-        return random(1) < 0.8 ? 'collector' : 'warrior';
+        this.goToTarget(sugar);
     }
-
-    seesBug(bug) {
-        if (this.caste === 'warrior') {
-            this.moveTo(bug);
-        }
+    spotsFruit(fruit) {
+        this.think('Juhuu, ein Apfel!');
     }
-
-    seesSugar(sugar) {
-        if (this.caste === 'warrior') return;
-
-        if (this.carryFood === 0)
-            this.target = sugar;
+    // smellsMarker(marker) {}
+    // sugarReached(sugar) {}
+    // fruitReached(fruit) {}
+    becomesTired() {
+        this.stop();
+        this.goHome();
     }
+    // hasDied(death) {}
+    // tick() {}
 
-    seesFruit(fruit) {
-        if (this.caste === 'warrior') return;
-
-        if (this.carryFood === 0 && fruit.carriers.length < fruit.maxCarriers)
-            this.target = fruit;
-    }
-
-    smellsMarker(marker) {
-        if (this.caste === 'warrior') return;
-
-        if (this.carryFood === 0) {
-            if (marker.target)
-                this.target = marker.target;
-            else 
-                this.target = null;
-        }
-    }
-
-    foodReached(food) {
-        if (food) 
-            this.take(food);
-        else
-            this.target = null;
-
-        if (this.carryFood > 0)
-            this.moveHome();
-        else 
-            this.target = null;
-    }
-
-    homeReached() {
-        if (this.carryFood > 0) {
-            foodCollected += this.carryFood;
-
-            if (this.lastTarget != null)
-                this.target = this.lastTarget;
-            else
-                this.target = null;
-
-            this.speedModificator = 1;
-            this.drop();
-        }
-    }
+    // COMMANDS
+    // goForward(distance)
+    // goToTarget(target)
+    // goAwayFromTarget(target)
+    // goHome()
+    // stop()
+    // turnByDegrees(angle)
+    // turnToTarget(target)
+    // turnToDirection(direction)
+    // turnAround()
+    // think(message)
 }

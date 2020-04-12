@@ -1,213 +1,178 @@
-class BaseAnt extends SimObject {
-    constructor() {
-        super(createVector(), createVector(), createVector());
+class BaseAnt {
+    constructor() { }
 
-        this.caste = this.getCaste();
-
-        this.col = color(20);
-    }
-
-    init(name, position, rotation, scale, speed, antHill) {
-        this.name = name;
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
-        this.speed = speed;
-        this.antHill = antHill;
-        this.vitality = 100;
-        this.lifetime = 999;
-        
-        this.attackStrength = 10;
-       
+    init(colony) {
+        this.colony = colony;
+        this.remainingDistance = 0;
+        this.remainingRotation = 0;
         this.target = null;
-        this.lastTarget = null;
-        this.targetReached = false;
-        this.speedModificator = 1;
-        this.carryFood = 0;
-        this.markerTimer = 0;
-        
-        this.canMove = true;
-        this.smelledMarkers = [];
-        this.carryFruit = null;
+        this.reached = false;
+        this.traveledDistance = 0;
+        this.energy = 100;
+        this.maxEnergy = 100;
+        this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
+        this.rotationSpeed = 5;
+        this.currentSpeed = 2;
+        this.viewDistance = 10;
+        this.carriedFruit = null;
+        this.currentLoad = 0;
+        this.debugMessage = null;
+        this.isTired = false;
+        this.smelledMarker = [];
 
-        this.visionSenseRange = 40;
-        this.targetReachDist = 5;
-        this.carryFoodModificator = 0.5;
-        this.maxCarryAmount = 5;
+        this.w = 6;
+        this.h = 3;
     }
 
-    getCaste() { return ''; }
+    // setter
+    setTarget(value) {
+        if (this.target === value && value !== null)
+            return;
+        this.target = value;
+        this.remainingRotation = 0;
+        this.remainingDistance = 0;
+    }
 
-    update(deltaTime) {
-        this.lifetime -= deltaTime;
-        if (this.lifetime < 0) this.lifetime = 0;
+    // sim functions
+    move() {
+        if (this.remainingRotation !== 0) {
+            if (Math.abs(this.remainingRotation) < this.rotationSpeed) {
+                this.coordinate.direction += this.remainingRotation;
+                this.remainingRotation = 0;
+            }
+            else if (this.remainingRotation >= this.rotationSpeed) {
+                this.coordinate.direction += this.rotationSpeed;
+                this.remainingRotation = Coordinate.clampAngle(this.remainingRotation - this.rotationSpeed);
+            }
+            else if (this.remainingRotation <= -this.rotationSpeed) {
+                this.coordinate.direction -= this.rotationSpeed;
+                this.remainingRotation = Coordinate.clampAngle(this.remainingRotation + this.rotationSpeed);
+            }
+        }
+        else if (this.remainingDistance > 0) {
+            if (!this.carriedFruit) {
+                let steps = Math.min(this.remainingDistance, this.currentSpeed);
+                this.remainingDistance -= steps;
+                this.traveledDistance += steps;
 
-        if (this.lifetime == 0 || this.vitality == 0) return;
+                this.coordinate.position.x += steps * Math.cos(this.coordinate.direction * Math.PI / 180.0);
+                this.coordinate.position.y += steps * Math.sin(this.coordinate.direction * Math.PI / 180.0);
+            }
+        }
+        else if (this.target !== null) {
+            let d = !(this.target instanceof Marker || this.target instanceof AntColony) ? Coordinate.distance(this.coordinate, this.target.coordinate) : Coordinate.distanceMidPoints(this.coordinate, this.target.coordinate);
+            this.reached = d <= 10;
+            if (!this.reached) {
+                let dir = Coordinate.directionAngle(this.coordinate, this.target.coordinate);
+                if (d < this.viewDistance || this.carriedFruit != null) {
+                    this.remainingDistance = d;
+                }
+                else {
+                    dir += random(-10, 10);
+                    this.remainingDistance = this.viewDistance;
+                }
+                this.turnToDirection(dir);
+            }
+        }
 
-        this.updateVision();
-        this.updateSmelling();
-        this.updateMovement();    
-
-        this.markerTimer += deltaTime;
-        if (this.carryFood > 0 && this.markerTimer > 0.5) {
-            this.markerTimer = 0;
-            let behind = createVector(this.rotation.x, this.rotation.y);
-            behind.rotate(radians(180));
-            behind.normalize();
-            this.setMarker(30, behind, this.lastTarget);
+        if (this.coordinate.position.x < 0) {
+            this.coordinate.position.x = -this.coordinate.position.x;
+            if (this.coordinate.direction > 90 && this.coordinate.direction <= 180)
+                this.coordinate.setDirection(180 - this.coordinate.direction);
+            else if (this.coordinate.direction > 180 && this.coordinate.direction < 270)
+                this.coordinate.setDirection(540 - this.coordinate.direction);
+        }
+        else if (this.coordinate.position.x > width) {
+            this.coordinate.position.x = width - this.coordinate.position.x;
+            if (this.coordinate.direction >= 0 && this.coordinate.direction < 90)
+                this.coordinate.setDirection(180 - this.coordinate.direction);
+            else if (this.coordinate.direction > 270 && this.coordinate.direction < 360)
+                this.coordinate.setDirection(540 - this.coordinate.direction);
+        }
+        if (this.coordinate.position.y < 0) {
+            this.coordinate.position.y = -this.coordinate.position.y;
+            // if (this.coordinate.direction <= 180 || this.coordinate.direction >= 360)
+            //     return;
+            this.coordinate.setDirection(360 - this.coordinate.direction);
+        }
+        else {
+            if (this.coordinate.position.y <= height)
+                return;
+            this.coordinate.position.y = height - this.coordinate.position.y;
+            if (this.coordinate.direction <= 0 || this.coordinate.direction >= 180)
+                return;
+            this.coordinate.direction = 360 - this.coordinate.direction;
         }
     }
 
+    // rendering
     render() {
         push();
-        translate(this.position.x, this.position.y);
-        rotate(this.rotation.heading());
-        noStroke();
-        fill(this.col);
-        rect(0, 0, this.scale.x, this.scale.y);
-        stroke(150);
+        translate(this.coordinate.position.x, this.coordinate.position.y);
 
-        if (this.carryFood > 0) {
-            fill(250);
-            rect(0, 0, 5, 5);
-        }
-
-        if (displayAntSenseRange) {
-            // draw sense radius
-            noStroke();
-            fill(150, 0, 150, 50);
-            ellipse(this.scale.x / 2, this.scale.y / 2, this.visionSenseRange, this.visionSenseRange);
-        }
-
-        pop();
-
-        if (displayLabels) {
+        if (this.debugMessage) {
             fill(20);
-            text(this.name, this.position.x - 20, this.position.y - 15);
+            textSize(16);
+            let tw = textWidth(this.debugMessage);
+            text(this.debugMessage, -tw/2, -16);
         }
+
+        rotate(this.coordinate.direction);
+        noStroke();
+        fill(20);
+        rect(-this.w / 2, -this.h / 2, this.w, this.h);
+        pop();
     }
 
-    move() {
-        this.position.x += this.rotation.x * this.speed * this.speedModificator;
-        this.position.y += this.rotation.y * this.speed * this.speedModificator;
-    }
+    // player events
+    awakes() { }
+    waits() { }
+    spotsSugar(sugar) { }
+    spotsFruit(fruit) { }
+    sugarReached(sugar) { }
+    fruitReached(fruit) { }
+    becomesTired() { }
+    hasDied(death) { }
+    tick() { }
 
-    setMarker(radius, direction, target) {
-        this.antHill.setMarkerAtPosition(this, this.position, radius, direction, target);
+    // player commands
+    // moving
+    goForward(distance) {
+        if (!distance || Number.isNaN(distance)) distance = Number.MAX_SAFE_INTEGER;
+        this.remainingDistance = distance;
     }
-
-    // MOVING
-    moveTo(target) {
+    goToTarget(target) {
         this.target = target;
-        this.canMove = true;
     }
-
-    moveHome() {
-        this.target = this.antHill;
-        this.canMove = true;
+    goAwayFromTarget(target, distance) {
+        this.turnToDirection(Coordinate.directionAngle(this.coordinate, target.coordinate) + 180);
+        this.goForward(distance);
     }
-
+    goHome() {
+        this.goToTarget(this.colony);
+    }
     stop() {
         this.target = null;
-        this.canMove = false;
+        this.remainingDistance = 0;
+        this.remainingRotation = 0;
     }
-
-    // TURNING
-    turnTo(target) {
-        let dir = p5.Vector.sub(target, this.position);
-        this.rotation = dir.normalize();
+    // turning
+    turnByDegrees(angle) {
+        this.remainingRotation = Coordinate.clampAngle(angle);
     }
-
+    turnToTarget(target) {
+        if (!target || !target.coordinate) return;
+        this.remainingRotation = Coordinate.clampAngle(Coordinate.directionAngle(this.coordinate, target.coordinate) - this.coordinate.direction);
+    }
+    turnToDirection(direction) {
+        this.remainingRotation = Coordinate.clampAngle(direction - this.coordinate.direction);
+    }
     turnAround() {
-        this.rotation.rotate(radians(180));
+        if (this.remainingRotation > 0) this.remainingRotation = 180;
+        else this.remainingRotation = -180;
     }
-
-    // FOOD
-    take(food) {
-        if (food instanceof Fruit) {
-            this.carryFood = food.amount;
-            food.pickup(this);
-            this.carryFruit = food;
-            this.lastTarget = food;
-
-        } else {
-            this.carryFood = food.pickup(this.maxCarryAmount);
-            if (this.carryFood == 0) this.lastTarget = null;
-            else this.lastTarget = food;
-
-            this.speedModificator = this.carryFoodModificator;
-        }
-    }
-
-    drop() {
-        this.canMove = true;
-        this.carryFood = 0;
-        this.carryFruit = null;
-    }
-
-    // NAV
-    foodReached(food) {}
-    homeReached() {}
-
-    // SENSING
-    seesSugar(sugar) {}
-    seesFruit(fruit) {}
-    seesBug(bug) {}
-    smellsMarker(marker) {}
-
-    updateVision() {
-        for (let f of food) {
-            if (this.position.dist(f.position) < this.visionSenseRange) {
-                if (f instanceof Fruit)
-                    this.seesFruit(f);
-                else
-                    this.seesSugar(f);
-            }
-        }
-
-        for (let b of bugs) {
-            if (this.position.dist(b.position) < this.visionSenseRange) {
-                this.seesBug(b);
-            }
-        }
-    }
-
-    updateSmelling() {
-        for (let m of this.antHill.marker) {
-            if (this.position.dist(m.position) <= m.radius && this.smelledMarkers.indexOf(m) === -1) {
-                this.smelledMarkers.push(m);
-                this.smellsMarker(m);
-            }
-        }
-    }
-
-    updateMovement() {
-        if (!this.canMove) return;
-
-        if (this.target != null) {
-            let t = this.target.position;
-
-            if (this.position.dist(t) > this.targetReachDist) {
-                this.targetReached = false;
-                this.turnTo(t);
-                this.move();
-            } else {
-                // STOP!
-                if (!this.targetReached) {
-                    this.targetReached = true;
-
-                    if (this.target === this.antHill)
-                        this.homeReached();
-                    else if (this.target instanceof Food)
-                        this.foodReached(this.target);
-                } else {
-                    this.target = null;
-                }
-            }
-        } else {
-            // we have no target, so just roam on the playground
-            this.rotation.rotate(radians(random(-10, 10)));
-            this.move();
-        }
+    //debug
+    think(message) {
+        this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
     }
 }

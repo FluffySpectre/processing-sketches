@@ -1,19 +1,48 @@
-class CollectorAnt extends BaseAnt {
-    constructor(name, position, rotation, scale, speed, antHill) {
-        super(name, position, rotation, scale, speed, antHill);
+var COLONY_INFO = {
+    name: 'Beispielameisen',
+    creator: 'Björn Bosse'
+};
+
+class PlayerAnt extends BaseAnt {
+    getCaste() {
+        return random(1) < 0.8 ? 'collector' : 'warrior';
     }
 
-    seesSugar(sugar) {
+    awakes() {
+        if (this.caste === 'warrior') {
+            this.col = color(255, 0, 0);
+        } else {
+            this.col = color(20);
+        }
+    }
+
+    waits() {
+        this.goForward(20);
+    }
+
+    spotsBug(bug) {
+        if (this.caste === 'warrior') {
+            this.goTo(bug);
+        }
+    }
+
+    spotsSugar(sugar) {
+        if (this.caste === 'warrior') return;
+
         if (this.carryFood === 0)
             this.target = sugar;
     }
 
-    seesFruit(fruit) {
+    spotsFruit(fruit) {
+        if (this.caste === 'warrior') return;
+
         if (this.carryFood === 0 && fruit.carriers.length < fruit.maxCarriers)
             this.target = fruit;
     }
 
     smellsMarker(marker) {
+        if (this.caste === 'warrior') return;
+
         if (this.carryFood === 0) {
             if (marker.target)
                 this.target = marker.target;
@@ -29,7 +58,7 @@ class CollectorAnt extends BaseAnt {
             this.target = null;
 
         if (this.carryFood > 0)
-            this.moveHome();
+            this.goHome();
         else 
             this.target = null;
     }

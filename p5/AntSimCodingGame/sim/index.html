@@ -14,16 +14,17 @@
   <!-- PLEASE NO CHANGES BELOW THIS LINE (UNTIL I SAY SO) -->
   <script language="javascript" type="text/javascript" src="libraries/p5.min.js"></script>
   <script language="javascript" type="text/javascript" src="libraries/p5.dom.min.js"></script>
-  <script language="javascript" type="text/javascript" src="SimObject.js"></script>
+  <script language="javascript" type="text/javascript" src="Coordinate.js"></script>
+  <script language="javascript" type="text/javascript" src="SimSettings.js"></script>
+  <script language="javascript" type="text/javascript" src="PlayerStatistics.js"></script>
   <script language="javascript" type="text/javascript" src="Marker.js"></script>
   <script language="javascript" type="text/javascript" src="Food.js"></script>
   <script language="javascript" type="text/javascript" src="Sugar.js"></script>
   <script language="javascript" type="text/javascript" src="Fruit.js"></script>
   <script language="javascript" type="text/javascript" src="Bug.js"></script>
   <script language="javascript" type="text/javascript" src="BaseAnt.js"></script>
-  <script language="javascript" type="text/javascript" src="CollectorAnt.js"></script>
-  <!-- <script language="javascript" type="text/javascript" src="WarriorAnt.js"></script> -->
-  <script language="javascript" type="text/javascript" src="AntHill.js"></script>
+  <script language="javascript" type="text/javascript" src="AntColony.js"></script>
+  <script language="javascript" type="text/javascript" src="Environment.js"></script>
   <script language="javascript" type="text/javascript" src="AntSim.js"></script>
   <!-- OK, YOU CAN MAKE CHANGES BELOW THIS LINE AGAIN -->
 
@@ -51,6 +52,11 @@
           document.body.insertBefore(pre, document.body.firstChild);
         }
       }
+
+      setTimeout(function () {
+        if (typeof window.playerCodeLoaded === 'function')
+          window.playerCodeLoaded()
+      }, 1000);
     };
 
     if (receivedJS) {

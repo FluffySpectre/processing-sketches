@@ -1,52 +1,31 @@
 class Fruit extends Food {
-    constructor(position, rotation, scale, amount) {
-        super(position, rotation, scale, amount);
+    constructor(x, y, amount) {
+        super(x, y, amount);
 
         this.carriers = [];
-        this.targetReachDist = 5;
-        this.maxCarriers = 5;
     }
 
-    pickup(ant) {
-        this.carriers.push(ant);
-        ant.canMove = false;
+    get amount() {
+        return this.amountVal;
     }
 
-    drop(ant) {
-        if (this.carriers.indexOf(ant) > -1)
-            this.carriers.remove(ant);
+    set amount(val) {
+        this.amountVal = val;
+        this.coordinate.radius = Math.floor((SimSettings.fruitRadiusMultiplier * Math.sqrt(this.amount / Math.PI)));
     }
 
-    update(deltaTime) {
-        if (this.carriers.length == 0) return;
-
-        // calculate current position towards the anthill
-        this.rotation = p5.Vector.sub(this.carriers[0].antHill.position, this.position).normalize();
-        this.position.x += this.rotation.x * fruitBaseSpeed * this.carriers.length;
-        this.position.y += this.rotation.y * fruitBaseSpeed * this.carriers.length;
-
-        // set the current direction and velocity for all carriers too
-        for (let ant of this.carriers) {
-            ant.position = this.position.copy();
-            ant.rotation = this.rotation.copy();
-            ant.target = null;
+    needsCarriers(colony) {
+        let num = 0;
+        for (let a of this.carriers) {
+            if (a.colony === colony)
+                num += a.currentLoad;
         }
-
-        if (p5.Vector.dist(this.position, this.carriers[0].antHill.position) < this.targetReachDist) {
-            foodCollected += this.amount;
-            this.amount = 0;
-
-            for (let ant of this.carriers) {
-                ant.drop();
-            }
-
-            this.carriers = [];
-        }
+        return num * SimSettings.fruitLoadMultiplier < this.amount;
     }
 
     render() {
         stroke(100);
         fill(10, 230, 10);
-        ellipse(this.position.x, this.position.y, this.scale.x, this.scale.y);
+        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius*2);
     }
 }
