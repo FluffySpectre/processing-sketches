@@ -8,7 +8,7 @@ class AntColony {
 
         this.antRange = 1800;
         this.antBaseSpeed = 2;
-        this.antMaxLoad = 4;
+        this.antMaxLoad = 5;
     }
 
     newAnt() {

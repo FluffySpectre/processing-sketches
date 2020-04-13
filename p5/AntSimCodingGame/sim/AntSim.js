@@ -32,4 +32,5 @@ function draw() {
 
     fill(20);
     text('Round: ' + environment.currentRound, 10, 20);
+    text('Points: ' + environment.colony.statistics.points, 10, 36);
 }
