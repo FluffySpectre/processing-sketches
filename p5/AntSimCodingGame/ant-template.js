@@ -1,14 +1,25 @@
-var COLONY_INFO = {
-    name: 'Beispielameisen',
-    creator: 'Björn Bosse',
+var PLAYER_INFO = {
+    name: 'Björn Bosse',
+    colonyName: 'Beispielameisen',
     castes: [
-        { name: 'warrior', speedModificator: 1 }
+        { name: 'warrior', speedModificator: 1 },
+        { name: 'collector', speedModificator: 1 }
     ]
 };
 
 class PlayerAnt extends BaseAnt {
+    // CAST SELECTION
+    determineCast(availableAnts) {
+        if (availableAnts['warrior'] < 25)
+            return 'warrior';
+        else 
+            return 'collector';
+    }
+
     // EVENTS
-    // awakes() {}
+    awakes() {
+        this.think(this.caste);
+    }
     waits() {
         this.turnByDegrees(random(-45, 45));
         this.goForward(50);

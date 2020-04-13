@@ -2,7 +2,8 @@ let environment: Environment;
 let playerCodeAvailable = false;
 
 function playerCodeLoaded() {
-    environment = new Environment(0);
+    // @ts-ignore - PLAYER_INFO comes from the player's code
+    environment = new Environment(PLAYER_INFO, 0);
 
     playerCodeAvailable = true;
 }

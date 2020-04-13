@@ -1,20 +1,35 @@
 class AntColony {
-    constructor(x, y) {
+    constructor(x, y, playerInfo) {
         this.antDelay = 0;
         this.coordinate = new Coordinate(x, y, 25);
         this.ants = [];
         this.starvedAnts = [];
         this.antDelay = 0;
         this.statistics = new PlayerStatistics();
+        this.playerInfo = playerInfo;
         this.antRange = 1800;
-        this.antBaseSpeed = 2;
+        this.antBaseSpeed = 1;
         this.antMaxLoad = 5;
+        this.castes = playerInfo.castes;
+        this.antsInCaste = this.castes.map(c => 0);
     }
     newAnt() {
+        let availableAnts = null;
+        if (this.castes && this.castes.length > 0) {
+            availableAnts = {};
+            let castesCount = 0;
+            for (let caste of this.castes) {
+                if (!availableAnts.hasOwnProperty(caste.name)) {
+                    availableAnts[caste.name] = this.antsInCaste[castesCount];
+                }
+                castesCount++;
+            }
+        }
         let ant = new PlayerAnt();
-        ant.init(this);
-        ant.awakes();
+        ant.init(this, availableAnts);
         this.ants.push(ant);
+        this.antsInCaste[ant.casteIndex]++;
+        ant.awakes();
     }
     removeAnt(ant) {
         let ai = this.ants.indexOf(ant);
@@ -30,7 +45,7 @@ class AntColony {
 let environment;
 let playerCodeAvailable = false;
 function playerCodeLoaded() {
-    environment = new Environment(0);
+    environment = new Environment(PLAYER_INFO, 0);
     playerCodeAvailable = true;
 }
 function setup() {
@@ -57,8 +72,26 @@ function draw() {
 }
 class BaseAnt {
     constructor() { }
-    init(colony) {
+    init(colony, availableAnts) {
         this.colony = colony;
+        let cIndex = -1;
+        if (availableAnts) {
+            let antCast = this.determineCast(availableAnts);
+            for (let i = 0; i < colony.castes.length; i++) {
+                let cast = this.colony.castes[i];
+                if (cast.name == antCast) {
+                    cIndex = i;
+                    break;
+                }
+            }
+        }
+        if (cIndex > -1) {
+            this.casteIndex = cIndex;
+            console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
+        }
+        else {
+            console.error('Caste not exists!');
+        }
         this.remainingDistance = 0;
         this.remainingRotation = 0;
         this.target = null;
@@ -68,7 +101,7 @@ class BaseAnt {
         this.maxVitality = 50;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
         this.rotationSpeed = 10;
-        this.currentSpeed = 2;
+        this.currentSpeed = this.colony.antBaseSpeed;
         this.viewDistance = 20;
         this.carriedFruit = null;
         this.currentLoad = 0;
@@ -96,6 +129,9 @@ class BaseAnt {
     }
     get direction() {
         return this.coordinate.direction;
+    }
+    get caste() {
+        return this.colony.castes[this.casteIndex].name;
     }
     move() {
         if (this.remainingRotation !== 0) {
@@ -182,6 +218,7 @@ class BaseAnt {
         }
         pop();
     }
+    determineCast(availableAnts) { }
     awakes() { }
     waits() { }
     spotsSugar(sugar) { }
@@ -322,12 +359,12 @@ class Coordinate {
     }
 }
 class Environment {
-    constructor(randSeed) {
+    constructor(playerInfo, randSeed) {
         if (randSeed !== 0)
             randomSeed(randSeed);
         this.sugarHills = [];
         this.fruits = [];
-        this.colony = new AntColony(width / 2, height / 2);
+        this.colony = new AntColony(width / 2, height / 2, playerInfo);
         this.sugarDelay = 0;
         this.fruitDelay = 0;
         this.currentRound = 0;
@@ -591,6 +628,8 @@ SimSettings.fruitLoadMultiplier = 5;
 SimSettings.fruitRadiusMultiplier = 1.25;
 SimSettings.antLimit = 50;
 SimSettings.antRespawnDelay = 15;
+class CasteSettings {
+}
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);

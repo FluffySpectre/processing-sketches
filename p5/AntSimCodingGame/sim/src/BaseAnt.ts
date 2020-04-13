@@ -1,5 +1,6 @@
 class BaseAnt {
     colony: AntColony;
+    casteIndex: number;
     remainingDistance: number;
     remainingRotation: number;
     reached: boolean;
@@ -19,8 +20,27 @@ class BaseAnt {
 
     constructor() { }
 
-    init(colony: AntColony) {
+    init(colony: AntColony, availableAnts: any[]) {
         this.colony = colony;
+
+        let cIndex = -1;
+        if (availableAnts) {
+            let antCast = this.determineCast(availableAnts);
+            for (let i=0; i<colony.castes.length; i++) {
+                let cast = this.colony.castes[i];
+                if (cast.name == antCast) {
+                    cIndex = i;
+                    break;
+                }
+            }
+        }
+        if (cIndex > -1) {
+            this.casteIndex = cIndex;
+            console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
+        } else {
+            console.error('Caste not exists!');
+        }
+
         this.remainingDistance = 0;
         this.remainingRotation = 0;
         this.target = null;
@@ -30,7 +50,7 @@ class BaseAnt {
         this.maxVitality = 50;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
         this.rotationSpeed = 10;
-        this.currentSpeed = 2;
+        this.currentSpeed = this.colony.antBaseSpeed;
         this.viewDistance = 20;
         this.carriedFruit = null;
         this.currentLoad = 0;
@@ -68,6 +88,10 @@ class BaseAnt {
 
     get direction() {
         return this.coordinate.direction;
+    }
+
+    get caste() {
+        return this.colony.castes[this.casteIndex].name;
     }
 
     // sim functions
@@ -166,6 +190,8 @@ class BaseAnt {
 
         pop();
     }
+
+    determineCast(availableAnts: any[]) { }
 
     // player events
     awakes() { }

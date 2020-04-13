@@ -6,12 +6,12 @@ class Environment {
     fruitDelay: number;
     currentRound: number;
 
-    constructor(randSeed: number) {
+    constructor(playerInfo: PlayerInfo, randSeed: number) {
         if (randSeed !== 0) randomSeed(randSeed);
 
         this.sugarHills = [];
         this.fruits = [];
-        this.colony = new AntColony(width / 2, height / 2);
+        this.colony = new AntColony(width / 2, height / 2, playerInfo);
 
         this.sugarDelay = 0;
         this.fruitDelay = 0;
