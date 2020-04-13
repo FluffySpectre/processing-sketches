@@ -6,7 +6,9 @@ class AntColony {
         this.antDelay = 0;
         this.statistics = new PlayerStatistics();
 
-        this.antRange = 2000;
+        this.antRange = 1800;
+        this.antBaseSpeed = 2;
+        this.antMaxLoad = 4;
     }
 
     newAnt() {

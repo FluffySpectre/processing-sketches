@@ -22,6 +22,14 @@ function draw() {
 
     if (!playerCodeAvailable) return;
 
-    environment.step();
+    if (environment.currentRound < SimSettings.totalRounds) {
+        environment.step();
+    } else {
+        // simulation ended
+
+    }
     environment.render();
+
+    fill(20);
+    text('Round: ' + environment.currentRound, 10, 20);
 }

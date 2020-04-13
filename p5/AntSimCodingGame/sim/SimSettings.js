@@ -1,5 +1,6 @@
 class SimSettings {
 }
+SimSettings.totalRounds = 15000; // @60FPS = 4.25 minutes
 SimSettings.displayDebugLabels = true;
 SimSettings.sugarLimit = 4;
 SimSettings.minSugarAmount = 200;
@@ -14,4 +15,3 @@ SimSettings.fruitLoadMultiplier = 5;
 SimSettings.fruitRadiusMultiplier = 1.25;
 SimSettings.antLimit = 50;
 SimSettings.antRespawnDelay = 15;
-SimSettings.antMaxLoad = 4;

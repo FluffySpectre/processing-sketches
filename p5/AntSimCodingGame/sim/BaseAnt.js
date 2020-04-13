@@ -8,15 +8,14 @@ class BaseAnt {
         this.targetVal = null;
         this.reached = false;
         this.traveledDistance = 0;
-        this.vitality = 100;
-        this.maxVitality = 100;
+        this.vitality = 50;
+        this.maxVitality = 50;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
         this.rotationSpeed = 10;
         this.currentSpeed = 2;
         this.viewDistance = 20;
         this.carriedFruit = null;
         this.currentLoad = 0;
-        this.maxLoad = SimSettings.antMaxLoad;
         this.debugMessage = null;
         this.isTired = false;
         this.smelledMarker = [];
@@ -37,6 +36,19 @@ class BaseAnt {
         // TODO: find out why these two lines break the target movement
         // this.remainingRotation = 0;
         // this.remainingDistance = 0;
+    }
+
+    get currentLoad() {
+        return this.currentLoadVal;
+    }
+    set currentLoad(value) {
+        this.currentLoadVal = value >= 0 ? value : 0;
+        this.currentSpeed = this.colony.antBaseSpeed;
+        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.antMaxLoad / 2;
+    }
+
+    get direction() {
+        return this.coordinate.direction;
     }
 
     // sim functions
@@ -84,22 +96,22 @@ class BaseAnt {
         if (this.coordinate.position.x < 0) {
             this.coordinate.position.x = -this.coordinate.position.x;
             if (this.coordinate.direction > 90 && this.coordinate.direction <= 180)
-                this.coordinate.setDirection(180 - this.coordinate.direction);
+                this.coordinate.direction = 180 - this.coordinate.direction;
             else if (this.coordinate.direction > 180 && this.coordinate.direction < 270)
-                this.coordinate.setDirection(540 - this.coordinate.direction);
+                this.coordinate.direction = 540 - this.coordinate.direction;
         }
         else if (this.coordinate.position.x > width) {
             this.coordinate.position.x = width - this.coordinate.position.x;
             if (this.coordinate.direction >= 0 && this.coordinate.direction < 90)
-                this.coordinate.setDirection(180 - this.coordinate.direction);
+                this.coordinate.direction = 180 - this.coordinate.direction;
             else if (this.coordinate.direction > 270 && this.coordinate.direction < 360)
-                this.coordinate.setDirection(540 - this.coordinate.direction);
+                this.coordinate.direction = 540 - this.coordinate.direction;
         }
         if (this.coordinate.position.y < 0) {
             this.coordinate.position.y = -this.coordinate.position.y;
             // if (this.coordinate.direction <= 180 || this.coordinate.direction >= 360)
             //     return;
-            this.coordinate.setDirection(360 - this.coordinate.direction);
+            this.coordinate.direction = 360 - this.coordinate.direction;
         }
         else {
             if (this.coordinate.position.y <= height)
@@ -187,7 +199,7 @@ class BaseAnt {
     take(food) {
         if (food instanceof Sugar) {
             if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
-                let num = Math.min(this.maxLoad - this.currentLoad, food.amount);
+                let num = Math.min(this.colony.antMaxLoad - this.currentLoad, food.amount);
                 this.currentLoad += num;
                 food.amount -= num;
             }
@@ -201,7 +213,7 @@ class BaseAnt {
             this.stop();
             this.carriedFruit = food;
             food.carriers.push(this);
-            this.currentLoad = this.maxLoad;
+            this.currentLoad = this.colony.antMaxLoad;
         }
     }
     drop() {

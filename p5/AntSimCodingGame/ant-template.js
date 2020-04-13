@@ -53,4 +53,7 @@ class PlayerAnt extends BaseAnt {
     // take(food)
     // drop()
     // needsCarriers(fruit)
+
+    // STATE
+    // direction
 }
