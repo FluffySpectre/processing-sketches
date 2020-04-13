@@ -2,8 +2,8 @@ var PLAYER_INFO = {
     name: 'Björn Bosse',
     colonyName: 'Beispielameisen',
     castes: [
-        { name: 'warrior', speedModificator: 1 },
-        { name: 'collector', speedModificator: 1 }
+        { name: 'warrior', color: 'red', speedModificator: 1 },
+        { name: 'collector', color: '#222', speedModificator: 1 }
     ]
 };
 
@@ -17,9 +17,7 @@ class PlayerAnt extends BaseAnt {
     }
 
     // EVENTS
-    awakes() {
-        this.think(this.caste);
-    }
+    // awakes() {}
     waits() {
         this.turnByDegrees(random(-45, 45));
         this.goForward(50);

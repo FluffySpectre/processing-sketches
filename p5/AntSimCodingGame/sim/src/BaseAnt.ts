@@ -17,6 +17,7 @@ class BaseAnt {
     smelledMarker: Marker[];
     w: number;
     h: number;
+    colour: string;
 
     constructor() { }
 
@@ -30,6 +31,7 @@ class BaseAnt {
                 let cast = this.colony.castes[i];
                 if (cast.name == antCast) {
                     cIndex = i;
+                    this.colour = cast.color || '#222';
                     break;
                 }
             }
@@ -180,7 +182,7 @@ class BaseAnt {
 
         rotate(this.coordinate.direction);
         noStroke();
-        fill(20);
+        fill(this.colour);
         rect(-this.w / 2, -this.h / 2, this.w, this.h);
 
         if (this.currentLoad > 0 && !this.carriedFruit) {
