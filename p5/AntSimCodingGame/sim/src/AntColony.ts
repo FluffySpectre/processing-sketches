@@ -1,5 +1,16 @@
 class AntColony {
-    constructor(x, y) {
+    coordinate: Coordinate;
+    ants: BaseAnt[];
+    starvedAnts: BaseAnt[];
+    antDelay = 0;
+    statistics: PlayerStatistics;
+
+    // colony ant stats
+    antRange: number;
+    antBaseSpeed: number;
+    antMaxLoad: number;
+
+    constructor(x: number, y: number) {
         this.coordinate = new Coordinate(x, y, 25);
         this.ants = [];
         this.starvedAnts = [];
@@ -12,13 +23,14 @@ class AntColony {
     }
 
     newAnt() {
+        // @ts-ignore
         let ant = new PlayerAnt();
         ant.init(this);
         ant.awakes();
         this.ants.push(ant);
     }
 
-    removeAnt(ant) {
+    removeAnt(ant: BaseAnt) {
         let ai = this.ants.indexOf(ant);
         if (ai > -1)
             this.ants.splice(ai, 1);

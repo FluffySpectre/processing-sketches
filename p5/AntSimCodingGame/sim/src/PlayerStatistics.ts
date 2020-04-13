@@ -1,4 +1,7 @@
 class PlayerStatistics {
+    starvedAnts: number;
+    collectedFood: number;
+
     constructor() {
         this.starvedAnts = 0;
         this.collectedFood = 0;

@@ -1,11 +1,29 @@
 class BaseAnt {
+    colony: AntColony;
+    remainingDistance: number;
+    remainingRotation: number;
+    reached: boolean;
+    traveledDistance: number;
+    vitality: number;
+    maxVitality: number;
+    coordinate: Coordinate;
+    rotationSpeed: number;
+    currentSpeed: number;
+    viewDistance: number;
+    carriedFruit: Fruit;
+    debugMessage: string;
+    isTired: boolean;
+    smelledMarker: Marker[];
+    w: number;
+    h: number;
+
     constructor() { }
 
-    init(colony) {
+    init(colony: AntColony) {
         this.colony = colony;
         this.remainingDistance = 0;
         this.remainingRotation = 0;
-        this.targetVal = null;
+        this.target = null;
         this.reached = false;
         this.traveledDistance = 0;
         this.vitality = 50;
@@ -19,7 +37,6 @@ class BaseAnt {
         this.debugMessage = null;
         this.isTired = false;
         this.smelledMarker = [];
-
         this.w = 6;
         this.h = 3;
     }
@@ -37,6 +54,7 @@ class BaseAnt {
         // this.remainingRotation = 0;
         // this.remainingDistance = 0;
     }
+    private targetVal: any;
 
     get currentLoad() {
         return this.currentLoadVal;
@@ -46,6 +64,7 @@ class BaseAnt {
         this.currentSpeed = this.colony.antBaseSpeed;
         this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.antMaxLoad / 2;
     }
+    private currentLoadVal: number;
 
     get direction() {
         return this.coordinate.direction;
@@ -151,24 +170,24 @@ class BaseAnt {
     // player events
     awakes() { }
     waits() { }
-    spotsSugar(sugar) { }
-    spotsFruit(fruit) { }
-    sugarReached(sugar) { }
-    fruitReached(fruit) { }
+    spotsSugar(sugar: Sugar) { }
+    spotsFruit(fruit: Fruit) { }
+    sugarReached(sugar: Sugar) { }
+    fruitReached(fruit: Fruit) { }
     becomesTired() { }
-    hasDied(death) { }
+    hasDied(death: string) { }
     tick() { }
 
     // player commands
     // moving
-    goForward(distance) {
-        if (!distance || Number.isNaN(distance)) distance = Number.MAX_SAFE_INTEGER;
+    goForward(distance: number) {
+        if (!distance || Number(distance) === NaN) distance = Number.MAX_SAFE_INTEGER;
         this.remainingDistance = distance;
     }
-    goToTarget(target) {
+    goToTarget(target: any) {
         this.target = target;
     }
-    goAwayFromTarget(target, distance) {
+    goAwayFromTarget(target: any, distance: number) {
         this.turnToDirection(Coordinate.directionAngle(this.coordinate, target.coordinate) + 180);
         this.goForward(distance);
     }
@@ -181,14 +200,14 @@ class BaseAnt {
         this.remainingRotation = 0;
     }
     // turning
-    turnByDegrees(angle) {
+    turnByDegrees(angle: number) {
         this.remainingRotation = Coordinate.clampAngle(angle);
     }
-    turnToTarget(target) {
+    turnToTarget(target: any) {
         if (!target || !target.coordinate) return;
         this.remainingRotation = Coordinate.clampAngle(Coordinate.directionAngle(this.coordinate, target.coordinate) - this.coordinate.direction);
     }
-    turnToDirection(direction) {
+    turnToDirection(direction: number) {
         this.remainingRotation = Coordinate.clampAngle(direction - this.coordinate.direction);
     }
     turnAround() {
@@ -196,7 +215,7 @@ class BaseAnt {
         else this.remainingRotation = -180;
     }
     // food
-    take(food) {
+    take(food: Food) {
         if (food instanceof Sugar) {
             if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
                 let num = Math.min(this.colony.antMaxLoad - this.currentLoad, food.amount);
@@ -226,11 +245,11 @@ class BaseAnt {
             this.carriedFruit.carriers.splice(ci, 1);
         this.carriedFruit = null;
     }
-    needsCarriers(fruit) {
+    needsCarriers(fruit: Fruit) {
         return fruit.needsCarriers(this.colony);
     }
     //debug
-    think(message) {
+    think(message: string) {
         this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
     }
 }

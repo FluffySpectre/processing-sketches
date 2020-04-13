@@ -1,4 +1,4 @@
-let environment;
+let environment: Environment;
 let playerCodeAvailable = false;
 
 function playerCodeLoaded() {

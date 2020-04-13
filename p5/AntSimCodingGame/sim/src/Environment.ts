@@ -1,5 +1,12 @@
 class Environment {
-    constructor(randSeed) {
+    sugarHills: Sugar[];
+    fruits: Fruit[];
+    colony: AntColony;
+    sugarDelay: number;
+    fruitDelay: number;
+    currentRound: number;
+
+    constructor(randSeed: number) {
         if (randSeed !== 0) randomSeed(randSeed);
 
         this.sugarHills = [];
@@ -96,7 +103,7 @@ class Environment {
         this.colony.starvedAnts = [];
     }
 
-    antAndTarget(ant) {
+    antAndTarget(ant: BaseAnt) {
         if (ant.target instanceof AntColony) {
             if (ant.carriedFruit)
                 return;
@@ -129,7 +136,7 @@ class Environment {
         }
     }
 
-    antAndSugar(ant) {
+    antAndSugar(ant: BaseAnt) {
         for (let s of this.sugarHills) {
             let num = Coordinate.distance(ant.coordinate, s.coordinate);
             if (ant.target !== s && num <= ant.viewDistance) {
@@ -138,7 +145,7 @@ class Environment {
         }
     }
 
-    antAndFruit(ant) {
+    antAndFruit(ant: BaseAnt) {
         for (let f of this.fruits) {
             let num = Coordinate.distance(ant.coordinate, f.coordinate);
             if (ant.target !== f && num <= ant.viewDistance)
@@ -146,7 +153,7 @@ class Environment {
         }
     }
 
-    // antAndMarker(ant) {
+    // antAndMarker(ant: BaseAnt) {
     //     let marker = ant.colony.marker.findMarker(ant);
     //     if (!marker)
     //         return;

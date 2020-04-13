@@ -1,5 +1,7 @@
 class Fruit extends Food {
-    constructor(x, y, amount) {
+    carriers: BaseAnt[];
+
+    constructor(x: number, y: number, amount: number) {
         super(x, y, amount);
 
         this.carriers = [];
@@ -14,7 +16,7 @@ class Fruit extends Food {
         this.coordinate.radius = Math.floor((SimSettings.fruitRadiusMultiplier * Math.sqrt(this.amount / Math.PI)));
     }
 
-    needsCarriers(colony) {
+    needsCarriers(colony: AntColony) {
         let num = 0;
         for (let a of this.carriers) {
             if (a.colony === colony)

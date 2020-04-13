@@ -1,5 +1,5 @@
 class Sugar extends Food {
-    constructor(x, y, amount) {
+    constructor(x: number, y: number, amount: number) {
         super(x, y, amount);
     }
 
@@ -11,7 +11,7 @@ class Sugar extends Food {
         if (SimSettings.displayDebugLabels) {
             fill(20);
             textSize(14);
-            let tw = textWidth(this.amount);
+            let tw = textWidth(this.amount.toString());
             text(this.amount, this.coordinate.position.x - tw / 2, this.coordinate.position.y - 16);
         }
     }
