@@ -4,10 +4,9 @@ class AntColony {
         this.ants = [];
         this.starvedAnts = [];
         this.antDelay = 0;
-        this.antCountDown = 2;
         this.statistics = new PlayerStatistics();
 
-        this.antRange = 1000;
+        this.antRange = 2000;
     }
 
     newAnt() {

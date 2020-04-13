@@ -26,6 +26,6 @@ class Fruit extends Food {
     render() {
         stroke(100);
         fill(10, 230, 10);
-        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius*2);
+        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
     }
 }

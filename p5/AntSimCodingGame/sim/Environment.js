@@ -8,10 +8,14 @@ class Environment {
 
         this.sugarDelay = 0;
         this.fruitDelay = 0;
+
+        this.currentRound = 0;
     }
 
     // this is the main simulation loop
     step() {
+        this.currentRound++;
+
         this.removeSugar();
         this.spawnSugar();
         this.spawnFruit();
@@ -20,7 +24,7 @@ class Environment {
             a.move();
 
             if (a.traveledDistance > this.colony.antRange) {
-                a.energy = 0;
+                a.vitality = 0;
                 this.colony.starvedAnts.push(a);
             } else {
                 if (a.traveledDistance > this.colony.antRange / 3 && !a.isTired) {
@@ -43,6 +47,8 @@ class Environment {
 
         this.removeAnts();
         this.spawnAnt();
+        this.moveFruitAndAnts();
+        this.removeFruit();
     }
 
     // this is the main render loop of this simulation
@@ -99,7 +105,7 @@ class Environment {
             ant.smelledMarker = [];
             ant.colony.statistics.collectedFood += ant.currentLoad;
             ant.currentLoad = 0;
-            ant.energy = ant.maxEnergy;
+            ant.vitality = ant.maxVitality;
             ant.isTired = false;
         }
         else if (ant.target instanceof Sugar) {
@@ -126,8 +132,9 @@ class Environment {
     antAndSugar(ant) {
         for (let s of this.sugarHills) {
             let num = Coordinate.distance(ant.coordinate, s.coordinate);
-            if (ant.target !== s && num <= ant.viewDistance)
+            if (ant.target !== s && num <= ant.viewDistance) {
                 ant.spotsSugar(s);
+            }
         }
     }
 
@@ -136,6 +143,38 @@ class Environment {
             let num = Coordinate.distance(ant.coordinate, f.coordinate);
             if (ant.target !== f && num <= ant.viewDistance)
                 ant.spotsFruit(f);
+        }
+    }
+
+    // antAndMarker(ant) {
+    //     let marker = ant.colony.marker.findMarker(ant);
+    //     if (!marker)
+    //         return;
+    //     ant.smellsFriend(marker);
+    //     ant.smelledMarker.push(marker);
+    // }
+
+    moveFruitAndAnts() {
+        for (let f of this.fruits) {
+            if (f.carriers.length <= 0) continue;
+            let dx = 0;
+            let dy = 0;
+            let load = 0;
+            for (let a of f.carriers) {
+                if (a.target === f || a.remainingRotation !== 0)
+                    continue;
+
+                dx += a.currentSpeed * Math.cos(a.coordinate.direction * Math.PI / 180.0);
+                dy += a.currentSpeed * Math.sin(a.coordinate.direction * Math.PI / 180.0);
+                load += a.currentLoad;
+            }
+            load = Math.min(Math.floor(0.0 + load * SimSettings.fruitLoadMultiplier), f.amount);
+            dx = dx * load / f.amount / f.carriers.length;
+            dy = dy * load / f.amount / f.carriers.length;
+            f.coordinate = Coordinate.withDeltas(f.coordinate, dx, dy);
+            for (let a of f.carriers) {
+                a.coordinate = Coordinate.withDeltas(a.coordinate, dx, dy);
+            }
         }
     }
 
@@ -165,6 +204,25 @@ class Environment {
         this.fruitDelay--;
     }
 
+    removeFruit() {
+        for (let f of this.fruits) {
+            if (Coordinate.distanceMidPoints(f.coordinate, this.colony.coordinate) <= 5) {
+                this.colony.statistics.collectedFood += f.amount;
+                f.amount = 0;
+                for (let a of f.carriers) {
+                    if (a) {
+                        a.carriedFruit = null;
+                        a.currentLoad = 0;
+                        a.remainingDistance = 0;
+                        a.remainingRotation = 0;
+                        a.goHome();
+                    }
+                }
+                f.carriers = [];
+            }
+        }
+        this.fruits = this.fruits.filter(f => f && f.amount > 0);
+    }
 
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));

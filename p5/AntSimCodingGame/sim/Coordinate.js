@@ -5,6 +5,14 @@ class Coordinate {
         this.position = createVector(x, y);
     }
 
+    static withDeltas(c, deltaX, deltaY) {
+      let result = new Coordinate(0, 0, c.radius);
+      result.position.x = c.position.x + deltaX;
+      result.position.y = c.position.y + deltaY;
+      result.direction = c.direction;
+      return result;
+    }
+
     setDirection(angle) {
       this.direction = angle;
       while (this.direction < 0)
@@ -29,7 +37,6 @@ class Coordinate {
 
     static directionAngle(c1, c2) {
       let num = p5.Vector.sub(c2.position, c1.position).heading();
-      //let num = Math.floor(Math.round(atan2((c2.position.y - c1.position.y), (c2.position.x - c1.position.x)) * 180.0 / Math.PI));
       if (num < 0)
         num += 360;
       return num;

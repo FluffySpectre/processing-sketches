@@ -1,29 +1,39 @@
 var COLONY_INFO = {
     name: 'Beispielameisen',
-    creator: 'Björn Bosse'
+    creator: 'Björn Bosse',
+    castes: [
+        { name: 'warrior', speedModificator: 1 }
+    ]
 };
 
 class PlayerAnt extends BaseAnt {
     // EVENTS
     // awakes() {}
     waits() {
-        this.turnByDegrees(random(0, 360));
+        this.turnByDegrees(random(-45, 45));
         this.goForward(50);
     }
     // spotsBug(bug) {}
     spotsSugar(sugar) {
-        this.think('Mhhm, Zucker!');
+        if (this.currentLoad > 0) return;
 
         this.goToTarget(sugar);
     }
     spotsFruit(fruit) {
-        this.think('Juhuu, ein Apfel!');
+        if (this.currentLoad > 0 || !this.needsCarriers(fruit)) return;
+
+        this.goToTarget(fruit);
     }
     // smellsMarker(marker) {}
-    // sugarReached(sugar) {}
-    // fruitReached(fruit) {}
+    sugarReached(sugar) {
+        this.take(sugar);
+        this.goHome();
+    }
+    fruitReached(fruit) {
+        this.take(fruit);
+        this.goHome();
+    }
     becomesTired() {
-        this.stop();
         this.goHome();
     }
     // hasDied(death) {}
@@ -40,4 +50,7 @@ class PlayerAnt extends BaseAnt {
     // turnToDirection(direction)
     // turnAround()
     // think(message)
+    // take(food)
+    // drop()
+    // needsCarriers(fruit)
 }

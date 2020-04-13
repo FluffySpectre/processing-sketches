@@ -5,17 +5,18 @@ class BaseAnt {
         this.colony = colony;
         this.remainingDistance = 0;
         this.remainingRotation = 0;
-        this.target = null;
+        this.targetVal = null;
         this.reached = false;
         this.traveledDistance = 0;
-        this.energy = 100;
-        this.maxEnergy = 100;
+        this.vitality = 100;
+        this.maxVitality = 100;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
-        this.rotationSpeed = 5;
+        this.rotationSpeed = 10;
         this.currentSpeed = 2;
-        this.viewDistance = 10;
+        this.viewDistance = 20;
         this.carriedFruit = null;
         this.currentLoad = 0;
+        this.maxLoad = SimSettings.antMaxLoad;
         this.debugMessage = null;
         this.isTired = false;
         this.smelledMarker = [];
@@ -24,13 +25,18 @@ class BaseAnt {
         this.h = 3;
     }
 
-    // setter
-    setTarget(value) {
+    // getter/setter
+    get target() {
+        return this.targetVal;
+    }
+    set target(value) {
         if (this.target === value && value !== null)
             return;
-        this.target = value;
-        this.remainingRotation = 0;
-        this.remainingDistance = 0;
+        this.targetVal = value;
+
+        // TODO: find out why these two lines break the target movement
+        // this.remainingRotation = 0;
+        // this.remainingDistance = 0;
     }
 
     // sim functions
@@ -60,11 +66,11 @@ class BaseAnt {
             }
         }
         else if (this.target !== null) {
-            let d = !(this.target instanceof Marker || this.target instanceof AntColony) ? Coordinate.distance(this.coordinate, this.target.coordinate) : Coordinate.distanceMidPoints(this.coordinate, this.target.coordinate);
-            this.reached = d <= 10;
+            let d = Coordinate.distanceMidPoints(this.coordinate, this.target.coordinate);
+            this.reached = d <= 5;
             if (!this.reached) {
                 let dir = Coordinate.directionAngle(this.coordinate, this.target.coordinate);
-                if (d < this.viewDistance || this.carriedFruit != null) {
+                if (d < this.viewDistance || this.carriedFruit) {
                     this.remainingDistance = d;
                 }
                 else {
@@ -114,13 +120,19 @@ class BaseAnt {
             fill(20);
             textSize(16);
             let tw = textWidth(this.debugMessage);
-            text(this.debugMessage, -tw/2, -16);
+            text(this.debugMessage, -tw / 2, -16);
         }
 
         rotate(this.coordinate.direction);
         noStroke();
         fill(20);
         rect(-this.w / 2, -this.h / 2, this.w, this.h);
+
+        if (this.currentLoad > 0 && !this.carriedFruit) {
+            fill(250);
+            rect(-2.5, -2.5, 5, 5);
+        }
+
         pop();
     }
 
@@ -170,6 +182,40 @@ class BaseAnt {
     turnAround() {
         if (this.remainingRotation > 0) this.remainingRotation = 180;
         else this.remainingRotation = -180;
+    }
+    // food
+    take(food) {
+        if (food instanceof Sugar) {
+            if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
+                let num = Math.min(this.maxLoad - this.currentLoad, food.amount);
+                this.currentLoad += num;
+                food.amount -= num;
+            }
+        } else if (food instanceof Fruit) {
+            if (this.carriedFruit === food)
+                return;
+            if (this.carriedFruit)
+                this.drop();
+            if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) > 5)
+                return;
+            this.stop();
+            this.carriedFruit = food;
+            food.carriers.push(this);
+            this.currentLoad = this.maxLoad;
+        }
+    }
+    drop() {
+        this.currentLoad = 0;
+        this.target = null;
+        if (!this.carriedFruit)
+            return;
+        let ci = this.carriedFruit.carriers.indexOf(this);
+        if (ci > -1)
+            this.carriedFruit.carriers.splice(ci, 1);
+        this.carriedFruit = null;
+    }
+    needsCarriers(fruit) {
+        return fruit.needsCarriers(this.colony);
     }
     //debug
     think(message) {

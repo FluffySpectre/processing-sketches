@@ -7,9 +7,9 @@ class Food {
     get amount() {
         return this.amountVal;
     }
-    
+
     set amount(val) {
         this.amountVal = val;
-        this.coordinate.radius = Math.floor(Math.round(Math.sqrt(this.amount / Math.PI) * 0.5));
+        this.coordinate.radius = Math.floor(Math.round(Math.sqrt(this.amount / Math.PI) * SimSettings.sugarRadiusMultiplier));
     }
 }
