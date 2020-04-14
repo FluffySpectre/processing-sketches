@@ -6,41 +6,39 @@ class BaseAnt {
     reached: boolean;
     traveledDistance: number;
     vitality: number;
-    maxVitality: number;
     coordinate: Coordinate;
-    rotationSpeed: number;
     currentSpeed: number;
-    viewDistance: number;
     carriedFruit: Fruit;
     debugMessage: string;
     isTired: boolean;
     smelledMarker: Marker[];
-    w: number;
-    h: number;
     colour: string;
 
     constructor() { }
 
     init(colony: AntColony, availableAnts: any[]) {
         this.colony = colony;
+        this.colour = '#222';
 
         let cIndex = -1;
         if (availableAnts) {
-            let antCast = this.determineCast(availableAnts);
+            let antCast = this.determineCaste(availableAnts);
             for (let i=0; i<colony.castes.length; i++) {
                 let cast = this.colony.castes[i];
-                if (cast.name == antCast) {
+                if (cast.name === antCast) {
                     cIndex = i;
-                    this.colour = cast.color || '#222';
+                    this.colour = cast.color || this.colour;
                     break;
                 }
             }
         }
         if (cIndex > -1) {
             this.casteIndex = cIndex;
-            console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
+            // console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
         } else {
-            console.error('Caste not exists!');
+            console.error('Caste not exists! Using default.');
+
+            this.casteIndex = 0;
         }
 
         this.remainingDistance = 0;
@@ -48,19 +46,14 @@ class BaseAnt {
         this.target = null;
         this.reached = false;
         this.traveledDistance = 0;
-        this.vitality = 50;
-        this.maxVitality = 50;
+        this.vitality = this.maxVitality;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
-        this.rotationSpeed = 10;
-        this.currentSpeed = this.colony.antBaseSpeed;
-        this.viewDistance = 20;
+        this.currentSpeed = this.colony.castesSpeed[this.casteIndex];
         this.carriedFruit = null;
         this.currentLoad = 0;
         this.debugMessage = null;
         this.isTired = false;
         this.smelledMarker = [];
-        this.w = 6;
-        this.h = 3;
     }
 
     // getter/setter
@@ -83,10 +76,30 @@ class BaseAnt {
     }
     set currentLoad(value) {
         this.currentLoadVal = value >= 0 ? value : 0;
-        this.currentSpeed = this.colony.antBaseSpeed;
-        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.antMaxLoad / 2;
+        this.currentSpeed = this.colony.castesSpeed[this.casteIndex];
+        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.castesLoad[this.casteIndex] / 2;
     }
     private currentLoadVal: number;
+
+    get maxLoad() {
+        return this.colony.castesLoad[this.casteIndex];
+    }
+
+    get rotationSpeed() {
+        return this.colony.castesRotationSpeed[this.casteIndex];
+    }
+
+    get range() {
+        return this.colony.castesRange[this.casteIndex];
+    }
+
+    get viewRange()  {
+        return this.colony.castesViewRange[this.casteIndex];
+    }
+
+    get maxVitality() {
+        return this.colony.castesVitality[this.casteIndex];
+    }
 
     get direction() {
         return this.coordinate.direction;
@@ -127,12 +140,12 @@ class BaseAnt {
             this.reached = d <= 5;
             if (!this.reached) {
                 let dir = Coordinate.directionAngle(this.coordinate, this.target.coordinate);
-                if (d < this.viewDistance || this.carriedFruit) {
+                if (d < this.viewRange || this.carriedFruit) {
                     this.remainingDistance = d;
                 }
                 else {
                     dir += random(-10, 10);
-                    this.remainingDistance = this.viewDistance;
+                    this.remainingDistance = this.viewRange;
                 }
                 this.turnToDirection(dir);
             }
@@ -183,7 +196,7 @@ class BaseAnt {
         rotate(this.coordinate.direction);
         noStroke();
         fill(this.colour);
-        rect(-this.w / 2, -this.h / 2, this.w, this.h);
+        rect(-3, -1.5, 6, 3);
 
         if (this.currentLoad > 0 && !this.carriedFruit) {
             fill(250);
@@ -193,7 +206,9 @@ class BaseAnt {
         pop();
     }
 
-    determineCast(availableAnts: any[]) { }
+    determineCaste(availableAnts: any[]): string { 
+        return ''; 
+    }
 
     // player events
     awakes() { }
@@ -246,7 +261,7 @@ class BaseAnt {
     take(food: Food) {
         if (food instanceof Sugar) {
             if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
-                let num = Math.min(this.colony.antMaxLoad - this.currentLoad, food.amount);
+                let num = Math.min(this.maxLoad - this.currentLoad, food.amount);
                 this.currentLoad += num;
                 food.amount -= num;
             }
@@ -260,7 +275,7 @@ class BaseAnt {
             this.stop();
             this.carriedFruit = food;
             food.carriers.push(this);
-            this.currentLoad = this.colony.antMaxLoad;
+            this.currentLoad = this.maxLoad;
         }
     }
     drop() {

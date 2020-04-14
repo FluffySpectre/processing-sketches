@@ -1,11 +1,25 @@
 let environment: Environment;
 let playerCodeAvailable = false;
+let playerCodeValid = true;
 
 function playerCodeLoaded() {
-    // @ts-ignore - PLAYER_INFO comes from the player's code
-    environment = new Environment(PLAYER_INFO, 0);
+    playerCodeValid = true;
 
-    playerCodeAvailable = true;
+    // @ts-ignore check the playerinfo values
+    let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
+    for (let c of playerInfo.castes) {
+        let abilitySum = c.speed + c.rotationSpeed + c.attack + c.load + c.range + c.viewRange + c.vitality;
+        if (abilitySum !== 0) {
+            console.error('Caste ' + c.name + ' abilities need to add up to zero! Got sum: ' + abilitySum);
+            playerCodeValid = false;
+        }
+    }
+
+    if (playerCodeValid) {
+        environment = new Environment(playerInfo, 0);
+
+        playerCodeAvailable = true;
+    }
 }
 
 function setup() {
@@ -21,7 +35,21 @@ function draw() {
     angleMode(DEGREES);
     background(245, 222, 179);
 
-    if (!playerCodeAvailable) return;
+    if (!playerCodeValid) {
+        let errorMsg = 'There are errors in your code. Please check the console.';
+        fill(255, 0, 0);
+        textSize(24);
+        text(errorMsg, width/2-textWidth(errorMsg)/2, height/2-12);
+        return;
+    }
+
+    if (!playerCodeAvailable) {
+        let loadingMsg = 'Loading...';
+        fill(20);
+        textSize(24);
+        text(loadingMsg, width/2-textWidth(loadingMsg)/2, height/2-12);
+        return;
+    }
 
     if (environment.currentRound < SimSettings.totalRounds) {
         environment.step();
@@ -32,6 +60,7 @@ function draw() {
     environment.render();
 
     fill(20);
+    textSize(14);
     text('Round: ' + environment.currentRound, 10, 20);
     text('Points: ' + environment.colony.statistics.points, 10, 36);
 }

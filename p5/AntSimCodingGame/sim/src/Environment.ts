@@ -30,11 +30,11 @@ class Environment {
         for (let a of this.colony.ants) {
             a.move();
 
-            if (a.traveledDistance > this.colony.antRange) {
+            if (a.traveledDistance > a.range) {
                 a.vitality = 0;
                 this.colony.starvedAnts.push(a);
             } else {
-                if (a.traveledDistance > this.colony.antRange / 3 && !a.isTired) {
+                if (a.traveledDistance > a.range / 3 && !a.isTired) {
                     a.isTired = true;
                     a.becomesTired();
                 }
@@ -139,7 +139,7 @@ class Environment {
     antAndSugar(ant: BaseAnt) {
         for (let s of this.sugarHills) {
             let num = Coordinate.distance(ant.coordinate, s.coordinate);
-            if (ant.target !== s && num <= ant.viewDistance) {
+            if (ant.target !== s && num <= ant.viewRange) {
                 ant.spotsSugar(s);
             }
         }
@@ -148,7 +148,7 @@ class Environment {
     antAndFruit(ant: BaseAnt) {
         for (let f of this.fruits) {
             let num = Coordinate.distance(ant.coordinate, f.coordinate);
-            if (ant.target !== f && num <= ant.viewDistance)
+            if (ant.target !== f && num <= ant.viewRange)
                 ant.spotsFruit(f);
         }
     }

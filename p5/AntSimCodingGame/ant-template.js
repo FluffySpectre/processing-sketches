@@ -2,15 +2,15 @@ var PLAYER_INFO = {
     name: 'Björn Bosse',
     colonyName: 'Beispielameisen',
     castes: [
-        { name: 'warrior', color: 'red', speedModificator: 1 },
-        { name: 'collector', color: '#222', speedModificator: 1 }
+        { name: 'warrior', color: 'red', speed: 1, rotationSpeed: 0, load: -1, range: -1, viewRange: 0, vitality: -1, attack: 2 },
+        { name: 'collector', color: '#222', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
     ]
 };
 
 class PlayerAnt extends BaseAnt {
-    // CAST SELECTION
-    determineCast(availableAnts) {
-        if (availableAnts['warrior'] < 25)
+    // CASTE SELECTION
+    determineCaste(availableAnts) {
+        if (availableAnts['warrior'] < 5)
             return 'warrior';
         else 
             return 'collector';
@@ -24,12 +24,12 @@ class PlayerAnt extends BaseAnt {
     }
     // spotsBug(bug) {}
     spotsSugar(sugar) {
-        if (this.currentLoad > 0) return;
+        if (this.caste !== 'collector' || this.currentLoad > 0) return;
 
         this.goToTarget(sugar);
     }
     spotsFruit(fruit) {
-        if (this.currentLoad > 0 || !this.needsCarriers(fruit)) return;
+        if (this.caste !== 'collector' || this.currentLoad > 0 || !this.needsCarriers(fruit)) return;
 
         this.goToTarget(fruit);
     }

@@ -16,4 +16,5 @@ class SimSettings {
     static fruitRadiusMultiplier = 1.25;
     static antLimit = 50;
     static antRespawnDelay = 15;
+    static casteAbilities = new CasteAbilities();
 }

@@ -6,11 +6,17 @@ class AntColony {
     statistics: PlayerStatistics;
     playerInfo: PlayerInfo;
 
+    // castes stats
+    castesSpeed: number[];
+    castesRotationSpeed: number[];
+    castesLoad: number[];
+    castesRange: number[];
+    castesViewRange: number[];
+    castesVitality: number[];
+    castesAttack: number[];
+
     // colony ant stats
-    antRange: number;
-    antBaseSpeed: number;
-    antMaxLoad: number;
-    castes: any[];
+    castes: CasteInfo[];
     antsInCaste: number[];
 
     constructor(x: number, y: number, playerInfo: PlayerInfo) {
@@ -21,12 +27,30 @@ class AntColony {
         this.statistics = new PlayerStatistics();
         this.playerInfo = playerInfo;
 
-        this.antRange = 1800;
-        this.antBaseSpeed = 1;
-        this.antMaxLoad = 5;
-
         this.castes = playerInfo.castes;
+        if (this.castes.length === 0)
+            this.castes.push(new CasteInfo());
         this.antsInCaste = this.castes.map(c => 0);
+
+        this.castesSpeed = new Array<number>(this.castes.length);
+        this.castesRotationSpeed = new Array<number>(this.castes.length);
+        this.castesLoad = new Array<number>(this.castes.length);
+        this.castesRange = new Array<number>(this.castes.length);
+        this.castesViewRange = new Array<number>(this.castes.length);
+        this.castesVitality = new Array<number>(this.castes.length);
+        this.castesAttack = new Array<number>(this.castes.length);
+
+        let i = 0;
+        for (let c of this.castes) {
+            this.castesSpeed[i] = SimSettings.casteAbilities.get(c.speed).speed;
+            this.castesRotationSpeed[i] = SimSettings.casteAbilities.get(c.rotationSpeed).rotationSpeed;
+            this.castesLoad[i] = SimSettings.casteAbilities.get(c.load).load;
+            this.castesRange[i] = SimSettings.casteAbilities.get(c.range).range;
+            this.castesViewRange[i] = SimSettings.casteAbilities.get(c.viewRange).viewRange;
+            this.castesVitality[i] = SimSettings.casteAbilities.get(c.vitality).vitality;
+            this.castesAttack[i] = SimSettings.casteAbilities.get(c.attack).attack;
+            i++;
+        }
     }
 
     newAnt() {

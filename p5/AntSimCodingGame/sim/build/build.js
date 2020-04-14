@@ -7,11 +7,28 @@ class AntColony {
         this.antDelay = 0;
         this.statistics = new PlayerStatistics();
         this.playerInfo = playerInfo;
-        this.antRange = 1800;
-        this.antBaseSpeed = 1;
-        this.antMaxLoad = 5;
         this.castes = playerInfo.castes;
+        if (this.castes.length === 0)
+            this.castes.push(new CasteInfo());
         this.antsInCaste = this.castes.map(c => 0);
+        this.castesSpeed = new Array(this.castes.length);
+        this.castesRotationSpeed = new Array(this.castes.length);
+        this.castesLoad = new Array(this.castes.length);
+        this.castesRange = new Array(this.castes.length);
+        this.castesViewRange = new Array(this.castes.length);
+        this.castesVitality = new Array(this.castes.length);
+        this.castesAttack = new Array(this.castes.length);
+        let i = 0;
+        for (let c of this.castes) {
+            this.castesSpeed[i] = SimSettings.casteAbilities.get(c.speed).speed;
+            this.castesRotationSpeed[i] = SimSettings.casteAbilities.get(c.rotationSpeed).rotationSpeed;
+            this.castesLoad[i] = SimSettings.casteAbilities.get(c.load).load;
+            this.castesRange[i] = SimSettings.casteAbilities.get(c.range).range;
+            this.castesViewRange[i] = SimSettings.casteAbilities.get(c.viewRange).viewRange;
+            this.castesVitality[i] = SimSettings.casteAbilities.get(c.vitality).vitality;
+            this.castesAttack[i] = SimSettings.casteAbilities.get(c.attack).attack;
+            i++;
+        }
     }
     newAnt() {
         let availableAnts = null;
@@ -44,9 +61,21 @@ class AntColony {
 }
 let environment;
 let playerCodeAvailable = false;
+let playerCodeValid = true;
 function playerCodeLoaded() {
-    environment = new Environment(PLAYER_INFO, 0);
-    playerCodeAvailable = true;
+    playerCodeValid = true;
+    let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
+    for (let c of playerInfo.castes) {
+        let abilitySum = c.speed + c.rotationSpeed + c.attack + c.load + c.range + c.viewRange + c.vitality;
+        if (abilitySum !== 0) {
+            console.error('Caste ' + c.name + ' abilities need to add up to zero! Got sum: ' + abilitySum);
+            playerCodeValid = false;
+        }
+    }
+    if (playerCodeValid) {
+        environment = new Environment(playerInfo, 0);
+        playerCodeAvailable = true;
+    }
 }
 function setup() {
     var cnv = createCanvas(windowWidth, windowWidth);
@@ -58,8 +87,20 @@ function windowResized() {
 function draw() {
     angleMode(DEGREES);
     background(245, 222, 179);
-    if (!playerCodeAvailable)
+    if (!playerCodeValid) {
+        let errorMsg = 'There are errors in your code. Please check the console.';
+        fill(255, 0, 0);
+        textSize(24);
+        text(errorMsg, width / 2 - textWidth(errorMsg) / 2, height / 2 - 12);
         return;
+    }
+    if (!playerCodeAvailable) {
+        let loadingMsg = 'Loading...';
+        fill(20);
+        textSize(24);
+        text(loadingMsg, width / 2 - textWidth(loadingMsg) / 2, height / 2 - 12);
+        return;
+    }
     if (environment.currentRound < SimSettings.totalRounds) {
         environment.step();
     }
@@ -67,6 +108,7 @@ function draw() {
     }
     environment.render();
     fill(20);
+    textSize(14);
     text('Round: ' + environment.currentRound, 10, 20);
     text('Points: ' + environment.colony.statistics.points, 10, 36);
 }
@@ -74,43 +116,39 @@ class BaseAnt {
     constructor() { }
     init(colony, availableAnts) {
         this.colony = colony;
+        this.colour = '#222';
         let cIndex = -1;
         if (availableAnts) {
-            let antCast = this.determineCast(availableAnts);
+            let antCast = this.determineCaste(availableAnts);
             for (let i = 0; i < colony.castes.length; i++) {
                 let cast = this.colony.castes[i];
-                if (cast.name == antCast) {
+                if (cast.name === antCast) {
                     cIndex = i;
-                    this.colour = cast.color || '#222';
+                    this.colour = cast.color || this.colour;
                     break;
                 }
             }
         }
         if (cIndex > -1) {
             this.casteIndex = cIndex;
-            console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
         }
         else {
-            console.error('Caste not exists!');
+            console.error('Caste not exists! Using default.');
+            this.casteIndex = 0;
         }
         this.remainingDistance = 0;
         this.remainingRotation = 0;
         this.target = null;
         this.reached = false;
         this.traveledDistance = 0;
-        this.vitality = 50;
-        this.maxVitality = 50;
+        this.vitality = this.maxVitality;
         this.coordinate = new Coordinate(colony.coordinate.position.x, colony.coordinate.position.y, 5);
-        this.rotationSpeed = 10;
-        this.currentSpeed = this.colony.antBaseSpeed;
-        this.viewDistance = 20;
+        this.currentSpeed = this.colony.castesSpeed[this.casteIndex];
         this.carriedFruit = null;
         this.currentLoad = 0;
         this.debugMessage = null;
         this.isTired = false;
         this.smelledMarker = [];
-        this.w = 6;
-        this.h = 3;
     }
     get target() {
         return this.targetVal;
@@ -125,8 +163,23 @@ class BaseAnt {
     }
     set currentLoad(value) {
         this.currentLoadVal = value >= 0 ? value : 0;
-        this.currentSpeed = this.colony.antBaseSpeed;
-        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.antMaxLoad / 2;
+        this.currentSpeed = this.colony.castesSpeed[this.casteIndex];
+        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.castesLoad[this.casteIndex] / 2;
+    }
+    get maxLoad() {
+        return this.colony.castesLoad[this.casteIndex];
+    }
+    get rotationSpeed() {
+        return this.colony.castesRotationSpeed[this.casteIndex];
+    }
+    get range() {
+        return this.colony.castesRange[this.casteIndex];
+    }
+    get viewRange() {
+        return this.colony.castesViewRange[this.casteIndex];
+    }
+    get maxVitality() {
+        return this.colony.castesVitality[this.casteIndex];
     }
     get direction() {
         return this.coordinate.direction;
@@ -163,12 +216,12 @@ class BaseAnt {
             this.reached = d <= 5;
             if (!this.reached) {
                 let dir = Coordinate.directionAngle(this.coordinate, this.target.coordinate);
-                if (d < this.viewDistance || this.carriedFruit) {
+                if (d < this.viewRange || this.carriedFruit) {
                     this.remainingDistance = d;
                 }
                 else {
                     dir += random(-10, 10);
-                    this.remainingDistance = this.viewDistance;
+                    this.remainingDistance = this.viewRange;
                 }
                 this.turnToDirection(dir);
             }
@@ -212,14 +265,16 @@ class BaseAnt {
         rotate(this.coordinate.direction);
         noStroke();
         fill(this.colour);
-        rect(-this.w / 2, -this.h / 2, this.w, this.h);
+        rect(-3, -1.5, 6, 3);
         if (this.currentLoad > 0 && !this.carriedFruit) {
             fill(250);
             rect(-2.5, -2.5, 5, 5);
         }
         pop();
     }
-    determineCast(availableAnts) { }
+    determineCaste(availableAnts) {
+        return '';
+    }
     awakes() { }
     waits() { }
     spotsSugar(sugar) { }
@@ -269,7 +324,7 @@ class BaseAnt {
     take(food) {
         if (food instanceof Sugar) {
             if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
-                let num = Math.min(this.colony.antMaxLoad - this.currentLoad, food.amount);
+                let num = Math.min(this.maxLoad - this.currentLoad, food.amount);
                 this.currentLoad += num;
                 food.amount -= num;
             }
@@ -284,7 +339,7 @@ class BaseAnt {
             this.stop();
             this.carriedFruit = food;
             food.carriers.push(this);
-            this.currentLoad = this.colony.antMaxLoad;
+            this.currentLoad = this.maxLoad;
         }
     }
     drop() {
@@ -307,6 +362,80 @@ class BaseAnt {
 class Bug {
     constructor(x, y) {
         this.coordinate = new Coordinate(x, y, 10);
+    }
+}
+class CasteAbilityLevel {
+}
+class CasteAbilities {
+    constructor() {
+        this.offset = -1;
+        this.abilities = [new CasteAbilityLevel(), new CasteAbilityLevel(), new CasteAbilityLevel(), new CasteAbilityLevel()];
+        this.abilities[0].speed = 1;
+        this.abilities[0].rotationSpeed = 2;
+        this.abilities[0].load = 4;
+        this.abilities[0].range = 1800;
+        this.abilities[0].viewRange = 20;
+        this.abilities[0].vitality = 50;
+        this.abilities[0].attack = 0;
+        this.abilities[1].speed = 2;
+        this.abilities[1].rotationSpeed = 4;
+        this.abilities[1].load = 5;
+        this.abilities[1].range = 2250;
+        this.abilities[1].viewRange = 40;
+        this.abilities[1].vitality = 100;
+        this.abilities[1].attack = 10;
+        this.abilities[2].speed = 3;
+        this.abilities[2].rotationSpeed = 8;
+        this.abilities[2].load = 7;
+        this.abilities[2].range = 3400;
+        this.abilities[2].viewRange = 80;
+        this.abilities[2].vitality = 175;
+        this.abilities[2].attack = 20;
+        this.abilities[3].speed = 4;
+        this.abilities[3].rotationSpeed = 12;
+        this.abilities[3].load = 10;
+        this.abilities[3].range = 4500;
+        this.abilities[3].viewRange = 160;
+        this.abilities[3].vitality = 250;
+        this.abilities[3].attack = 30;
+    }
+    minIndex() {
+        return this.offset;
+    }
+    maxIndex() {
+        return this.offset + this.abilities.length - 1;
+    }
+    get(index) {
+        if (!Number.isSafeInteger(index) || index < this.offset || index > this.maxIndex()) {
+            if (index !== undefined)
+                console.error('Caste ability level invalid! Got: ' + index + '. Allowed are: -1, 0, 1, 2');
+            return this.abilities[0];
+        }
+        return this.abilities[index - this.offset];
+    }
+}
+class CasteInfo {
+    constructor() {
+        this.speed = 0;
+        this.rotationSpeed = 0;
+        this.load = 0;
+        this.range = 0;
+        this.viewRange = 0;
+        this.vitality = 0;
+        this.attack = 0;
+    }
+    static fromObject(obj) {
+        let ci = new CasteInfo();
+        ci.name = obj.name || '';
+        ci.color = obj.color || null;
+        ci.speed = Number.isInteger(obj.speed) ? obj.speed : 0;
+        ci.rotationSpeed = Number.isInteger(obj.rotationSpeed) ? obj.rotationSpeed : 0;
+        ci.load = Number.isInteger(obj.load) ? obj.load : 0;
+        ci.range = Number.isInteger(obj.range) ? obj.range : 0;
+        ci.viewRange = Number.isInteger(obj.viewRange) ? obj.viewRange : 0;
+        ci.vitality = Number.isInteger(obj.vitality) ? obj.vitality : 0;
+        ci.attack = Number.isInteger(obj.attack) ? obj.attack : 0;
+        return ci;
     }
 }
 class Coordinate {
@@ -377,12 +506,12 @@ class Environment {
         this.spawnFruit();
         for (let a of this.colony.ants) {
             a.move();
-            if (a.traveledDistance > this.colony.antRange) {
+            if (a.traveledDistance > a.range) {
                 a.vitality = 0;
                 this.colony.starvedAnts.push(a);
             }
             else {
-                if (a.traveledDistance > this.colony.antRange / 3 && !a.isTired) {
+                if (a.traveledDistance > a.range / 3 && !a.isTired) {
                     a.isTired = true;
                     a.becomesTired();
                 }
@@ -477,7 +606,7 @@ class Environment {
     antAndSugar(ant) {
         for (let s of this.sugarHills) {
             let num = Coordinate.distance(ant.coordinate, s.coordinate);
-            if (ant.target !== s && num <= ant.viewDistance) {
+            if (ant.target !== s && num <= ant.viewRange) {
                 ant.spotsSugar(s);
             }
         }
@@ -485,7 +614,7 @@ class Environment {
     antAndFruit(ant) {
         for (let f of this.fruits) {
             let num = Coordinate.distance(ant.coordinate, f.coordinate);
-            if (ant.target !== f && num <= ant.viewDistance)
+            if (ant.target !== f && num <= ant.viewRange)
                 ant.spotsFruit(f);
         }
     }
@@ -601,6 +730,20 @@ class Fruit extends Food {
 }
 class Marker {
 }
+class PlayerInfo {
+    static fromObject(obj) {
+        let pi = new PlayerInfo();
+        pi.name = obj.name;
+        pi.colonyName = obj.colonyName;
+        pi.castes = [];
+        if (Array.isArray(obj.castes)) {
+            for (let c of obj.castes) {
+                pi.castes.push(CasteInfo.fromObject(c));
+            }
+        }
+        return pi;
+    }
+}
 class PlayerStatistics {
     constructor() {
         this.starvedAnts = 0;
@@ -629,8 +772,7 @@ SimSettings.fruitLoadMultiplier = 5;
 SimSettings.fruitRadiusMultiplier = 1.25;
 SimSettings.antLimit = 50;
 SimSettings.antRespawnDelay = 15;
-class CasteSettings {
-}
+SimSettings.casteAbilities = new CasteAbilities();
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);
