@@ -1,14 +1,15 @@
 body {
     padding: 0;
     margin: 0;
+    background-color: #333;
 }
 
 #editorContainer {
     position: absolute;
     left: 0;
-    top: 2rem;
-    width: 50%;
-    height: calc(100% - 2rem);
+    top: 3rem;
+    width: 49%;
+    height: calc(100% - 3rem);
 }
 
 #simContainer {
@@ -21,16 +22,17 @@ body {
 
 #runButton {
     position: absolute;
-    left: calc(50% - 3rem);
+    left: calc(49% - 4rem);
     top: 0;
-    width: 3rem;
-    height: 2rem;
+    width: 4rem;
+    height: 3rem;
     color: white;
-    background-color: green;
+    background-color: #4f8cbd;
+    border: none;
 }
 
 .upload-btn {
     color: black;
-    height: 2rem;
+    height: 3rem;
     background-color: darkgray;
 }

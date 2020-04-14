@@ -62,6 +62,7 @@ class AntColony {
 let environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
+let colonyNameUI, foodValueUI, deadAntsValueUI, pointsValue;
 function playerCodeLoaded() {
     playerCodeValid = true;
     let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
@@ -75,12 +76,17 @@ function playerCodeLoaded() {
     if (playerCodeValid) {
         environment = new Environment(playerInfo, 0);
         playerCodeAvailable = true;
+        colonyNameUI.html(playerInfo.colonyName);
     }
 }
 function setup() {
     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
     var cnv = createCanvas(s, s);
     cnv.style('display', 'block');
+    colonyNameUI = select('#colonyName');
+    foodValueUI = select('#foodValue');
+    deadAntsValueUI = select('#deadAntsValue');
+    pointsValue = select('#pointsValue');
 }
 function windowResized() {
     resizeCanvas(windowWidth, windowWidth);
@@ -108,10 +114,16 @@ function draw() {
     else {
     }
     environment.render();
-    fill(20);
-    textSize(14);
-    text('Round: ' + environment.currentRound, 10, 20);
-    text('Points: ' + environment.colony.statistics.points, 10, 36);
+    if (frameCount % 60 === 0) {
+        foodValueUI.html(environment.colony.statistics.collectedFood.toString());
+        deadAntsValueUI.html(environment.colony.statistics.starvedAnts.toString());
+        pointsValue.html(environment.colony.statistics.points.toString());
+    }
+    if (SimSettings.displayDebugLabels) {
+        fill(20);
+        textSize(14);
+        text('Round: ' + environment.currentRound, 10, 20);
+    }
 }
 class BaseAnt {
     constructor() { }
