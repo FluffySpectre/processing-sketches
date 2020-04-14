@@ -203,6 +203,12 @@ class BaseAnt {
             rect(-2.5, -2.5, 5, 5);
         }
 
+        if (SimSettings.displayDebugLabels) {
+            noStroke();
+            fill(20, 50);
+            ellipse(0, 0, this.viewRange*2);
+        }
+
         pop();
     }
 

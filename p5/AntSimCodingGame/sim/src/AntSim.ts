@@ -29,6 +29,8 @@ function playerCodeLoaded() {
 }
 
 function setup() {
+    frameRate(SimSettings.stepsPerSecond);
+
     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
     var cnv = createCanvas(s, s);
     cnv.style('display', 'block');
@@ -79,7 +81,8 @@ function draw() {
     if (SimSettings.displayDebugLabels) {
         fill(20);
         textSize(14);
-        text('Round: ' + environment.currentRound, 10, 20);
+        text('FPS: ' + Math.floor(frameRate()), 10, 20);
+        text('Round: ' + environment.currentRound, 10, 36);
     }
 }
 

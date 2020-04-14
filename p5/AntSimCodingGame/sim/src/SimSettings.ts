@@ -1,5 +1,6 @@
 class SimSettings {
-    static totalRounds = 15000; // @60FPS = 4.25 minutes
+    static stepsPerSecond = 30;
+    static totalRounds = 7300; // @30FPS = 4 minutes
     static displayDebugLabels = false;
     static sugarLimit = 4;
     static minSugarAmount = 200;

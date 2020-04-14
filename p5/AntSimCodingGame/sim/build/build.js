@@ -81,6 +81,7 @@ function playerCodeLoaded() {
     }
 }
 function setup() {
+    frameRate(SimSettings.stepsPerSecond);
     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
     var cnv = createCanvas(s, s);
     cnv.style('display', 'block');
@@ -121,7 +122,8 @@ function draw() {
     if (SimSettings.displayDebugLabels) {
         fill(20);
         textSize(14);
-        text('Round: ' + environment.currentRound, 10, 20);
+        text('FPS: ' + Math.floor(frameRate()), 10, 20);
+        text('Round: ' + environment.currentRound, 10, 36);
     }
 }
 function drawMessage(msg, textColor) {
@@ -290,6 +292,11 @@ class BaseAnt {
             fill(250);
             rect(-2.5, -2.5, 5, 5);
         }
+        if (SimSettings.displayDebugLabels) {
+            noStroke();
+            fill(20, 50);
+            ellipse(0, 0, this.viewRange * 2);
+        }
         pop();
     }
     determineCaste(availableAnts) {
@@ -390,32 +397,32 @@ class CasteAbilities {
     constructor() {
         this.offset = -1;
         this.abilities = [new CasteAbilityLevel(), new CasteAbilityLevel(), new CasteAbilityLevel(), new CasteAbilityLevel()];
-        this.abilities[0].speed = 1;
-        this.abilities[0].rotationSpeed = 2;
+        this.abilities[0].speed = 2;
+        this.abilities[0].rotationSpeed = 4;
         this.abilities[0].load = 4;
         this.abilities[0].range = 1800;
         this.abilities[0].viewRange = 20;
         this.abilities[0].vitality = 50;
         this.abilities[0].attack = 0;
-        this.abilities[1].speed = 2;
-        this.abilities[1].rotationSpeed = 4;
+        this.abilities[1].speed = 4;
+        this.abilities[1].rotationSpeed = 8;
         this.abilities[1].load = 5;
         this.abilities[1].range = 2250;
         this.abilities[1].viewRange = 40;
         this.abilities[1].vitality = 100;
         this.abilities[1].attack = 10;
-        this.abilities[2].speed = 3;
-        this.abilities[2].rotationSpeed = 8;
+        this.abilities[2].speed = 6;
+        this.abilities[2].rotationSpeed = 16;
         this.abilities[2].load = 7;
         this.abilities[2].range = 3400;
         this.abilities[2].viewRange = 80;
         this.abilities[2].vitality = 175;
         this.abilities[2].attack = 20;
-        this.abilities[3].speed = 4;
-        this.abilities[3].rotationSpeed = 12;
+        this.abilities[3].speed = 8;
+        this.abilities[3].rotationSpeed = 24;
         this.abilities[3].load = 10;
         this.abilities[3].range = 4500;
-        this.abilities[3].viewRange = 160;
+        this.abilities[3].viewRange = 120;
         this.abilities[3].vitality = 250;
         this.abilities[3].attack = 30;
     }
@@ -746,6 +753,12 @@ class Fruit extends Food {
         stroke(100);
         fill(10, 230, 10);
         ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
+        if (SimSettings.displayDebugLabels && this.carriers.length > 0) {
+            fill(20);
+            textSize(16);
+            let tw = textWidth(this.carriers.length.toString());
+            text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 16);
+        }
     }
 }
 class Marker {
@@ -775,7 +788,8 @@ class PlayerStatistics {
 }
 class SimSettings {
 }
-SimSettings.totalRounds = 15000;
+SimSettings.stepsPerSecond = 30;
+SimSettings.totalRounds = 7300;
 SimSettings.displayDebugLabels = false;
 SimSettings.sugarLimit = 4;
 SimSettings.minSugarAmount = 200;
