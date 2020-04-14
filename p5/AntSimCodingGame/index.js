@@ -17,6 +17,9 @@ var codeEditor = monaco.editor.create(document.getElementById('editorContainer')
     value: '',
     language: 'javascript',
     theme: "vs-dark",
+    minimap: {
+        enabled: false
+    },
 });
 
 var runContainer = document.getElementById('simContainer');
