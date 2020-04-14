@@ -1,6 +1,7 @@
 let environment: Environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
+let simulationEnd = false;
 
 // stats ui
 let colonyNameUI: p5.Element, foodValueUI: p5.Element, deadAntsValueUI: p5.Element, pointsValue: p5.Element;
@@ -47,18 +48,12 @@ function draw() {
     background(245, 222, 179);
 
     if (!playerCodeValid) {
-        let errorMsg = 'There are errors in your code. Please check the console.';
-        fill(255, 0, 0);
-        textSize(24);
-        text(errorMsg, width/2-textWidth(errorMsg)/2, height/2-12);
+        drawMessage('There are errors in your code. Please check the console.', '#f00');
         return;
     }
 
     if (!playerCodeAvailable) {
-        let loadingMsg = 'Loading...';
-        fill(20);
-        textSize(24);
-        text(loadingMsg, width/2-textWidth(loadingMsg)/2, height/2-12);
+        drawMessage('Loading...', '#fff');
         return;
     }
 
@@ -66,7 +61,7 @@ function draw() {
         environment.step();
     } else {
         // simulation ended
-
+        simulationEnd = true;
     }
     environment.render();
 
@@ -77,9 +72,22 @@ function draw() {
         pointsValue.html(environment.colony.statistics.points.toString());
     }
 
+    if (simulationEnd) {
+        drawMessage('Simulation finished!', '#fff');
+    }
+
     if (SimSettings.displayDebugLabels) {
         fill(20);
         textSize(14);
         text('Round: ' + environment.currentRound, 10, 20);
     }
+}
+
+function drawMessage(msg: string, textColor: string) {
+    noStroke();
+    fill(20, 180);
+    rect(0, 0, width, height);
+    textSize(24);
+    fill(textColor);
+    text(msg, width/2-textWidth(msg)/2, height/2-12);
 }

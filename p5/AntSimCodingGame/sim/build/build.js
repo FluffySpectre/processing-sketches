@@ -62,6 +62,7 @@ class AntColony {
 let environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
+let simulationEnd = false;
 let colonyNameUI, foodValueUI, deadAntsValueUI, pointsValue;
 function playerCodeLoaded() {
     playerCodeValid = true;
@@ -95,23 +96,18 @@ function draw() {
     angleMode(DEGREES);
     background(245, 222, 179);
     if (!playerCodeValid) {
-        let errorMsg = 'There are errors in your code. Please check the console.';
-        fill(255, 0, 0);
-        textSize(24);
-        text(errorMsg, width / 2 - textWidth(errorMsg) / 2, height / 2 - 12);
+        drawMessage('There are errors in your code. Please check the console.', '#f00');
         return;
     }
     if (!playerCodeAvailable) {
-        let loadingMsg = 'Loading...';
-        fill(20);
-        textSize(24);
-        text(loadingMsg, width / 2 - textWidth(loadingMsg) / 2, height / 2 - 12);
+        drawMessage('Loading...', '#fff');
         return;
     }
     if (environment.currentRound < SimSettings.totalRounds) {
         environment.step();
     }
     else {
+        simulationEnd = true;
     }
     environment.render();
     if (frameCount % 60 === 0) {
@@ -119,11 +115,22 @@ function draw() {
         deadAntsValueUI.html(environment.colony.statistics.starvedAnts.toString());
         pointsValue.html(environment.colony.statistics.points.toString());
     }
+    if (simulationEnd) {
+        drawMessage('Simulation finished!', '#fff');
+    }
     if (SimSettings.displayDebugLabels) {
         fill(20);
         textSize(14);
         text('Round: ' + environment.currentRound, 10, 20);
     }
+}
+function drawMessage(msg, textColor) {
+    noStroke();
+    fill(20, 180);
+    rect(0, 0, width, height);
+    textSize(24);
+    fill(textColor);
+    text(msg, width / 2 - textWidth(msg) / 2, height / 2 - 12);
 }
 class BaseAnt {
     constructor() { }
