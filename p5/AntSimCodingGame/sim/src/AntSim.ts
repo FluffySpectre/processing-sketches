@@ -23,7 +23,8 @@ function playerCodeLoaded() {
 }
 
 function setup() {
-    var cnv = createCanvas(windowWidth, windowWidth);
+    let s = windowWidth < windowHeight ? windowWidth : windowHeight;
+    var cnv = createCanvas(s, s);
     cnv.style('display', 'block');
 }
 
