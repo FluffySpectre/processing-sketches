@@ -28,11 +28,30 @@ body {
     height: 3rem;
     color: white;
     background-color: #4f8cbd;
-    border: none;
+    padding: 0;
 }
 
-.upload-btn {
-    color: black;
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.btn {
+    border: 1px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
     height: 3rem;
-    background-color: darkgray;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
 }

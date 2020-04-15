@@ -14,12 +14,12 @@
   <div id="editorContainer"></div>
   <div id="simContainer"></div>
 
-  <button id="runButton" onclick="run()">RUN</button>
+  <button class="btn" id="runButton" onclick="run()">Run</button>
 
-  <label class="upload-btn">
-    <input type="file" id="codeUpload" style="display:none" accept=".js" onchange="codeUploaded()">
-    Load File
-  </label>
+  <div class="upload-btn-wrapper">
+    <button class="btn">Load File</button>
+    <input type="file" id="codeUpload" name="myfile" accept=".js" onchange="codeUploaded()" />
+  </div>
 
   <script>var require = { paths: { 'vs': './node_modules/monaco-editor/min/vs' } };</script>
   <script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
