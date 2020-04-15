@@ -14,7 +14,7 @@ class Environment {
         this.sugarHills = [];
         this.fruits = [];
         this.playerColony = new Colony(playerInfo);
-        this.playerColony.antHill = new AntHill(width / 2, height / 2, 25);
+        this.playerColony.antHill = new AntHill(width / 2, height / 2, SimSettings.antHillRadius);
         this.bugs = new Colony();
         this.sugarDelay = 0;
         this.fruitDelay = 0;

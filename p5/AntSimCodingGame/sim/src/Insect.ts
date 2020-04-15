@@ -42,6 +42,8 @@ class Insect {
             this.coordinate = new Coordinate(this.colony.antHill.coordinate.position.x, this.colony.antHill.coordinate.position.y, 5);
         else
             this.coordinate = new Coordinate(random(0, width), random(0, height), 5);
+
+        this.coordinate.direction = random(0, 359);
     }
 
     // getter/setter

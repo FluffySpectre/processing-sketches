@@ -107,6 +107,7 @@ class Insect {
             this.coordinate = new Coordinate(this.colony.antHill.coordinate.position.x, this.colony.antHill.coordinate.position.y, 5);
         else
             this.coordinate = new Coordinate(random(0, width), random(0, height), 5);
+        this.coordinate.direction = random(0, 359);
     }
     get target() {
         return this.targetVal;
@@ -424,21 +425,21 @@ class CasteAbilities {
         this.abilities[0].viewRange = 20;
         this.abilities[0].vitality = 50;
         this.abilities[0].attack = 0;
-        this.abilities[1].speed = 4;
+        this.abilities[1].speed = 3;
         this.abilities[1].rotationSpeed = 8;
         this.abilities[1].load = 5;
         this.abilities[1].range = 2250;
         this.abilities[1].viewRange = 40;
         this.abilities[1].vitality = 100;
         this.abilities[1].attack = 10;
-        this.abilities[2].speed = 6;
+        this.abilities[2].speed = 4;
         this.abilities[2].rotationSpeed = 16;
         this.abilities[2].load = 7;
         this.abilities[2].range = 3400;
         this.abilities[2].viewRange = 80;
         this.abilities[2].vitality = 175;
         this.abilities[2].attack = 20;
-        this.abilities[3].speed = 8;
+        this.abilities[3].speed = 5;
         this.abilities[3].rotationSpeed = 24;
         this.abilities[3].load = 10;
         this.abilities[3].range = 4500;
@@ -622,7 +623,7 @@ class Environment {
         this.sugarHills = [];
         this.fruits = [];
         this.playerColony = new Colony(playerInfo);
-        this.playerColony.antHill = new AntHill(width / 2, height / 2, 25);
+        this.playerColony.antHill = new AntHill(width / 2, height / 2, SimSettings.antHillRadius);
         this.bugs = new Colony();
         this.sugarDelay = 0;
         this.fruitDelay = 0;
@@ -986,31 +987,32 @@ class SimSettings {
 }
 SimSettings.stepsPerSecond = 30;
 SimSettings.totalRounds = 7300;
+SimSettings.antLimit = 50;
+SimSettings.antHillRadius = 25;
 SimSettings.displayDebugLabels = false;
-SimSettings.sugarLimit = 4;
-SimSettings.minSugarAmount = 200;
-SimSettings.maxSugarAmount = 200;
-SimSettings.sugarRadiusMultiplier = 1.25;
-SimSettings.sugarRespawnDelay = 1;
-SimSettings.pointsForFood = 1;
-SimSettings.pointsForStarvedAnts = -5;
-SimSettings.fruitLimit = 4;
+SimSettings.sugarLimit = 2;
+SimSettings.fruitLimit = 2;
+SimSettings.bugLimit = 5;
+SimSettings.minSugarAmount = 500;
+SimSettings.maxSugarAmount = 500;
 SimSettings.minFruitAmount = 250;
 SimSettings.maxFruitAmount = 250;
-SimSettings.fruitRespawnDelay = 1;
+SimSettings.sugarRadiusMultiplier = 1;
 SimSettings.fruitLoadMultiplier = 5;
 SimSettings.fruitRadiusMultiplier = 1.25;
-SimSettings.antLimit = 50;
+SimSettings.pointsForFood = 1;
+SimSettings.pointsForStarvedAnts = -5;
 SimSettings.antRespawnDelay = 15;
-SimSettings.casteAbilities = new CasteAbilities();
+SimSettings.bugRespawnDelay = 75;
+SimSettings.sugarRespawnDelay = 150;
+SimSettings.fruitRespawnDelay = 225;
 SimSettings.bugSpeed = 2;
 SimSettings.bugRotationSpeed = 5;
 SimSettings.bugVitality = 1000;
 SimSettings.bugAttack = 50;
-SimSettings.bugLimit = 4;
-SimSettings.bugRespawnDelay = 1;
 SimSettings.bugRegenerationDelay = 5;
 SimSettings.bugRegenerationValue = 1;
+SimSettings.casteAbilities = new CasteAbilities();
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);

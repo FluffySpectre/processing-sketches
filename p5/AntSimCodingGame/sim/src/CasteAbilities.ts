@@ -22,7 +22,7 @@ class CasteAbilities {
         this.abilities[0].vitality = 50;
         this.abilities[0].attack = 0;
 
-        this.abilities[1].speed = 4;
+        this.abilities[1].speed = 3;
         this.abilities[1].rotationSpeed = 8;
         this.abilities[1].load = 5;
         this.abilities[1].range = 2250;
@@ -30,7 +30,7 @@ class CasteAbilities {
         this.abilities[1].vitality = 100;
         this.abilities[1].attack = 10;
 
-        this.abilities[2].speed = 6;
+        this.abilities[2].speed = 4;
         this.abilities[2].rotationSpeed = 16;
         this.abilities[2].load = 7;
         this.abilities[2].range = 3400;
@@ -38,7 +38,7 @@ class CasteAbilities {
         this.abilities[2].vitality = 175;
         this.abilities[2].attack = 20;
 
-        this.abilities[3].speed = 8;
+        this.abilities[3].speed = 5;
         this.abilities[3].rotationSpeed = 24;
         this.abilities[3].load = 10;
         this.abilities[3].range = 4500;
