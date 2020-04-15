@@ -22,7 +22,8 @@ class BaseAnt extends Insect {
             this.casteIndex = cIndex;
             // console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
         } else {
-            console.error('Caste not exists! Using default.');
+            if (colony.castes[0].name) // no error for default caste
+                console.error('Caste not exists! Using default.');
 
             this.casteIndex = 0;
         }
@@ -42,6 +43,7 @@ class BaseAnt extends Insect {
     spotsSugar(sugar: Sugar) { }
     spotsFruit(fruit: Fruit) { }
     spotsBug(bug: Bug) { }
+    spotsFriend(ant: BaseAnt) { }
     sugarReached(sugar: Sugar) { }
     fruitReached(fruit: Fruit) { }
     becomesTired() { }

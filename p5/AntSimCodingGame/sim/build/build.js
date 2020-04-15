@@ -101,6 +101,8 @@ class Insect {
         this.currentLoad = 0;
         this.debugMessage = null;
         this.smelledMarker = [];
+        this.colonyCount = 0;
+        this.casteCount = 0;
         if (this.colony.antHill)
             this.coordinate = new Coordinate(this.colony.antHill.coordinate.position.x, this.colony.antHill.coordinate.position.y, 5);
         else
@@ -163,6 +165,12 @@ class Insect {
             }
         }
         return d;
+    }
+    get antsInViewRange() {
+        return this.colonyCount;
+    }
+    get antsFromSameCasteInViewRange() {
+        return this.casteCount;
     }
     move() {
         if (this.remainingRotation !== 0) {
@@ -303,7 +311,10 @@ class Insect {
         return fruit.needsCarriers(this.colony);
     }
     think(message) {
-        this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
+        if (message)
+            this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
+        else
+            this.debugMessage = null;
     }
 }
 class BaseAnt extends Insect {
@@ -325,7 +336,8 @@ class BaseAnt extends Insect {
             this.casteIndex = cIndex;
         }
         else {
-            console.error('Caste not exists! Using default.');
+            if (colony.castes[0].name)
+                console.error('Caste not exists! Using default.');
             this.casteIndex = 0;
         }
         this.isTired = false;
@@ -340,6 +352,7 @@ class BaseAnt extends Insect {
     spotsSugar(sugar) { }
     spotsFruit(fruit) { }
     spotsBug(bug) { }
+    spotsFriend(ant) { }
     sugarReached(sugar) { }
     fruitReached(fruit) { }
     becomesTired() { }
@@ -574,6 +587,12 @@ class Coordinate {
             return 0;
         return dist;
     }
+    static distanceSqr(c1, c2) {
+        let distSqr = c1.position.copy().sub(c2.position).magSq();
+        if (distSqr < 0)
+            return 0;
+        return distSqr;
+    }
     static distanceMidPoints(c1, c2) {
         let dist = c1.position.dist(c2.position);
         dist = Math.floor(dist);
@@ -622,6 +641,10 @@ class Environment {
         }
         for (let i = 0; i < this.playerColony.insects.length; i++) {
             let a = this.playerColony.insects[i];
+            let nearInsects = this.getAntsInViewRange(a);
+            a.colonyCount = nearInsects[0];
+            a.casteCount = nearInsects[1];
+            let nearestColonyAnt = nearInsects[2];
             a.move();
             if (a.traveledDistance > a.range) {
                 a.vitality = 0;
@@ -632,6 +655,8 @@ class Environment {
                     a.isTired = true;
                     a.becomesTired();
                 }
+                if (nearestColonyAnt && !(a.target instanceof BaseAnt))
+                    a.spotsFriend(nearestColonyAnt);
                 if (a.reached)
                     this.antAndTarget(a);
                 this.antAndSugar(a);
@@ -840,6 +865,26 @@ class Environment {
             }
         }
         this.bugs.eatenInsects = [];
+    }
+    getAntsInViewRange(insect) {
+        let numColonyAnts = 0, numCasteAnts = 0;
+        let nearestAnt = null, nearestAntDist = Number.MAX_SAFE_INTEGER;
+        for (let a of this.playerColony.insects) {
+            if (a === insect)
+                continue;
+            let distSqr = Coordinate.distanceSqr(insect.coordinate, a.coordinate);
+            if (distSqr <= insect.viewRange * insect.viewRange) {
+                if (distSqr < nearestAntDist) {
+                    nearestAntDist = distSqr;
+                    nearestAnt = a;
+                }
+                numColonyAnts++;
+                if (a.casteIndex === insect.casteIndex) {
+                    numCasteAnts++;
+                }
+            }
+        }
+        return [numColonyAnts, numCasteAnts, nearestAnt];
     }
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));

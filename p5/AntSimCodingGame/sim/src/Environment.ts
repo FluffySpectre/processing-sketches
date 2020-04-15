@@ -45,6 +45,12 @@ class Environment {
         for (let i = 0; i<this.playerColony.insects.length; i++) {
             let a = this.playerColony.insects[i] as BaseAnt;
 
+            // check the suroundings of the ant
+            let nearInsects = this.getAntsInViewRange(a);
+            a.colonyCount = nearInsects[0] as number;
+            a.casteCount = nearInsects[1] as number;
+            let nearestColonyAnt = nearInsects[2] as BaseAnt;
+
             a.move();
 
             if (a.traveledDistance > a.range) {
@@ -55,6 +61,9 @@ class Environment {
                     a.isTired = true;
                     a.becomesTired();
                 }
+
+                if (nearestColonyAnt && !(a.target instanceof BaseAnt))
+                    a.spotsFriend(nearestColonyAnt);
 
                 if (a.reached)
                     this.antAndTarget(a);
@@ -294,6 +303,29 @@ class Environment {
             }
         }
         this.bugs.eatenInsects = [];
+    }
+
+    getAntsInViewRange(insect: Insect) {
+        let numColonyAnts = 0, numCasteAnts = 0;
+        let nearestAnt = null, nearestAntDist = Number.MAX_SAFE_INTEGER;
+        for (let a of this.playerColony.insects) {
+            if (a === insect) continue; // ignore ourself
+
+            // distanceSqr is used here because of performance reasons
+            let distSqr = Coordinate.distanceSqr(insect.coordinate, a.coordinate);
+            if (distSqr <= insect.viewRange * insect.viewRange) {
+                if (distSqr < nearestAntDist) {
+                    nearestAntDist = distSqr;
+                    nearestAnt = a;
+                }
+
+                numColonyAnts++;
+                if (a.casteIndex === insect.casteIndex) {
+                    numCasteAnts++;
+                }
+            }
+        }
+        return [numColonyAnts, numCasteAnts, nearestAnt];
     }
 
     getRandomPoint() {

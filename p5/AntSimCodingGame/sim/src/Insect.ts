@@ -12,6 +12,8 @@ class Insect {
     debugMessage: string;
     smelledMarker: Marker[];
     colour: string;
+    colonyCount: number;
+    casteCount: number;
 
     constructor() { }
 
@@ -31,6 +33,8 @@ class Insect {
         this.currentLoad = 0;
         this.debugMessage = null;
         this.smelledMarker = [];
+        this.colonyCount = 0;
+        this.casteCount = 0;
 
         // if we got an anthill spawn there, otheriwise at a random position on the map
         if (this.colony.antHill)
@@ -114,6 +118,14 @@ class Insect {
             }
         }
         return d;
+    }
+
+    get antsInViewRange() {
+        return this.colonyCount;
+    }
+
+    get antsFromSameCasteInViewRange() {
+        return this.casteCount;
     }
 
     // sim functions
@@ -263,6 +275,9 @@ class Insect {
     }
     //debug
     think(message: string) {
-        this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
+        if (message)
+            this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
+        else 
+            this.debugMessage = null;
     }
 }

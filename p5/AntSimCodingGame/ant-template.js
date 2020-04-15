@@ -15,6 +15,7 @@ class PlayerAnt extends BaseAnt {
     // spotsSugar(sugar) {}
     // spotsFruit(fruit) {}
     // spotsBug(bug) {}
+    // spotsFriend(ant) {}
     // sugarReached(sugar) {}
     // fruitReached(fruit) {}
     // becomesTired() {}
@@ -55,4 +56,6 @@ class PlayerAnt extends BaseAnt {
     // this.target
     // this.isTired
     // this.distanceToAntHill
+    // this.antsInViewRange
+    // this.antsFromSameCasteInViewRange
 }

@@ -37,6 +37,13 @@ class Coordinate {
         return dist;
     }
 
+    static distanceSqr(c1: Coordinate, c2: Coordinate) {
+        let distSqr = c1.position.copy().sub(c2.position).magSq();
+        if (distSqr < 0)
+            return 0;
+        return distSqr;
+    }
+
     static distanceMidPoints(c1: Coordinate, c2: Coordinate) {
         let dist = c1.position.dist(c2.position);
         dist = Math.floor(dist);
