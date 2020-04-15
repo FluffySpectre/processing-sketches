@@ -32,9 +32,9 @@ class Fruit extends Food {
 
         if (SimSettings.displayDebugLabels && this.carriers.length > 0) {
             fill(20);
-            textSize(16);
+            textSize(14);
             let tw = textWidth(this.carriers.length.toString());
-            text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 16);
+            text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 14);
         }
     }
 }

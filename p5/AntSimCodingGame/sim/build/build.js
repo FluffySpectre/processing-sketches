@@ -133,7 +133,7 @@ function draw() {
         simulationEnd = true;
     }
     environment.render();
-    if (frameCount % 60 === 0) {
+    if (frameCount % SimSettings.stepsPerSecond === 0) {
         foodValueUI.html(environment.playerColony.statistics.collectedFood.toString());
         deadAntsValueUI.html(environment.playerColony.statistics.starvedAnts.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
@@ -197,6 +197,9 @@ class Insect {
     get maxLoad() {
         return this.colony.castesLoad[this.casteIndex];
     }
+    get maxSpeed() {
+        return this.colony.castesSpeed[this.casteIndex];
+    }
     get rotationSpeed() {
         return this.colony.castesRotationSpeed[this.casteIndex];
     }
@@ -222,6 +225,16 @@ class Insect {
     }
     get caste() {
         return this.colony.castes[this.casteIndex].name;
+    }
+    get distanceToAntHill() {
+        let d = Number.MAX_SAFE_INTEGER;
+        if (this.colony.antHill) {
+            let d2 = Coordinate.distanceMidPoints(this.coordinate, this.colony.antHill.coordinate);
+            if (d2 < d) {
+                d = d2;
+            }
+        }
+        return d;
     }
     move() {
         if (this.remainingRotation !== 0) {
@@ -409,9 +422,14 @@ class BaseAnt extends Insect {
         translate(this.coordinate.position.x, this.coordinate.position.y);
         if (this.debugMessage) {
             fill(20);
-            textSize(16);
+            textSize(14);
             let tw = textWidth(this.debugMessage);
-            text(this.debugMessage, -tw / 2, -16);
+            text(this.debugMessage, -tw / 2, -14);
+        }
+        if (SimSettings.displayDebugLabels) {
+            noStroke();
+            fill(20, 15);
+            ellipse(0, 0, this.viewRange * 2);
         }
         rotate(this.coordinate.direction);
         noStroke();
@@ -420,11 +438,6 @@ class BaseAnt extends Insect {
         if (this.currentLoad > 0 && !this.carriedFruit) {
             fill(250);
             rect(-2.5, -2.5, 5, 5);
-        }
-        if (SimSettings.displayDebugLabels) {
-            noStroke();
-            fill(20, 50);
-            ellipse(0, 0, this.viewRange * 2);
         }
         pop();
     }
@@ -441,16 +454,16 @@ class Bug extends Insect {
     render() {
         push();
         translate(this.coordinate.position.x, this.coordinate.position.y);
+        if (SimSettings.displayDebugLabels) {
+            fill(20);
+            textSize(14);
+            let tw = textWidth(this.vitality.toString());
+            text(this.vitality.toString(), -tw / 2, -14);
+        }
         rotate(this.coordinate.direction);
         noStroke();
         fill(this.colour);
         rect(-4, -2.5, 8, 5);
-        if (SimSettings.displayDebugLabels) {
-            fill(20);
-            textSize(16);
-            let tw = textWidth(this.vitality.toString());
-            text(this.vitality.toString(), -tw / 2, -16);
-        }
         pop();
     }
 }
@@ -850,9 +863,9 @@ class Fruit extends Food {
         ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
         if (SimSettings.displayDebugLabels && this.carriers.length > 0) {
             fill(20);
-            textSize(16);
+            textSize(14);
             let tw = textWidth(this.carriers.length.toString());
-            text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 16);
+            text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 14);
         }
     }
 }
@@ -885,7 +898,7 @@ class SimSettings {
 }
 SimSettings.stepsPerSecond = 30;
 SimSettings.totalRounds = 7300;
-SimSettings.displayDebugLabels = false;
+SimSettings.displayDebugLabels = true;
 SimSettings.sugarLimit = 4;
 SimSettings.minSugarAmount = 200;
 SimSettings.maxSugarAmount = 200;

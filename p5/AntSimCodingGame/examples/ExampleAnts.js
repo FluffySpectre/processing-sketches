@@ -1,79 +1,55 @@
-var COLONY_INFO = {
-    name: 'Beispielameisen',
-    creator: 'Björn Bosse'
+var PLAYER_INFO = {
+    name: 'Björn Bosse',
+    colonyName: 'Beispielameisen',
+    castes: [
+        { name: 'warrior', color: 'red', speed: 1, rotationSpeed: 0, load: -1, range: -1, viewRange: 0, vitality: -1, attack: 2 },
+        { name: 'collector', color: '#222', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
+    ]
 };
 
 class PlayerAnt extends BaseAnt {
-    getCaste() {
-        return random(1) < 0.8 ? 'collector' : 'warrior';
-    }
-
-    awakes() {
-        if (this.caste === 'warrior') {
-            this.col = color(255, 0, 0);
-        } else {
-            this.col = color(20);
-        }
+    determineCaste(availableInsects) {
+        if (availableInsects['warrior'] < 5)
+            return 'warrior';
+        else 
+            return 'collector';
     }
 
     waits() {
-        this.goForward(20);
+        this.turnByDegrees(random(-45, 45));
+        this.goForward(50);
     }
-
-    spotsBug(bug) {
-        if (this.caste === 'warrior') {
-            this.goTo(bug);
-        }
-    }
-
+    
     spotsSugar(sugar) {
-        if (this.caste === 'warrior') return;
+        if (this.caste !== 'collector' || this.currentLoad > 0) return;
 
-        if (this.carryFood === 0)
-            this.target = sugar;
+        this.goToTarget(sugar);
     }
-
+    
     spotsFruit(fruit) {
-        if (this.caste === 'warrior') return;
+        if (this.caste !== 'collector' || this.currentLoad > 0 || !this.needsCarriers(fruit)) return;
 
-        if (this.carryFood === 0 && fruit.carriers.length < fruit.maxCarriers)
-            this.target = fruit;
+        this.goToTarget(fruit);
     }
-
-    smellsMarker(marker) {
-        if (this.caste === 'warrior') return;
-
-        if (this.carryFood === 0) {
-            if (marker.target)
-                this.target = marker.target;
-            else 
-                this.target = null;
-        }
-    }
-
-    foodReached(food) {
-        if (food) 
-            this.take(food);
-        else
-            this.target = null;
-
-        if (this.carryFood > 0)
-            this.goHome();
-        else 
-            this.target = null;
-    }
-
-    homeReached() {
-        if (this.carryFood > 0) {
-            foodCollected += this.carryFood;
-
-            if (this.lastTarget != null)
-                this.target = this.lastTarget;
-            else
-                this.target = null;
-
-            this.speedModificator = 1;
+    
+    spotsBug(bug) {
+        if (this.caste === 'collector') {
             this.drop();
+            this.goAwayFromTarget(bug, 50);
         }
+    }
+    
+    sugarReached(sugar) {
+        this.take(sugar);
+        this.goHome();
+    }
+    
+    fruitReached(fruit) {
+        this.take(fruit);
+        this.goHome();
+    }
+
+    becomesTired() {
+        this.goHome();
     }
 }

@@ -55,9 +55,15 @@ class BaseAnt extends Insect {
 
         if (this.debugMessage) {
             fill(20);
-            textSize(16);
+            textSize(14);
             let tw = textWidth(this.debugMessage);
-            text(this.debugMessage, -tw / 2, -16);
+            text(this.debugMessage, -tw / 2, -14);
+        }
+
+        if (SimSettings.displayDebugLabels) {
+            noStroke();
+            fill(20, 15);
+            ellipse(0, 0, this.viewRange*2);
         }
 
         rotate(this.coordinate.direction);
@@ -68,12 +74,6 @@ class BaseAnt extends Insect {
         if (this.currentLoad > 0 && !this.carriedFruit) {
             fill(250);
             rect(-2.5, -2.5, 5, 5);
-        }
-
-        if (SimSettings.displayDebugLabels) {
-            noStroke();
-            fill(20, 50);
-            ellipse(0, 0, this.viewRange*2);
         }
 
         pop();

@@ -68,6 +68,10 @@ class Insect {
         return this.colony.castesLoad[this.casteIndex];
     }
 
+    get maxSpeed() {
+        return this.colony.castesSpeed[this.casteIndex];
+    }
+
     get rotationSpeed() {
         return this.colony.castesRotationSpeed[this.casteIndex];
     }
@@ -99,6 +103,17 @@ class Insect {
 
     get caste() {
         return this.colony.castes[this.casteIndex].name;
+    }
+
+    get distanceToAntHill() {
+        let d = Number.MAX_SAFE_INTEGER;
+        if (this.colony.antHill) {
+            let d2 = Coordinate.distanceMidPoints(this.coordinate, this.colony.antHill.coordinate);
+            if (d2 < d) {
+                d = d2;
+            }
+        }
+        return d;
     }
 
     // sim functions
