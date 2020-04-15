@@ -9,8 +9,8 @@ var PLAYER_INFO = {
 
 class PlayerAnt extends BaseAnt {
     // CASTE SELECTION
-    determineCaste(availableAnts) {
-        if (availableAnts['warrior'] < 5)
+    determineCaste(availableInsects) {
+        if (availableInsects['warrior'] < 5)
             return 'warrior';
         else 
             return 'collector';

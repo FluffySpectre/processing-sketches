@@ -1,9 +1,11 @@
 class Environment {
     sugarHills: Sugar[];
     fruits: Fruit[];
-    colony: AntColony;
+    playerColony: Colony;
+    bugs: Colony;
     sugarDelay: number;
     fruitDelay: number;
+    bugDelay: number;
     currentRound: number;
 
     constructor(playerInfo: PlayerInfo, randSeed: number) {
@@ -11,10 +13,12 @@ class Environment {
 
         this.sugarHills = [];
         this.fruits = [];
-        this.colony = new AntColony(width / 2, height / 2, playerInfo);
-
+        this.playerColony = new Colony(playerInfo);
+        this.playerColony.antHill = new AntHill(width / 2, height / 2, 25);
+        this.bugs = new Colony();
         this.sugarDelay = 0;
         this.fruitDelay = 0;
+        this.bugDelay = 0;
 
         this.currentRound = 0;
     }
@@ -27,12 +31,25 @@ class Environment {
         this.spawnSugar();
         this.spawnFruit();
 
-        for (let a of this.colony.ants) {
+        for (let i=0; i<this.bugs.insects.length; i++) {
+            let b = this.bugs.insects[i] as Bug;
+
+            b.move();
+            
+            if (b.remainingDistance === 0) {
+                b.turnToDirection(random(0, 360));
+                b.goForward(random(160, 320));
+            }
+        }
+
+        for (let i = 0; i<this.playerColony.insects.length; i++) {
+            let a = this.playerColony.insects[i] as BaseAnt;
+
             a.move();
 
             if (a.traveledDistance > a.range) {
                 a.vitality = 0;
-                this.colony.starvedAnts.push(a);
+                this.playerColony.starvedInsects.push(a);
             } else {
                 if (a.traveledDistance > a.range / 3 && !a.isTired) {
                     a.isTired = true;
@@ -56,12 +73,16 @@ class Environment {
         this.spawnAnt();
         this.moveFruitAndAnts();
         this.removeFruit();
+        this.spawnBug();
     }
 
     // this is the main render loop of this simulation
     render() {
-        for (let a of this.colony.ants) {
+        for (let a of this.playerColony.insects) {
             a.render();
+        }
+        for (let b of this.bugs.insects) {
+            b.render();
         }
         for (let s of this.sugarHills) {
             s.render();
@@ -70,29 +91,30 @@ class Environment {
             f.render();
         }
 
-        this.colony.render();
+        this.playerColony.render();
     }
 
     spawnAnt() {
-        if (this.colony.ants.length < SimSettings.antLimit && this.colony.antDelay < 0) {
-            this.colony.newAnt();
-            this.colony.antDelay = SimSettings.antRespawnDelay;
+        if (this.playerColony.insects.length < SimSettings.antLimit && this.playerColony.insectDelay < 0) {
+            this.playerColony.newInsect();
+            this.playerColony.insectDelay = SimSettings.antRespawnDelay;
         }
-        this.colony.antDelay--;
+        this.playerColony.insectDelay--;
     }
 
     removeAnts() {
         let antsToRemove = [];
-        for (let a of this.colony.starvedAnts) {
+        for (let i = 0; i< this.playerColony.starvedInsects.length; i++) {
+            let a = this.playerColony.starvedInsects[i] as BaseAnt;
             if (a && antsToRemove.indexOf(a) === -1) {
                 antsToRemove.push(a);
-                this.colony.statistics.starvedAnts++;
+                this.playerColony.statistics.starvedAnts++;
                 a.hasDied('starved');
             }
         }
         for (let a of antsToRemove) {
             if (a) {
-                this.colony.removeAnt(a);
+                this.playerColony.removeAnt(a);
                 for (let f of this.fruits) {
                     let carrierIndex = f.carriers.indexOf(a);
                     if (carrierIndex > -1)
@@ -100,11 +122,11 @@ class Environment {
                 }
             }
         }
-        this.colony.starvedAnts = [];
+        this.playerColony.starvedInsects = [];
     }
 
     antAndTarget(ant: BaseAnt) {
-        if (ant.target instanceof AntColony) {
+        if (ant.target instanceof AntHill) {
             if (ant.carriedFruit)
                 return;
             ant.traveledDistance = 0;
@@ -154,7 +176,7 @@ class Environment {
     }
 
     // antAndMarker(ant: BaseAnt) {
-    //     let marker = ant.colony.marker.findMarker(ant);
+    //     let marker = ant.playerColony.marker.findMarker(ant);
     //     if (!marker)
     //         return;
     //     ant.smellsFriend(marker);
@@ -213,8 +235,8 @@ class Environment {
 
     removeFruit() {
         for (let f of this.fruits) {
-            if (Coordinate.distanceMidPoints(f.coordinate, this.colony.coordinate) <= 5) {
-                this.colony.statistics.collectedFood += f.amount;
+            if (Coordinate.distanceMidPoints(f.coordinate, this.playerColony.antHill.coordinate) <= 5) {
+                this.playerColony.statistics.collectedFood += f.amount;
                 f.amount = 0;
                 for (let a of f.carriers) {
                     if (a) {
@@ -231,9 +253,17 @@ class Environment {
         this.fruits = this.fruits.filter(f => f && f.amount > 0);
     }
 
+    spawnBug() {
+      if (this.bugs.insects.length < SimSettings.bugLimit && this.bugs.insectDelay < 0) {
+        this.bugs.newInsect();
+        this.bugs.insectDelay = SimSettings.bugRespawnDelay;
+      }
+      this.bugs.insectDelay--;
+    }
+
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));
-        while (rp.dist(this.colony.coordinate.position) < 25) {
+        while (rp.dist(this.playerColony.antHill.coordinate.position) < 25) {
             rp = createVector(random(20, width - 20), random(20, height - 20));
         }
         return rp;

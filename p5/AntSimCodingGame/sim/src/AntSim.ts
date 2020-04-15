@@ -69,9 +69,9 @@ function draw() {
 
     // update stats ui
     if (frameCount % 60 === 0) {
-        foodValueUI.html(environment.colony.statistics.collectedFood.toString());
-        deadAntsValueUI.html(environment.colony.statistics.starvedAnts.toString());
-        pointsValue.html(environment.colony.statistics.points.toString());
+        foodValueUI.html(environment.playerColony.statistics.collectedFood.toString());
+        deadAntsValueUI.html(environment.playerColony.statistics.starvedAnts.toString());
+        pointsValue.html(environment.playerColony.statistics.points.toString());
     }
 
     if (simulationEnd) {

@@ -18,4 +18,10 @@ class SimSettings {
     static antLimit = 50;
     static antRespawnDelay = 15;
     static casteAbilities = new CasteAbilities();
+    static bugSpeed = 2;
+    static bugRotationSpeed = 5;
+    static bugVitality = 1000;
+    static bugAttack = 50;
+    static bugLimit = 4;
+    static bugRespawnDelay = 5;
 }
