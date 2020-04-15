@@ -378,7 +378,6 @@ class Bug extends Insect {
         this.currentSpeed = colony.castesSpeed[0];
         this.attack = colony.castesAttack[0];
         this.colour = 'blue';
-        this.vitality = 20;
     }
     render() {
         push();
@@ -824,7 +823,6 @@ class Environment {
     healBugs() {
         if (this.currentRound % SimSettings.bugRegenerationDelay !== 0)
             return;
-        console.log('BUGS HEALED');
         for (let b of this.bugs.insects) {
             if (b && b.vitality < b.maxVitality) {
                 b.vitality += SimSettings.bugRegenerationValue;
