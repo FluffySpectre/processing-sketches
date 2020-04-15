@@ -2,15 +2,15 @@ var PLAYER_INFO = {
     name: 'Björn Bosse',
     colonyName: 'Beispielameisen',
     castes: [
-        { name: 'warrior', color: 'red', speed: 1, rotationSpeed: 0, load: -1, range: -1, viewRange: 0, vitality: -1, attack: 2 },
+        { name: 'soldier', color: 'red', speed: 1, rotationSpeed: 0, load: -1, range: -1, viewRange: 0, vitality: -1, attack: 2 },
         { name: 'collector', color: '#222', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
     ]
 };
 
 class PlayerAnt extends BaseAnt {
     determineCaste(availableInsects) {
-        if (availableInsects['warrior'] < 5)
-            return 'warrior';
+        if (availableInsects['soldier'] < 5)
+            return 'soldier';
         else 
             return 'collector';
     }
@@ -36,6 +36,8 @@ class PlayerAnt extends BaseAnt {
         if (this.caste === 'collector') {
             this.drop();
             this.goAwayFromTarget(bug, 50);
+        } else {
+            this.goToTarget(bug);
         }
     }
     
