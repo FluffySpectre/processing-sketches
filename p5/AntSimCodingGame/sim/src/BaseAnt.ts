@@ -41,6 +41,7 @@ class BaseAnt extends Insect {
     waits() { }
     spotsSugar(sugar: Sugar) { }
     spotsFruit(fruit: Fruit) { }
+    spotsBug(bug: Bug) { }
     sugarReached(sugar: Sugar) { }
     fruitReached(fruit: Fruit) { }
     becomesTired() { }

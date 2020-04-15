@@ -398,6 +398,7 @@ class BaseAnt extends Insect {
     waits() { }
     spotsSugar(sugar) { }
     spotsFruit(fruit) { }
+    spotsBug(bug) { }
     sugarReached(sugar) { }
     fruitReached(fruit) { }
     becomesTired() { }
@@ -622,6 +623,7 @@ class Environment {
                 if (!a.carriedFruit) {
                     this.antAndFruit(a);
                 }
+                this.antAndBug(a);
                 if (!a.target && a.remainingDistance === 0)
                     a.waits();
                 a.tick();
@@ -722,6 +724,13 @@ class Environment {
             let num = Coordinate.distance(ant.coordinate, f.coordinate);
             if (ant.target !== f && num <= ant.viewRange)
                 ant.spotsFruit(f);
+        }
+    }
+    antAndBug(ant) {
+        for (let b of this.bugs.insects) {
+            let num = Coordinate.distance(ant.coordinate, b.coordinate);
+            if (ant.target !== b && num <= ant.viewRange)
+                ant.spotsBug(b);
         }
     }
     moveFruitAndAnts() {
