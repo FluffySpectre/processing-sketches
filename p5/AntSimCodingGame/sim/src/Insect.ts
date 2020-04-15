@@ -5,7 +5,6 @@ class Insect {
     remainingRotation: number;
     reached: boolean;
     traveledDistance: number;
-    vitality: number;
     coordinate: Coordinate;
     currentSpeed: number;
     carriedFruit: Fruit;
@@ -74,6 +73,14 @@ class Insect {
     get maxLoad() {
         return this.colony.castesLoad[this.casteIndex];
     }
+
+    get vitality() {
+        return this.vitalityVal;
+    }
+    set vitality(value) {
+        this.vitalityVal = value >= 0 ? value : 0;
+    }
+    private vitalityVal: number;
 
     get maxSpeed() {
         return this.colony.castesSpeed[this.casteIndex];
@@ -279,6 +286,10 @@ class Insect {
     }
     needsCarriers(fruit: Fruit) {
         return fruit.needsCarriers(this.colony);
+    }
+    // fighting
+    attackTarget(insect: Insect) {
+        this.target = insect;
     }
     //debug
     think(message: string) {

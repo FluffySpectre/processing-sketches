@@ -28,7 +28,7 @@ class CasteAbilities {
         this.abilities[1].range = 2250;
         this.abilities[1].viewRange = 40;
         this.abilities[1].vitality = 100;
-        this.abilities[1].attack = 10;
+        this.abilities[1].attack = 2;
 
         this.abilities[2].speed = 4;
         this.abilities[2].rotationSpeed = 16;
@@ -36,7 +36,7 @@ class CasteAbilities {
         this.abilities[2].range = 3400;
         this.abilities[2].viewRange = 80;
         this.abilities[2].vitality = 175;
-        this.abilities[2].attack = 20;
+        this.abilities[2].attack = 4;
 
         this.abilities[3].speed = 5;
         this.abilities[3].rotationSpeed = 24;
@@ -44,7 +44,7 @@ class CasteAbilities {
         this.abilities[3].range = 4500;
         this.abilities[3].viewRange = 120;
         this.abilities[3].vitality = 250;
-        this.abilities[3].attack = 30;
+        this.abilities[3].attack = 8;
     }
 
     minIndex() {

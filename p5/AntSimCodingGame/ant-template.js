@@ -29,6 +29,7 @@ class PlayerAnt extends BaseAnt {
     // sugarReached(sugar) {}
     // fruitReached(fruit) {}
     // becomesTired() {}
+    // underAttack(bug) {}
     // hasDied(death) {}
     // tick() {}
 
@@ -46,6 +47,7 @@ class PlayerAnt extends BaseAnt {
     // this.take(food)
     // this.drop()
     // this.needsCarriers(fruit)
+    // this.attackTarget(insect)
 
     // CASTE-RELATED
     // this.maxVitality

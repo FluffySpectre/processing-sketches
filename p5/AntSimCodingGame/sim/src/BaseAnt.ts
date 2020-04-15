@@ -7,8 +7,9 @@ class BaseAnt extends Insect {
         super.init(colony, availableInsects);
     
         let cIndex = -1;
+        let antCast = '';
         if (availableInsects) {
-            let antCast = this.determineCaste(availableInsects);
+            antCast = this.determineCaste(availableInsects);
             for (let i=0; i<colony.castes.length; i++) {
                 let cast = colony.castes[i];
                 if (cast.name === antCast) {
@@ -23,7 +24,7 @@ class BaseAnt extends Insect {
             // console.log('Cast set to: ' + colony.castes[this.casteIndex].name);
         } else {
             if (colony.castes[0].name) // no error for default caste
-                console.error('Caste not exists! Using default.');
+                console.error('Caste not exists: ' + antCast + '. Using default instead.');
 
             this.casteIndex = 0;
         }
@@ -47,6 +48,7 @@ class BaseAnt extends Insect {
     sugarReached(sugar: Sugar) { }
     fruitReached(fruit: Fruit) { }
     becomesTired() { }
+    underAttack(bug: Bug) { }
     hasDied(death: string) { }
     tick() { }
 

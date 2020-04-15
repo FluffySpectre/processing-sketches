@@ -71,7 +71,7 @@ function draw() {
     // update stats ui
     if (frameCount % SimSettings.stepsPerSecond === 0) {
         foodValueUI.html(environment.playerColony.statistics.collectedFood.toString());
-        deadAntsValueUI.html(environment.playerColony.statistics.starvedAnts.toString());
+        deadAntsValueUI.html(environment.playerColony.statistics.totalDeadAnts.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
 

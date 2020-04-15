@@ -34,6 +34,18 @@ class Environment {
         for (let i=0; i<this.bugs.insects.length; i++) {
             let b = this.bugs.insects[i] as Bug;
 
+            // check for fights
+            let battleAnts = this.getAntsInBattleRange(b);
+            if (battleAnts.length > 0) {
+                let num = SimSettings.bugAttack / battleAnts.length;
+                for (let a of battleAnts) {
+                    a.vitality -= num;
+                    a.underAttack(b);
+                    if (a.vitality <= 0)
+                        a.colony.eatenInsects.push(a);
+                }
+            }
+
             b.move();
             
             if (b.remainingDistance === 0) {
@@ -70,7 +82,22 @@ class Environment {
                     a.spotsBug(nearestBug);
                 if (nearestColonyAnt && !(a.target instanceof BaseAnt))
                     a.spotsFriend(nearestColonyAnt);
-                
+                if (a.target instanceof Bug) {
+                      let targetBug = a.target as Bug;
+                      if (targetBug.vitality > 0) {
+                        if (Coordinate.distance(a.coordinate, a.target.coordinate) < SimSettings.battleRange) {
+                            targetBug.vitality -= a.attack;
+                            if (targetBug.vitality <= 0) {
+                                this.bugs.eatenInsects.push(targetBug);
+                                this.playerColony.statistics.killedBugs++;
+                                a.stop();
+                            }
+                        }
+                    }
+                    else
+                        a.target = null;
+                }
+
                 if (a.reached)
                     this.antAndTarget(a);
                 this.antAndSugar(a);
@@ -121,7 +148,7 @@ class Environment {
 
     removeAnts() {
         let antsToRemove = [];
-        for (let i = 0; i< this.playerColony.starvedInsects.length; i++) {
+        for (let i = 0; i < this.playerColony.starvedInsects.length; i++) {
             let a = this.playerColony.starvedInsects[i] as BaseAnt;
             if (a && antsToRemove.indexOf(a) === -1) {
                 antsToRemove.push(a);
@@ -129,6 +156,15 @@ class Environment {
                 a.hasDied('starved');
             }
         }
+        for (let i = 0; i < this.playerColony.eatenInsects.length; i++) {
+            let a = this.playerColony.eatenInsects[i] as BaseAnt;
+            if (a && antsToRemove.indexOf(a) === -1) {
+                antsToRemove.push(a);
+                this.playerColony.statistics.eatenAnts++;
+                a.hasDied('eaten');
+            }
+        }
+        
         for (let a of antsToRemove) {
             if (a) {
                 this.playerColony.removeAnt(a);
@@ -140,6 +176,7 @@ class Environment {
             }
         }
         this.playerColony.starvedInsects = [];
+        this.playerColony.eatenInsects = [];
     }
 
     antAndTarget(ant: BaseAnt) {
@@ -341,6 +378,21 @@ class Environment {
             }
         }
         return [numColonyAnts, numCasteAnts, nearestAnt];
+    }
+
+    getAntsInBattleRange(insect: Insect) {
+        let battleAnts = [];
+        for (let i of this.playerColony.insects) {
+            let a = i as BaseAnt;
+            if (a === insect) continue; // ignore ourself
+
+            // distanceSqr is used here because of performance reasons
+            let distSqr = Coordinate.distanceSqr(insect.coordinate, a.coordinate);
+            if (distSqr <= SimSettings.battleRange * SimSettings.battleRange) {
+                battleAnts.push(a);
+            }
+        }
+        return battleAnts;
     }
 
     getRandomPoint() {

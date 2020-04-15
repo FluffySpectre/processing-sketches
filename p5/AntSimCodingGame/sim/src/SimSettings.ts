@@ -16,6 +16,8 @@ class SimSettings {
     static fruitRadiusMultiplier = 1.25;
     static pointsForFood = 1;
     static pointsForStarvedAnts = -5;
+    static pointsForEatenAnts = 0;
+    static pointsForKilledBugs = 150;
     static antRespawnDelay = 15;
     static bugRespawnDelay = 75;
     static sugarRespawnDelay = 150;
@@ -26,5 +28,6 @@ class SimSettings {
     static bugAttack = 50;
     static bugRegenerationDelay = 5;
     static bugRegenerationValue = 1;
+    static battleRange = 10;
     static casteAbilities = new CasteAbilities();
 }
