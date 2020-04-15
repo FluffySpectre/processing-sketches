@@ -893,7 +893,7 @@ class PlayerStatistics {
         this.collectedFood = 0;
     }
     get points() {
-        return Math.floor((SimSettings.pointsForFood * this.collectedFood + SimSettings.pointsForStarvedAnts * this.starvedAnts));
+        return Math.max(Math.floor((SimSettings.pointsForFood * this.collectedFood + SimSettings.pointsForStarvedAnts * this.starvedAnts)), 0);
     }
 }
 class SimSettings {
