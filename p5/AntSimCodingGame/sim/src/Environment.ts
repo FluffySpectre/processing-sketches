@@ -46,10 +46,14 @@ class Environment {
             let a = this.playerColony.insects[i] as BaseAnt;
 
             // check the suroundings of the ant
-            let nearInsects = this.getAntsInViewRange(a);
-            a.colonyCount = nearInsects[0] as number;
-            a.casteCount = nearInsects[1] as number;
-            let nearestColonyAnt = nearInsects[2] as BaseAnt;
+            let nearAnts = this.getAntsInViewRange(a);
+            a.colonyCount = nearAnts[0] as number;
+            a.casteCount = nearAnts[1] as number;
+            let nearestColonyAnt = nearAnts[2] as BaseAnt;
+
+            let nearBugs = this.getBugsInViewRange(a);
+            a.bugCount = nearBugs[0] as number;
+            let nearestBug = nearBugs[1] as Bug;
 
             a.move();
 
@@ -62,16 +66,17 @@ class Environment {
                     a.becomesTired();
                 }
 
+                if (nearestBug && !(a.target instanceof Bug))
+                    a.spotsBug(nearestBug);
                 if (nearestColonyAnt && !(a.target instanceof BaseAnt))
                     a.spotsFriend(nearestColonyAnt);
-
+                
                 if (a.reached)
                     this.antAndTarget(a);
                 this.antAndSugar(a);
                 if (!a.carriedFruit) {
                     this.antAndFruit(a);
                 }
-                this.antAndBug(a);
 
                 if (!a.target && a.remainingDistance === 0)
                     a.waits();
@@ -187,14 +192,6 @@ class Environment {
         }
     }
 
-    antAndBug(ant: BaseAnt) {
-        for (let b of this.bugs.insects) {
-            let num = Coordinate.distance(ant.coordinate, b.coordinate);
-            if (ant.target !== b && num <= ant.viewRange)
-                ant.spotsBug(b);
-        }
-    }
-
     // antAndMarker(ant: BaseAnt) {
     //     let marker = ant.playerColony.marker.findMarker(ant);
     //     if (!marker)
@@ -303,6 +300,24 @@ class Environment {
             }
         }
         this.bugs.eatenInsects = [];
+    }
+
+    getBugsInViewRange(insect: Insect) {
+        let numBugs = 0;
+        let nearestBug = null, nearestBugDist = Number.MAX_SAFE_INTEGER;
+        for (let b of this.bugs.insects) {
+            if (b === insect) continue; // ignore ourself
+
+            let distSqr = Coordinate.distanceSqr(insect.coordinate, b.coordinate);
+            if (distSqr <= insect.viewRange * insect.viewRange) {
+                if (distSqr < nearestBugDist) {
+                    nearestBugDist = distSqr;
+                    nearestBug = b;
+                }
+                numBugs++;
+            }
+        }
+        return [numBugs, nearestBug];
     }
 
     getAntsInViewRange(insect: Insect) {

@@ -1,13 +1,23 @@
 var PLAYER_INFO = {
-    name: 'Björn Bosse',
-    colonyName: 'Dummy',
-    castes: []
+    name: '<Your Name>',
+    colonyName: 'My first ants',
+    castes: [
+        { name: 'collector', color: 'black', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
+    ]
 };
 
 class PlayerAnt extends BaseAnt {
+    // this function gets called if the ant is created
+    constructor() {
+        super(); // needs to be called first
+
+        // add here your custom variables
+        //...
+    }
+
     // CASTE SELECTION
     determineCaste(availableInsects) {
-        return '';
+        return 'collector';
     }
 
     // EVENTS
@@ -47,6 +57,9 @@ class PlayerAnt extends BaseAnt {
     // this.attack
 
     // STATE
+    // this.target
+    // this.remainingDistance
+    // this.remainingRotation
     // this.direction
     // this.vitality
     // this.currentSpeed
@@ -58,4 +71,5 @@ class PlayerAnt extends BaseAnt {
     // this.distanceToAntHill
     // this.antsInViewRange
     // this.antsFromSameCasteInViewRange
+    // this.bugsInViewRange
 }

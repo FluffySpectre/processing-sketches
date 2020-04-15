@@ -14,6 +14,7 @@ class Insect {
     colour: string;
     colonyCount: number;
     casteCount: number;
+    bugCount: number;
 
     constructor() { }
 
@@ -126,6 +127,10 @@ class Insect {
 
     get antsFromSameCasteInViewRange() {
         return this.casteCount;
+    }
+
+    get bugsInViewRange() {
+        return this.bugCount;
     }
 
     // sim functions

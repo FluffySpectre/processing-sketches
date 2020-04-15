@@ -172,6 +172,9 @@ class Insect {
     get antsFromSameCasteInViewRange() {
         return this.casteCount;
     }
+    get bugsInViewRange() {
+        return this.bugCount;
+    }
     move() {
         if (this.remainingRotation !== 0) {
             if (Math.abs(this.remainingRotation) < this.rotationSpeed) {
@@ -641,10 +644,13 @@ class Environment {
         }
         for (let i = 0; i < this.playerColony.insects.length; i++) {
             let a = this.playerColony.insects[i];
-            let nearInsects = this.getAntsInViewRange(a);
-            a.colonyCount = nearInsects[0];
-            a.casteCount = nearInsects[1];
-            let nearestColonyAnt = nearInsects[2];
+            let nearAnts = this.getAntsInViewRange(a);
+            a.colonyCount = nearAnts[0];
+            a.casteCount = nearAnts[1];
+            let nearestColonyAnt = nearAnts[2];
+            let nearBugs = this.getBugsInViewRange(a);
+            a.bugCount = nearBugs[0];
+            let nearestBug = nearBugs[1];
             a.move();
             if (a.traveledDistance > a.range) {
                 a.vitality = 0;
@@ -655,6 +661,8 @@ class Environment {
                     a.isTired = true;
                     a.becomesTired();
                 }
+                if (nearestBug && !(a.target instanceof Bug))
+                    a.spotsBug(nearestBug);
                 if (nearestColonyAnt && !(a.target instanceof BaseAnt))
                     a.spotsFriend(nearestColonyAnt);
                 if (a.reached)
@@ -663,7 +671,6 @@ class Environment {
                 if (!a.carriedFruit) {
                     this.antAndFruit(a);
                 }
-                this.antAndBug(a);
                 if (!a.target && a.remainingDistance === 0)
                     a.waits();
                 a.tick();
@@ -768,13 +775,6 @@ class Environment {
                 ant.spotsFruit(f);
         }
     }
-    antAndBug(ant) {
-        for (let b of this.bugs.insects) {
-            let num = Coordinate.distance(ant.coordinate, b.coordinate);
-            if (ant.target !== b && num <= ant.viewRange)
-                ant.spotsBug(b);
-        }
-    }
     moveFruitAndAnts() {
         for (let f of this.fruits) {
             if (f.carriers.length <= 0)
@@ -865,6 +865,23 @@ class Environment {
             }
         }
         this.bugs.eatenInsects = [];
+    }
+    getBugsInViewRange(insect) {
+        let numBugs = 0;
+        let nearestBug = null, nearestBugDist = Number.MAX_SAFE_INTEGER;
+        for (let b of this.bugs.insects) {
+            if (b === insect)
+                continue;
+            let distSqr = Coordinate.distanceSqr(insect.coordinate, b.coordinate);
+            if (distSqr <= insect.viewRange * insect.viewRange) {
+                if (distSqr < nearestBugDist) {
+                    nearestBugDist = distSqr;
+                    nearestBug = b;
+                }
+                numBugs++;
+            }
+        }
+        return [numBugs, nearestBug];
     }
     getAntsInViewRange(insect) {
         let numColonyAnts = 0, numCasteAnts = 0;
