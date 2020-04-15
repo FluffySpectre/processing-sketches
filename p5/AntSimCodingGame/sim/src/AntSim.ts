@@ -20,6 +20,7 @@ function playerCodeLoaded() {
     }
 
     if (playerCodeValid) {
+        SimSettings.displayDebugLabels = playerInfo.debug;
         environment = new Environment(playerInfo, 0);
 
         playerCodeAvailable = true;

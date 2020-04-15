@@ -2,6 +2,7 @@ class PlayerInfo {
     name: string;
     colonyName: string;
     castes: CasteInfo[];
+    debug: boolean;
 
     static fromObject(obj: any): PlayerInfo {
         let pi = new PlayerInfo();
@@ -13,6 +14,7 @@ class PlayerInfo {
                 pi.castes.push(CasteInfo.fromObject(c));
             }
         }
+        pi.debug = obj.debug || false;
         return pi;
     }
 }

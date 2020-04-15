@@ -97,6 +97,7 @@ function playerCodeLoaded() {
         }
     }
     if (playerCodeValid) {
+        SimSettings.displayDebugLabels = playerInfo.debug;
         environment = new Environment(playerInfo, 0);
         playerCodeAvailable = true;
         colonyNameUI.html(playerInfo.colonyName);
@@ -882,6 +883,7 @@ class PlayerInfo {
                 pi.castes.push(CasteInfo.fromObject(c));
             }
         }
+        pi.debug = obj.debug || false;
         return pi;
     }
 }
@@ -898,7 +900,7 @@ class SimSettings {
 }
 SimSettings.stepsPerSecond = 30;
 SimSettings.totalRounds = 7300;
-SimSettings.displayDebugLabels = true;
+SimSettings.displayDebugLabels = false;
 SimSettings.sugarLimit = 4;
 SimSettings.minSugarAmount = 200;
 SimSettings.maxSugarAmount = 200;
