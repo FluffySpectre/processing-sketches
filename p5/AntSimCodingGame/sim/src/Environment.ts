@@ -74,6 +74,8 @@ class Environment {
         this.spawnAnt();
         this.moveFruitAndAnts();
         this.removeFruit();
+        this.removeBugs();
+        this.healBugs();
         this.spawnBug();
     }
 
@@ -268,6 +270,30 @@ class Environment {
         this.bugs.insectDelay = SimSettings.bugRespawnDelay;
       }
       this.bugs.insectDelay--;
+    }
+
+    healBugs() {
+        if (this.currentRound % SimSettings.bugRegenerationDelay !== 0)
+            return;
+
+        for (let b of this.bugs.insects) {
+            if (b && b.vitality < b.maxVitality) {
+                b.vitality += SimSettings.bugRegenerationValue;
+            }
+        }
+    }
+
+    removeBugs() {
+        for (let i = this.bugs.eatenInsects.length - 1; i >= 0; i--) {
+            let b = this.bugs.eatenInsects[i] as Bug;
+            if (b) {
+                let bIndex = this.bugs.insects.indexOf(b);
+                if (bIndex > -1) {
+                    this.bugs.insects.splice(bIndex, 1);
+                }
+            }
+        }
+        this.bugs.eatenInsects = [];
     }
 
     getRandomPoint() {

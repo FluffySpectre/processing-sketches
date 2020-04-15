@@ -1,76 +1,3 @@
-class Colony {
-    constructor(playerInfo) {
-        this.insectDelay = 0;
-        this.insects = [];
-        this.starvedInsects = [];
-        this.insectDelay = 0;
-        this.statistics = new PlayerStatistics();
-        if (playerInfo) {
-            this.playerInfo = playerInfo;
-            this.insectClass = 'PlayerAnt';
-            this.castes = playerInfo.castes;
-            if (this.castes.length === 0)
-                this.castes.push(new CasteInfo());
-            this.antsInCaste = this.castes.map(c => 0);
-            this.castesSpeed = new Array(this.castes.length);
-            this.castesRotationSpeed = new Array(this.castes.length);
-            this.castesLoad = new Array(this.castes.length);
-            this.castesRange = new Array(this.castes.length);
-            this.castesViewRange = new Array(this.castes.length);
-            this.castesVitality = new Array(this.castes.length);
-            this.castesAttack = new Array(this.castes.length);
-            let i = 0;
-            for (let c of this.castes) {
-                this.castesSpeed[i] = SimSettings.casteAbilities.get(c.speed).speed;
-                this.castesRotationSpeed[i] = SimSettings.casteAbilities.get(c.rotationSpeed).rotationSpeed;
-                this.castesLoad[i] = SimSettings.casteAbilities.get(c.load).load;
-                this.castesRange[i] = SimSettings.casteAbilities.get(c.range).range;
-                this.castesViewRange[i] = SimSettings.casteAbilities.get(c.viewRange).viewRange;
-                this.castesVitality[i] = SimSettings.casteAbilities.get(c.vitality).vitality;
-                this.castesAttack[i] = SimSettings.casteAbilities.get(c.attack).attack;
-                i++;
-            }
-        }
-        else {
-            this.playerInfo = null;
-            this.insectClass = 'Bug';
-            this.castesSpeed = [SimSettings.bugSpeed];
-            this.castesRotationSpeed = [SimSettings.bugRotationSpeed];
-            this.castesRange = [Number.MAX_SAFE_INTEGER];
-            this.castesViewRange = [0];
-            this.castesLoad = [0];
-            this.castesVitality = [SimSettings.bugVitality];
-            this.castesAttack = [SimSettings.bugAttack];
-            this.antsInCaste = [0];
-        }
-    }
-    newInsect() {
-        let availableInsects = null;
-        if (this.castes && this.castes.length > 0) {
-            availableInsects = {};
-            let castesCount = 0;
-            for (let caste of this.castes) {
-                if (!availableInsects.hasOwnProperty(caste.name)) {
-                    availableInsects[caste.name] = this.antsInCaste[castesCount];
-                }
-                castesCount++;
-            }
-        }
-        let ant = eval(`new ${this.insectClass}()`);
-        ant.init(this, availableInsects);
-        this.insects.push(ant);
-        this.antsInCaste[ant.casteIndex]++;
-    }
-    removeAnt(insect) {
-        let ai = this.insects.indexOf(insect);
-        if (ai > -1)
-            this.insects.splice(ai, 1);
-    }
-    render() {
-        if (this.antHill)
-            this.antHill.render();
-    }
-}
 class AntHill {
     constructor(x, y, radius) {
         this.coordinate = new Coordinate(x, y, radius);
@@ -451,6 +378,7 @@ class Bug extends Insect {
         this.currentSpeed = colony.castesSpeed[0];
         this.attack = colony.castesAttack[0];
         this.colour = 'blue';
+        this.vitality = 20;
     }
     render() {
         push();
@@ -540,6 +468,80 @@ class CasteInfo {
         ci.vitality = Number.isInteger(obj.vitality) ? obj.vitality : 0;
         ci.attack = Number.isInteger(obj.attack) ? obj.attack : 0;
         return ci;
+    }
+}
+class Colony {
+    constructor(playerInfo) {
+        this.insectDelay = 0;
+        this.insects = [];
+        this.starvedInsects = [];
+        this.eatenInsects = [];
+        this.insectDelay = 0;
+        this.statistics = new PlayerStatistics();
+        if (playerInfo) {
+            this.playerInfo = playerInfo;
+            this.insectClass = 'PlayerAnt';
+            this.castes = playerInfo.castes;
+            if (this.castes.length === 0)
+                this.castes.push(new CasteInfo());
+            this.antsInCaste = this.castes.map(c => 0);
+            this.castesSpeed = new Array(this.castes.length);
+            this.castesRotationSpeed = new Array(this.castes.length);
+            this.castesLoad = new Array(this.castes.length);
+            this.castesRange = new Array(this.castes.length);
+            this.castesViewRange = new Array(this.castes.length);
+            this.castesVitality = new Array(this.castes.length);
+            this.castesAttack = new Array(this.castes.length);
+            let i = 0;
+            for (let c of this.castes) {
+                this.castesSpeed[i] = SimSettings.casteAbilities.get(c.speed).speed;
+                this.castesRotationSpeed[i] = SimSettings.casteAbilities.get(c.rotationSpeed).rotationSpeed;
+                this.castesLoad[i] = SimSettings.casteAbilities.get(c.load).load;
+                this.castesRange[i] = SimSettings.casteAbilities.get(c.range).range;
+                this.castesViewRange[i] = SimSettings.casteAbilities.get(c.viewRange).viewRange;
+                this.castesVitality[i] = SimSettings.casteAbilities.get(c.vitality).vitality;
+                this.castesAttack[i] = SimSettings.casteAbilities.get(c.attack).attack;
+                i++;
+            }
+        }
+        else {
+            this.playerInfo = null;
+            this.insectClass = 'Bug';
+            this.castesSpeed = [SimSettings.bugSpeed];
+            this.castesRotationSpeed = [SimSettings.bugRotationSpeed];
+            this.castesRange = [Number.MAX_SAFE_INTEGER];
+            this.castesViewRange = [0];
+            this.castesLoad = [0];
+            this.castesVitality = [SimSettings.bugVitality];
+            this.castesAttack = [SimSettings.bugAttack];
+            this.antsInCaste = [0];
+        }
+    }
+    newInsect() {
+        let availableInsects = null;
+        if (this.castes && this.castes.length > 0) {
+            availableInsects = {};
+            let castesCount = 0;
+            for (let caste of this.castes) {
+                if (!availableInsects.hasOwnProperty(caste.name)) {
+                    availableInsects[caste.name] = this.antsInCaste[castesCount];
+                }
+                castesCount++;
+            }
+        }
+        let ant = eval(`new ${this.insectClass}()`);
+        ant.init(this, availableInsects);
+        this.insects.push(ant);
+        this.antsInCaste[ant.casteIndex]++;
+    }
+    removeAnt(insect) {
+        let ai = this.insects.indexOf(insect);
+        if (ai > -1)
+            this.insects.splice(ai, 1);
+    }
+    render() {
+        if (this.antHill)
+            this.antHill.render();
     }
 }
 class Coordinate {
@@ -647,6 +649,8 @@ class Environment {
         this.spawnAnt();
         this.moveFruitAndAnts();
         this.removeFruit();
+        this.removeBugs();
+        this.healBugs();
         this.spawnBug();
     }
     render() {
@@ -817,6 +821,28 @@ class Environment {
         }
         this.bugs.insectDelay--;
     }
+    healBugs() {
+        if (this.currentRound % SimSettings.bugRegenerationDelay !== 0)
+            return;
+        console.log('BUGS HEALED');
+        for (let b of this.bugs.insects) {
+            if (b && b.vitality < b.maxVitality) {
+                b.vitality += SimSettings.bugRegenerationValue;
+            }
+        }
+    }
+    removeBugs() {
+        for (let i = this.bugs.eatenInsects.length - 1; i >= 0; i--) {
+            let b = this.bugs.eatenInsects[i];
+            if (b) {
+                let bIndex = this.bugs.insects.indexOf(b);
+                if (bIndex > -1) {
+                    this.bugs.insects.splice(bIndex, 1);
+                }
+            }
+        }
+        this.bugs.eatenInsects = [];
+    }
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));
         while (rp.dist(this.playerColony.antHill.coordinate.position) < 25) {
@@ -922,7 +948,9 @@ SimSettings.bugRotationSpeed = 5;
 SimSettings.bugVitality = 1000;
 SimSettings.bugAttack = 50;
 SimSettings.bugLimit = 4;
-SimSettings.bugRespawnDelay = 5;
+SimSettings.bugRespawnDelay = 1;
+SimSettings.bugRegenerationDelay = 5;
+SimSettings.bugRegenerationValue = 1;
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);

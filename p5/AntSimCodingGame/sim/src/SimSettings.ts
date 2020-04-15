@@ -23,5 +23,7 @@ class SimSettings {
     static bugVitality = 1000;
     static bugAttack = 50;
     static bugLimit = 4;
-    static bugRespawnDelay = 5;
+    static bugRespawnDelay = 1;
+    static bugRegenerationDelay = 5;
+    static bugRegenerationValue = 1;
 }

@@ -1,6 +1,7 @@
 class Colony {
     insects: Insect[];
     starvedInsects: Insect[];
+    eatenInsects: Insect[];
     insectDelay = 0;
     statistics: PlayerStatistics;
     playerInfo: PlayerInfo;
@@ -23,6 +24,7 @@ class Colony {
     constructor(playerInfo?: PlayerInfo) {
         this.insects = [];
         this.starvedInsects = [];
+        this.eatenInsects = [];
         this.insectDelay = 0;
         this.statistics = new PlayerStatistics();
 
