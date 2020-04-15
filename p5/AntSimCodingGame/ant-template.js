@@ -34,8 +34,10 @@ class PlayerAnt extends BaseAnt {
         this.goToTarget(fruit);
     }
     spotsBug(bug) {
-        if (this.caste === 'collector')
+        if (this.caste === 'collector') {
+            this.drop();
             this.goAwayFromTarget(bug, 50);
+        }
     }
     // smellsMarker(marker) {}
     sugarReached(sugar) {
