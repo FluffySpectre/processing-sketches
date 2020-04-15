@@ -63,7 +63,7 @@ function codeUploaded() {
 
         // check the code
         // TODO: add some more code checks
-        if (code.indexOf('COLONY_INFO =') > -1 && code.indexOf('class PlayerAnt extends BaseAnt') > -1) {
+        if (code.indexOf('PLAYER_INFO =') > -1 && code.indexOf('class PlayerAnt extends BaseAnt') > -1) {
             codeEditor.setValue(code);
         } else {
             alert('This is not valid AntSim code!');
