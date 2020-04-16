@@ -1,16 +1,19 @@
 var PLAYER_INFO = {
     name: 'Björn Bosse',
-    colonyName: 'Beispielameisen',
+    colonyName: 'Example Ants',
     castes: [
         { name: 'soldier', color: 'red', speed: 1, rotationSpeed: 0, load: -1, range: -1, viewRange: 0, vitality: -1, attack: 2 },
-        { name: 'collector', color: '#222', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
+        { name: 'collector', color: '#222', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 },
+        { name: 'scout', color: 'green', speed: 1, rotationSpeed: -1, load: -1, range: 1, viewRange: 2, vitality: -1, attack: -1 }
     ]
 };
 
 class PlayerAnt extends BaseAnt {
     determineCaste(availableInsects) {
-        if (availableInsects['soldier'] < 5)
+        if (availableInsects['soldier'] < 10)
             return 'soldier';
+        else if (availableInsects['scout'] < 5)
+            return 'scout';
         else 
             return 'collector';
     }
@@ -21,8 +24,9 @@ class PlayerAnt extends BaseAnt {
     }
     
     spotsSugar(sugar) {
-        if (this.caste !== 'collector' || this.currentLoad > 0) return;
+        if (this.caste === 'soldier' || this.currentLoad > 0) return;
 
+        this.setMarker(1000, 80);
         this.goToTarget(sugar);
     }
     
@@ -33,7 +37,7 @@ class PlayerAnt extends BaseAnt {
     }
     
     spotsBug(bug) {
-        if (this.caste === 'collector') {
+        if (this.caste !== 'soldier') {
             this.drop();
             this.goAwayFromTarget(bug, 50);
         } else {
@@ -44,13 +48,19 @@ class PlayerAnt extends BaseAnt {
     smellsFriend(marker) {
         if (this.target instanceof Sugar || this.target instanceof Fruit || this.target instanceof AntHill)
             return;
-        this.turnToDirection(marker.information);
-        this.goForward(this.viewRange * 2);
+        if (marker.information === 1000)
+            this.goToTarget(marker);
+        else {
+            this.turnToDirection(marker.information);
+            this.goForward(this.viewRange * 2);
+        }
     }
     
     sugarReached(sugar) {
-        this.take(sugar);
-        this.goHome();
+        if (this.caste === 'collector') {
+            this.take(sugar);
+            this.goHome();
+        }
     }
     
     fruitReached(fruit) {
