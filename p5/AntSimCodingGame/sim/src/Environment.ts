@@ -104,6 +104,7 @@ class Environment {
                 if (!a.carriedFruit) {
                     this.antAndFruit(a);
                 }
+                this.antAndMarker(a);
 
                 if (!a.target && a.remainingDistance === 0)
                     a.waits();
@@ -113,6 +114,7 @@ class Environment {
 
         this.removeAnts();
         this.spawnAnt();
+        this.updateMarker();
         this.moveFruitAndAnts();
         this.removeFruit();
         this.removeBugs();
@@ -133,6 +135,9 @@ class Environment {
         }
         for (let f of this.fruits) {
             f.render();
+        }
+        for (let m of this.playerColony.marker) {
+            m.render();
         }
 
         this.playerColony.render();
@@ -229,13 +234,52 @@ class Environment {
         }
     }
 
-    // antAndMarker(ant: BaseAnt) {
-    //     let marker = ant.playerColony.marker.findMarker(ant);
-    //     if (!marker)
-    //         return;
-    //     ant.smellsFriend(marker);
-    //     ant.smelledMarker.push(marker);
-    // }
+    antAndMarker(ant: BaseAnt) {
+        let marker = this.getNearestMarker(ant);
+        if (!marker)
+            return;
+        ant.smellsFriend(marker);
+        ant.smelledMarker.push(marker);
+    }
+
+    updateMarker() {
+        let markerToRemove = [];
+        for (let m of this.playerColony.marker) {
+        if (m.isActive)
+            m.update();
+        else
+            markerToRemove.push(m);
+        }
+
+        for (let m of markerToRemove) {
+            for (let i of this.playerColony.insects) {
+                if (i) {
+                    let smIndex = i.smelledMarker.indexOf(m);
+                    if (smIndex > -1) {
+                        i.smelledMarker.splice(smIndex, 1);
+                    }
+                }
+            }
+            this.playerColony.marker.splice(this.playerColony.marker.indexOf(m), 1);
+        }
+        markerToRemove = [];
+
+        for (let newM of this.playerColony.newMarker) {
+            let alreadyAMarker = false;
+            for (let m of this.playerColony.marker) {
+                if (Coordinate.distanceMidPoints(m.coordinate, newM.coordinate) < SimSettings.markerDistance) {
+                    alreadyAMarker = true;
+                    break;
+                }
+            }
+            if (alreadyAMarker)
+                continue;
+
+            this.playerColony.marker.push(newM);
+        }
+
+        this.playerColony.newMarker = [];
+    }
 
     moveFruitAndAnts() {
         for (let f of this.fruits) {
@@ -393,6 +437,19 @@ class Environment {
             }
         }
         return battleAnts;
+    }
+
+    getNearestMarker(insect: Insect) {
+        let nearestMarker = null;
+        let nearestMarkerDist = Number.MAX_SAFE_INTEGER;
+        for (let m of this.playerColony.marker) {
+            let mDist = Coordinate.distanceMidPoints(insect.coordinate, m.coordinate);
+            if (mDist - insect.coordinate.radius - m.coordinate.radius <= 0 && mDist < nearestMarkerDist && insect.smelledMarker.indexOf(m) === -1) {
+                nearestMarkerDist = mDist;
+                nearestMarker = m;
+            }
+        }
+        return nearestMarker;
     }
 
     getRandomPoint() {

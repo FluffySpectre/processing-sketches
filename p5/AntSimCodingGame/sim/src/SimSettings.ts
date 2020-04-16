@@ -33,4 +33,15 @@ class SimSettings {
     static antNames = [
         'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Gabi', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Matthias LT', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Seddy', 'Tim', 'Manuel'
     ];
+    static markerMaximumAge = 150;
+    static markerSizeMinimum = 20;
+    static markerDistance = 13;
+
+    static get markerSizeMaximum() {
+        return this.markerSizeMinimum * this.markerMaximumAge;
+    }
+
+    static get markerRangeMaximum() {
+        return this.markerSizeMaximum - this.markerSizeMinimum;
+    }
 }

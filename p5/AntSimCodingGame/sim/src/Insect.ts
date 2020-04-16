@@ -291,6 +291,15 @@ class Insect {
     attackTarget(insect: Insect) {
         this.target = insect;
     }
+    // marker
+    setMarker(information: number, spread: number) {
+        if (!spread || Number(spread) === NaN || spread < 0)
+            spread = 0;
+        let m = new Marker(this.coordinate.copy(), spread);
+        m.information = information;
+        this.colony.newMarker.push(m);
+        this.smelledMarker.push(m);
+    }
     //debug
     think(message: string) {
         if (message)

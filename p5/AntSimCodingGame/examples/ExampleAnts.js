@@ -40,6 +40,13 @@ class PlayerAnt extends BaseAnt {
             this.goToTarget(bug);
         }
     }
+
+    smellsFriend(marker) {
+        if (this.target instanceof Sugar || this.target instanceof Fruit || this.target instanceof AntHill)
+            return;
+        this.turnToDirection(marker.information);
+        this.goForward(this.viewRange * 2);
+    }
     
     sugarReached(sugar) {
         this.take(sugar);
@@ -53,5 +60,11 @@ class PlayerAnt extends BaseAnt {
 
     becomesTired() {
         this.goHome();
+    }
+
+    tick() {
+        if (!this.target || this.currentLoad <= 0)
+            return;
+        this.setMarker(Coordinate.directionAngle(this.coordinate, this.target.coordinate) - 180, 25);
     }
 }

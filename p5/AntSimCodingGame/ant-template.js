@@ -26,6 +26,7 @@ class PlayerAnt extends BaseAnt {
     // spotsFruit(fruit) {}
     // spotsBug(bug) {}
     // spotsFriend(ant) {}
+    // smellsFriend(marker) {}
     // sugarReached(sugar) {}
     // fruitReached(fruit) {}
     // becomesTired() {}
@@ -47,6 +48,7 @@ class PlayerAnt extends BaseAnt {
     // this.take(food)
     // this.drop()
     // this.needsCarriers(fruit)
+    // this.setMarker(information, spread)
     // this.attackTarget(insect)
 
     // CASTE-RELATED

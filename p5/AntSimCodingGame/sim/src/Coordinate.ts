@@ -17,6 +17,12 @@ class Coordinate {
         return result;
     }
 
+    copy() {
+        let copiedCoord = new Coordinate(this.position.x, this.position.y, this.radius);
+        copiedCoord.direction = this.direction;
+        return copiedCoord;
+    }
+
     get direction() {
         return this.directionVal;
     }
@@ -48,6 +54,13 @@ class Coordinate {
         let dist = c1.position.dist(c2.position);
         dist = Math.floor(dist);
         return dist;
+    }
+
+    static distanceMidPointsSqr(c1: Coordinate, c2: Coordinate) {
+        let distSqr = c1.position.copy().sub(c2.position).magSq();
+        if (distSqr < 0)
+            return 0;
+        return distSqr;
     }
 
     static directionAngle(c1: Coordinate, c2: Coordinate) {

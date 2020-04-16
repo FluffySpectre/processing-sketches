@@ -334,6 +334,14 @@ class Insect {
     attackTarget(insect) {
         this.target = insect;
     }
+    setMarker(information, spread) {
+        if (!spread || Number(spread) === NaN || spread < 0)
+            spread = 0;
+        let m = new Marker(this.coordinate.copy(), spread);
+        m.information = information;
+        this.colony.newMarker.push(m);
+        this.smelledMarker.push(m);
+    }
     think(message) {
         if (message)
             this.debugMessage = message.length > 100 ? message.substr(0, 100) : message;
@@ -383,6 +391,7 @@ class BaseAnt extends Insect {
     spotsFruit(fruit) { }
     spotsBug(bug) { }
     spotsFriend(ant) { }
+    smellsFriend(marker) { }
     sugarReached(sugar) { }
     fruitReached(fruit) { }
     becomesTired() { }
@@ -531,6 +540,8 @@ class Colony {
         this.eatenInsects = [];
         this.insectDelay = 0;
         this.statistics = new PlayerStatistics();
+        this.marker = [];
+        this.newMarker = [];
         if (playerInfo) {
             this.playerInfo = playerInfo;
             this.insectClass = 'PlayerAnt';
@@ -611,6 +622,11 @@ class Coordinate {
         result.direction = c.direction;
         return result;
     }
+    copy() {
+        let copiedCoord = new Coordinate(this.position.x, this.position.y, this.radius);
+        copiedCoord.direction = this.direction;
+        return copiedCoord;
+    }
     get direction() {
         return this.directionVal;
     }
@@ -639,6 +655,12 @@ class Coordinate {
         let dist = c1.position.dist(c2.position);
         dist = Math.floor(dist);
         return dist;
+    }
+    static distanceMidPointsSqr(c1, c2) {
+        let distSqr = c1.position.copy().sub(c2.position).magSq();
+        if (distSqr < 0)
+            return 0;
+        return distSqr;
     }
     static directionAngle(c1, c2) {
         let num = p5.Vector.sub(c2.position, c1.position).heading();
@@ -735,6 +757,7 @@ class Environment {
                 if (!a.carriedFruit) {
                     this.antAndFruit(a);
                 }
+                this.antAndMarker(a);
                 if (!a.target && a.remainingDistance === 0)
                     a.waits();
                 a.tick();
@@ -742,6 +765,7 @@ class Environment {
         }
         this.removeAnts();
         this.spawnAnt();
+        this.updateMarker();
         this.moveFruitAndAnts();
         this.removeFruit();
         this.removeBugs();
@@ -760,6 +784,9 @@ class Environment {
         }
         for (let f of this.fruits) {
             f.render();
+        }
+        for (let m of this.playerColony.marker) {
+            m.render();
         }
         this.playerColony.render();
     }
@@ -847,6 +874,47 @@ class Environment {
             if (ant.target !== f && num <= ant.viewRange)
                 ant.spotsFruit(f);
         }
+    }
+    antAndMarker(ant) {
+        let marker = this.getNearestMarker(ant);
+        if (!marker)
+            return;
+        ant.smellsFriend(marker);
+        ant.smelledMarker.push(marker);
+    }
+    updateMarker() {
+        let markerToRemove = [];
+        for (let m of this.playerColony.marker) {
+            if (m.isActive)
+                m.update();
+            else
+                markerToRemove.push(m);
+        }
+        for (let m of markerToRemove) {
+            for (let i of this.playerColony.insects) {
+                if (i) {
+                    let smIndex = i.smelledMarker.indexOf(m);
+                    if (smIndex > -1) {
+                        i.smelledMarker.splice(smIndex, 1);
+                    }
+                }
+            }
+            this.playerColony.marker.splice(this.playerColony.marker.indexOf(m), 1);
+        }
+        markerToRemove = [];
+        for (let newM of this.playerColony.newMarker) {
+            let alreadyAMarker = false;
+            for (let m of this.playerColony.marker) {
+                if (Coordinate.distanceMidPoints(m.coordinate, newM.coordinate) < SimSettings.markerDistance) {
+                    alreadyAMarker = true;
+                    break;
+                }
+            }
+            if (alreadyAMarker)
+                continue;
+            this.playerColony.marker.push(newM);
+        }
+        this.playerColony.newMarker = [];
     }
     moveFruitAndAnts() {
         for (let f of this.fruits) {
@@ -989,6 +1057,18 @@ class Environment {
         }
         return battleAnts;
     }
+    getNearestMarker(insect) {
+        let nearestMarker = null;
+        let nearestMarkerDist = Number.MAX_SAFE_INTEGER;
+        for (let m of this.playerColony.marker) {
+            let mDist = Coordinate.distanceMidPoints(insect.coordinate, m.coordinate);
+            if (mDist - insect.coordinate.radius - m.coordinate.radius <= 0 && mDist < nearestMarkerDist && insect.smelledMarker.indexOf(m) === -1) {
+                nearestMarkerDist = mDist;
+                nearestMarker = m;
+            }
+        }
+        return nearestMarker;
+    }
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));
         while (rp.dist(this.playerColony.antHill.coordinate.position) < 25) {
@@ -1043,6 +1123,34 @@ class Fruit extends Food {
     }
 }
 class Marker {
+    constructor(coordinate, spread) {
+        this.age = 0;
+        this.coordinate = coordinate;
+        this.maxAge = SimSettings.markerMaximumAge;
+        if (spread < 0) {
+            spread = 0;
+        }
+        else {
+            if (spread > SimSettings.markerRangeMaximum)
+                spread = SimSettings.markerRangeMaximum;
+            this.maxAge = this.maxAge * SimSettings.markerSizeMinimum / (SimSettings.markerSizeMinimum + spread);
+        }
+        this.spread = spread;
+        this.update();
+    }
+    get isActive() {
+        return this.age < this.maxAge;
+    }
+    update() {
+        this.age++;
+        this.coordinate.radius = SimSettings.markerSizeMinimum;
+        this.coordinate.radius += this.spread * this.age / this.maxAge;
+    }
+    render() {
+        noStroke();
+        fill(240, 240, 10, map(this.age, 0, this.maxAge, 128, 0));
+        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
+    }
 }
 class PlayerInfo {
     static fromObject(obj) {
@@ -1074,6 +1182,12 @@ class PlayerStatistics {
     }
 }
 class SimSettings {
+    static get markerSizeMaximum() {
+        return this.markerSizeMinimum * this.markerMaximumAge;
+    }
+    static get markerRangeMaximum() {
+        return this.markerSizeMaximum - this.markerSizeMinimum;
+    }
 }
 SimSettings.stepsPerSecond = 30;
 SimSettings.totalRounds = 7300;
@@ -1109,6 +1223,9 @@ SimSettings.casteAbilities = new CasteAbilities();
 SimSettings.antNames = [
     'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Gabi', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Matthias LT', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Seddy', 'Tim', 'Manuel'
 ];
+SimSettings.markerMaximumAge = 150;
+SimSettings.markerSizeMinimum = 20;
+SimSettings.markerDistance = 13;
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);

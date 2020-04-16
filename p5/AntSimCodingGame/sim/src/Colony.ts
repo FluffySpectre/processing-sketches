@@ -7,6 +7,8 @@ class Colony {
     playerInfo: PlayerInfo;
     insectClass: string;
     antHill: AntHill;
+    marker: Marker[];
+    newMarker: Marker[];
 
     // castes stats
     castesSpeed: number[];
@@ -27,6 +29,8 @@ class Colony {
         this.eatenInsects = [];
         this.insectDelay = 0;
         this.statistics = new PlayerStatistics();
+        this.marker = [];
+        this.newMarker = [];
 
         // for ants
         if (playerInfo) {

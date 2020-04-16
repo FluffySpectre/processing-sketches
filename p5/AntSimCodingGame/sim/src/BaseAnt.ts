@@ -48,6 +48,7 @@ class BaseAnt extends Insect {
     spotsFruit(fruit: Fruit) { }
     spotsBug(bug: Bug) { }
     spotsFriend(ant: BaseAnt) { }
+    smellsFriend(marker: Marker) { }
     sugarReached(sugar: Sugar) { }
     fruitReached(fruit: Fruit) { }
     becomesTired() { }
