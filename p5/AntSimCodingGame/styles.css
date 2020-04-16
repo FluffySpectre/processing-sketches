@@ -8,7 +8,7 @@ body {
     position: absolute;
     left: 0;
     top: 3rem;
-    width: 49%;
+    width: 50%;
     height: calc(100% - 3rem);
 }
 
@@ -22,7 +22,7 @@ body {
 
 #runButton {
     position: absolute;
-    left: calc(49% - 4rem);
+    left: calc(50% - 4rem);
     top: 0;
     width: 4rem;
     height: 3rem;
@@ -46,6 +46,7 @@ body {
     font-size: 16px;
     font-weight: bold;
     height: 3rem;
+    cursor: pointer;
 }
 
 .upload-btn-wrapper input[type=file] {
@@ -54,4 +55,5 @@ body {
     left: 0;
     top: 0;
     opacity: 0;
+    cursor: pointer;
 }

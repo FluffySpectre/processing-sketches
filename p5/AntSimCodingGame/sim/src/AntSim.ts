@@ -33,7 +33,7 @@ function setup() {
     frameRate(SimSettings.stepsPerSecond);
 
     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
-    var cnv = createCanvas(s, s);
+    var cnv = createCanvas(s - 40, s - 20);
     cnv.style('display', 'block');
 
     colonyNameUI = select('#colonyName');

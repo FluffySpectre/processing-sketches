@@ -2,7 +2,7 @@ var PLAYER_INFO = {
     name: '<Your Name>',
     colonyName: 'My first ants',
     castes: [
-        { name: 'collector', color: 'black', speed: -1, rotationSpeed: 1, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
+        { name: 'collector', color: 'black', speed: 0, rotationSpeed: 0, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
     ]
 };
 
@@ -62,6 +62,7 @@ class PlayerAnt extends BaseAnt {
     // this.target
     // this.remainingDistance
     // this.remainingRotation
+    // this.traveledDistance
     // this.direction
     // this.vitality
     // this.currentSpeed
