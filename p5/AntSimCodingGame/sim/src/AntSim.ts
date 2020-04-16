@@ -77,6 +77,16 @@ function draw() {
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
 
+    if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+        let mouseCoord = new Coordinate(mouseX, mouseY, 0);
+        for (let i=0; i<environment.playerColony.insects.length; i++) {
+            let a = environment.playerColony.insects[i] as BaseAnt;
+            if (a && Coordinate.distance(mouseCoord, a.coordinate) < 30) {
+                a.showName();
+            }
+        }
+    }
+
     if (simulationEnd) {
         drawMessage('Simulation finished!', '#fff');
     }

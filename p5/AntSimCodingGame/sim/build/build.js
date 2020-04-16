@@ -68,6 +68,15 @@ function draw() {
         killedBugsValueUI.html(environment.playerColony.statistics.killedBugs.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
+    if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+        let mouseCoord = new Coordinate(mouseX, mouseY, 0);
+        for (let i = 0; i < environment.playerColony.insects.length; i++) {
+            let a = environment.playerColony.insects[i];
+            if (a && Coordinate.distance(mouseCoord, a.coordinate) < 30) {
+                a.showName();
+            }
+        }
+    }
     if (simulationEnd) {
         drawMessage('Simulation finished!', '#fff');
     }
@@ -333,6 +342,10 @@ class Insect {
     }
 }
 class BaseAnt extends Insect {
+    constructor() {
+        super(...arguments);
+        this.showNameDuration = 0;
+    }
     init(colony, availableInsects) {
         super.init(colony, availableInsects);
         let cIndex = -1;
@@ -357,6 +370,7 @@ class BaseAnt extends Insect {
             this.casteIndex = 0;
         }
         this.isTired = false;
+        this.name = random(SimSettings.antNames);
         this.vitality = colony.castesVitality[this.casteIndex];
         this.currentSpeed = colony.castesSpeed[this.casteIndex];
         this.attack = colony.castesAttack[this.casteIndex];
@@ -378,7 +392,14 @@ class BaseAnt extends Insect {
     render() {
         push();
         translate(this.coordinate.position.x, this.coordinate.position.y);
-        if (this.debugMessage) {
+        if (this.showNameDuration > 0) {
+            this.showNameDuration--;
+            fill(20);
+            textSize(14);
+            let tw = textWidth(this.name);
+            text(this.name, -tw / 2, -14);
+        }
+        if (this.showNameDuration <= 0 && this.debugMessage) {
             fill(20);
             textSize(14);
             let tw = textWidth(this.debugMessage);
@@ -398,6 +419,9 @@ class BaseAnt extends Insect {
             rect(-2.5, -2.5, 5, 5);
         }
         pop();
+    }
+    showName() {
+        this.showNameDuration = 50;
     }
 }
 class Bug extends Insect {
@@ -1082,6 +1106,9 @@ SimSettings.bugRegenerationDelay = 5;
 SimSettings.bugRegenerationValue = 1;
 SimSettings.battleRange = 10;
 SimSettings.casteAbilities = new CasteAbilities();
+SimSettings.antNames = [
+    'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Gabi', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Matthias LT', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Seddy', 'Tim', 'Manuel'
+];
 class Sugar extends Food {
     constructor(x, y, amount) {
         super(x, y, amount);

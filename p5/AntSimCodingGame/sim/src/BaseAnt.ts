@@ -2,6 +2,8 @@
 
 class BaseAnt extends Insect {
     isTired: boolean;
+    name: string;
+    showNameDuration: number = 0;
 
     init(colony: Colony, availableInsects: {[key: string]: number}) {
         super.init(colony, availableInsects);
@@ -30,6 +32,7 @@ class BaseAnt extends Insect {
         }
 
         this.isTired = false;
+        this.name = random(SimSettings.antNames);
         this.vitality = colony.castesVitality[this.casteIndex];
         this.currentSpeed = colony.castesSpeed[this.casteIndex];
         this.attack = colony.castesAttack[this.casteIndex];
@@ -57,7 +60,15 @@ class BaseAnt extends Insect {
         push();
         translate(this.coordinate.position.x, this.coordinate.position.y);
 
-        if (this.debugMessage) {
+        if (this.showNameDuration > 0) {
+            this.showNameDuration--;
+            fill(20);
+            textSize(14);
+            let tw = textWidth(this.name);
+            text(this.name, -tw / 2, -14);     
+        }
+
+        if (this.showNameDuration <= 0 && this.debugMessage) {
             fill(20);
             textSize(14);
             let tw = textWidth(this.debugMessage);
@@ -81,5 +92,9 @@ class BaseAnt extends Insect {
         }
 
         pop();
+    }
+
+    showName() {
+        this.showNameDuration = 50;
     }
 }

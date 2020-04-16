@@ -30,4 +30,7 @@ class SimSettings {
     static bugRegenerationValue = 1;
     static battleRange = 10;
     static casteAbilities = new CasteAbilities();
+    static antNames = [
+        'Anke', 'Matthias', 'Roland', 'Bernhard', 'Werner', 'Joachim', 'Gabi', 'Björn', 'Anja', 'Carsten', 'Benjamin', 'Timon', 'Yannik', 'Matthias LT', 'Jens', 'Dennis', 'Christine', 'Sebastian', 'Seddy', 'Tim', 'Manuel'
+    ];
 }
