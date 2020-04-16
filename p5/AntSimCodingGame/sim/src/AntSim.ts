@@ -4,7 +4,7 @@ let playerCodeValid = true;
 let simulationEnd = false;
 
 // stats ui
-let colonyNameUI: p5.Element, foodValueUI: p5.Element, deadAntsValueUI: p5.Element, pointsValue: p5.Element;
+let colonyNameUI: p5.Element, foodValueUI: p5.Element, deadAntsValueUI: p5.Element, killedBugsValueUI: p5.Element, pointsValue: p5.Element;
 
 function playerCodeLoaded() {
     playerCodeValid = true;
@@ -39,6 +39,7 @@ function setup() {
     colonyNameUI = select('#colonyName');
     foodValueUI = select('#foodValue');
     deadAntsValueUI = select('#deadAntsValue');
+    killedBugsValueUI = select('#killedBugsValue');
     pointsValue = select('#pointsValue');
 }
 
@@ -72,6 +73,7 @@ function draw() {
     if (frameCount % SimSettings.stepsPerSecond === 0) {
         foodValueUI.html(environment.playerColony.statistics.collectedFood.toString());
         deadAntsValueUI.html(environment.playerColony.statistics.totalDeadAnts.toString());
+        killedBugsValueUI.html(environment.playerColony.statistics.killedBugs.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
 

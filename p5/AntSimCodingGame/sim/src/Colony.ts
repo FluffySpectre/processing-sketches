@@ -97,6 +97,7 @@ class Colony {
         let ai = this.insects.indexOf(insect);
         if (ai > -1)
             this.insects.splice(ai, 1);
+        this.antsInCaste[insect.casteIndex]--;
     }
 
     render() {

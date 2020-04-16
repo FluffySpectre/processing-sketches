@@ -12,7 +12,7 @@ let environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
 let simulationEnd = false;
-let colonyNameUI, foodValueUI, deadAntsValueUI, pointsValue;
+let colonyNameUI, foodValueUI, deadAntsValueUI, killedBugsValueUI, pointsValue;
 function playerCodeLoaded() {
     playerCodeValid = true;
     let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
@@ -38,6 +38,7 @@ function setup() {
     colonyNameUI = select('#colonyName');
     foodValueUI = select('#foodValue');
     deadAntsValueUI = select('#deadAntsValue');
+    killedBugsValueUI = select('#killedBugsValue');
     pointsValue = select('#pointsValue');
 }
 function windowResized() {
@@ -64,6 +65,7 @@ function draw() {
     if (frameCount % SimSettings.stepsPerSecond === 0) {
         foodValueUI.html(environment.playerColony.statistics.collectedFood.toString());
         deadAntsValueUI.html(environment.playerColony.statistics.totalDeadAnts.toString());
+        killedBugsValueUI.html(environment.playerColony.statistics.killedBugs.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
     if (simulationEnd) {
@@ -565,6 +567,7 @@ class Colony {
         let ai = this.insects.indexOf(insect);
         if (ai > -1)
             this.insects.splice(ai, 1);
+        this.antsInCaste[insect.casteIndex]--;
     }
     render() {
         if (this.antHill)
