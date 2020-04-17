@@ -77,4 +77,8 @@ class PlayerAnt extends BaseAnt {
     // this.antsInViewRange
     // this.antsFromSameCasteInViewRange
     // this.bugsInViewRange
+
+    // UTLITIES
+    // Coordinate.distance(coordinate1, coordinate2)
+    // Coordinate.directionAngle(coordinate1, coordinate2)
 }
