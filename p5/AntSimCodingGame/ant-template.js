@@ -2,7 +2,7 @@ var PLAYER_INFO = {
     name: '<Your Name>',
     colonyName: 'My first ants',
     castes: [
-        { name: 'collector', color: 'black', speed: 0, rotationSpeed: 0, load: 2, range: 1, viewRange: -1, vitality: -1, attack: -1 }
+        { name: 'default', color: 'black', speed: 0, rotationSpeed: 0, load: 0, range: 0, viewRange: 0, vitality: 0, attack: 0 }
     ]
 };
 
@@ -17,7 +17,7 @@ class PlayerAnt extends BaseAnt {
 
     // CASTE SELECTION
     determineCaste(availableInsects) {
-        return 'collector';
+        return 'default';
     }
 
     // EVENTS
