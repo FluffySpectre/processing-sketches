@@ -13,6 +13,10 @@ let playerCodeAvailable = false;
 let playerCodeValid = true;
 let simulationEnd = false;
 let colonyNameUI, foodValueUI, deadAntsValueUI, killedBugsValueUI, pointsValue;
+let showInfoMaxDuration = 5;
+let showInfoDuration = 0;
+let showInfoObject = null;
+let showInfoPosition = null;
 function playerCodeLoaded() {
     playerCodeValid = true;
     let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
@@ -70,10 +74,56 @@ function draw() {
     }
     if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
         let mouseCoord = new Coordinate(mouseX, mouseY, 0);
-        for (let i = 0; i < environment.playerColony.insects.length; i++) {
-            let a = environment.playerColony.insects[i];
-            if (a && Coordinate.distance(mouseCoord, a.coordinate) < 30) {
-                a.showName();
+        let selectionRadius = 15;
+        let nearestObject = null, nearestObjectDist = Number.MAX_SAFE_INTEGER;
+        for (let s of environment.sugarHills) {
+            let fDist = Coordinate.distance(mouseCoord, s.coordinate);
+            if (s && fDist < selectionRadius) {
+                if (fDist < nearestObjectDist) {
+                    nearestObjectDist = fDist;
+                    nearestObject = s;
+                }
+            }
+        }
+        for (let f of environment.fruits) {
+            let fDist = Coordinate.distance(mouseCoord, f.coordinate);
+            if (f && fDist < selectionRadius) {
+                if (fDist < nearestObjectDist) {
+                    nearestObjectDist = fDist;
+                    nearestObject = f;
+                }
+            }
+        }
+        if (nearestObject) {
+            showInfoDuration = showInfoMaxDuration;
+            showInfoObject = nearestObject;
+            showInfoPosition = nearestObject.coordinate.position;
+        }
+        else {
+            for (let i = 0; i < environment.bugs.insects.length; i++) {
+                let b = environment.bugs.insects[i];
+                let bDist = Coordinate.distance(mouseCoord, b.coordinate);
+                if (b && bDist < selectionRadius) {
+                    if (bDist < nearestObjectDist) {
+                        nearestObjectDist = bDist;
+                        nearestObject = b;
+                    }
+                }
+            }
+            for (let i = 0; i < environment.playerColony.insects.length; i++) {
+                let a = environment.playerColony.insects[i];
+                let aDist = Coordinate.distance(mouseCoord, a.coordinate);
+                if (a && aDist < selectionRadius) {
+                    if (aDist < nearestObjectDist) {
+                        nearestObjectDist = aDist;
+                        nearestObject = a;
+                    }
+                }
+            }
+            if (nearestObject) {
+                showInfoDuration = showInfoMaxDuration;
+                showInfoObject = nearestObject;
+                showInfoPosition = nearestObject.coordinate.position;
             }
         }
     }
@@ -82,9 +132,20 @@ function draw() {
     }
     if (SimSettings.displayDebugLabels) {
         fill(20);
-        textSize(14);
+        textSize(12);
         text('FPS: ' + Math.floor(frameRate()), 10, 20);
         text('Round: ' + environment.currentRound, 10, 36);
+    }
+    if (showInfoDuration > 0) {
+        showInfoDuration--;
+        if (showInfoObject instanceof Sugar)
+            drawInfo('Sugar', 'Amount: ' + showInfoObject.amount.toString(), showInfoPosition);
+        else if (showInfoObject instanceof Fruit)
+            drawInfo('Apple', 'Amount: ' + showInfoObject.amount.toString(), showInfoPosition);
+        else if (showInfoObject instanceof BaseAnt)
+            drawInfo('Ant ' + showInfoObject.name, 'Vitality: ' + showInfoObject.vitality.toString(), showInfoPosition);
+        else if (showInfoObject instanceof Bug)
+            drawInfo('Bug', 'Vitality: ' + showInfoObject.vitality.toString(), showInfoPosition);
     }
 }
 function drawMessage(msg, textColor) {
@@ -94,6 +155,14 @@ function drawMessage(msg, textColor) {
     textSize(24);
     fill(textColor);
     text(msg, width / 2 - textWidth(msg) / 2, height / 2 - 12);
+}
+function drawInfo(firstLine, secondLine, position) {
+    fill(20);
+    textSize(12);
+    let tw = textWidth(firstLine);
+    text(firstLine, position.x - tw / 2, position.y - 32);
+    let tw2 = textWidth(secondLine);
+    text(secondLine, position.x - tw2 / 2, position.y - 16);
 }
 class Insect {
     constructor() { }
@@ -350,10 +419,6 @@ class Insect {
     }
 }
 class BaseAnt extends Insect {
-    constructor() {
-        super(...arguments);
-        this.showNameDuration = 0;
-    }
     init(colony, availableInsects) {
         super.init(colony, availableInsects);
         let cIndex = -1;
@@ -401,16 +466,9 @@ class BaseAnt extends Insect {
     render() {
         push();
         translate(this.coordinate.position.x, this.coordinate.position.y);
-        if (this.showNameDuration > 0) {
-            this.showNameDuration--;
+        if (this.debugMessage) {
             fill(20);
-            textSize(14);
-            let tw = textWidth(this.name);
-            text(this.name, -tw / 2, -14);
-        }
-        if (this.showNameDuration <= 0 && this.debugMessage) {
-            fill(20);
-            textSize(14);
+            textSize(12);
             let tw = textWidth(this.debugMessage);
             text(this.debugMessage, -tw / 2, -14);
         }
@@ -429,9 +487,6 @@ class BaseAnt extends Insect {
         }
         pop();
     }
-    showName() {
-        this.showNameDuration = 50;
-    }
 }
 class Bug extends Insect {
     init(colony, availableInsects) {
@@ -445,12 +500,6 @@ class Bug extends Insect {
     render() {
         push();
         translate(this.coordinate.position.x, this.coordinate.position.y);
-        if (SimSettings.displayDebugLabels) {
-            fill(20);
-            textSize(14);
-            let tw = textWidth(this.vitality.toString());
-            text(this.vitality.toString(), -tw / 2, -14);
-        }
         rotate(this.coordinate.direction);
         noStroke();
         fill(this.colour);
@@ -1116,7 +1165,7 @@ class Fruit extends Food {
         ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
         if (SimSettings.displayDebugLabels && this.carriers.length > 0) {
             fill(20);
-            textSize(14);
+            textSize(12);
             let tw = textWidth(this.carriers.length.toString());
             text(this.carriers.length.toString(), this.coordinate.position.x - tw / 2, this.coordinate.position.y - 14);
         }
@@ -1234,12 +1283,6 @@ class Sugar extends Food {
         stroke(100);
         fill(250);
         ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
-        if (SimSettings.displayDebugLabels) {
-            fill(20);
-            textSize(14);
-            let tw = textWidth(this.amount.toString());
-            text(this.amount, this.coordinate.position.x - tw / 2, this.coordinate.position.y - 16);
-        }
     }
 }
 //# sourceMappingURL=build.js.map
