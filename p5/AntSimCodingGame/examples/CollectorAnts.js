@@ -60,7 +60,7 @@ class PlayerAnt extends BaseAnt {
     }
     
     fruitReached(fruit) {
-        if (this.caste === 'collector') {
+        if (this.caste === 'collector' && this.needsCarriers(fruit)) {
             this.take(fruit);
             this.goHome();
         }
