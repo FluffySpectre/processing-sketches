@@ -105,30 +105,7 @@
     </div>
   </div>
 
-  <script type="text/javascript">
-    var geval = eval;
-
-    window.load = function (js) {
-      if (js) {
-        try {
-          geval(js);
-        } catch (err) {
-          var pre = document.createElement('pre');
-          pre.appendChild(document.createTextNode(err));
-          document.body.insertBefore(pre, document.body.firstChild);
-        }
-      }
-
-      setTimeout(function () {
-        if (typeof window.playerCodeLoaded === 'function')
-          window.playerCodeLoaded()
-      }, 1000);
-    };
-
-    if (receivedJS) {
-      window.load(receivedJS);
-    }
-  </script>
+  <script src="index.js"></script>
 </body>
 
 </html>
