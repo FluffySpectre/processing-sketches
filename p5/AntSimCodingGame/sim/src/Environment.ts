@@ -211,7 +211,7 @@ class Environment {
             ant.fruitReached(t);
         }
         else {
-            if (ant.target instanceof Bug) // TODO: maybe create a base class for ants and bugs (e.g. Insect)
+            if (ant.target instanceof Insect)
                 return;
             ant.target = null;
         }
