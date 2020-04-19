@@ -37,9 +37,9 @@ class Environment {
             // check for fights
             let battleAnts = this.getAntsInBattleRange(b);
             if (battleAnts.length > 0) {
-                let num = SimSettings.bugAttack / battleAnts.length;
+                let damage = Math.floor(SimSettings.bugAttack / battleAnts.length);
                 for (let a of battleAnts) {
-                    a.vitality -= num;
+                    a.vitality -= damage;
                     a.underAttack(b);
                     if (a.vitality <= 0)
                         a.colony.eatenInsects.push(a);

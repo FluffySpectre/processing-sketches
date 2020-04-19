@@ -64,9 +64,10 @@ class Insect {
         return this.currentLoadVal;
     }
     set currentLoad(value) {
+        value = Math.floor(value);
         this.currentLoadVal = value >= 0 ? value : 0;
         this.currentSpeed = this.colony.castesSpeed[this.casteIndex];
-        this.currentSpeed -= this.currentSpeed * this.currentLoad / this.colony.castesLoad[this.casteIndex] / 2;
+        this.currentSpeed -= Math.floor(this.currentSpeed * this.currentLoad / this.colony.castesLoad[this.casteIndex] / 2);
     }
     private currentLoadVal: number;
 
@@ -78,6 +79,7 @@ class Insect {
         return this.vitalityVal;
     }
     set vitality(value) {
+        value = Math.floor(value);
         this.vitalityVal = value >= 0 ? value : 0;
     }
     private vitalityVal: number;
@@ -107,6 +109,7 @@ class Insect {
         return this.attackVal;
     }
     set attack(value) {
+        value = Math.floor(value);
         this.attackVal = value >= 0 ? value : 0;
     }
     private attackVal: number;
