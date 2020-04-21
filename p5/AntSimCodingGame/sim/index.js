@@ -1,3 +1,7 @@
+function simSpeedChanged(simSpeed) {
+    onSimSpeedChanged(simSpeed);
+}
+
 var geval = eval;
 
 window.load = function (js) {
@@ -13,7 +17,9 @@ window.load = function (js) {
 
     setTimeout(function () {
         if (typeof window.playerCodeLoaded === 'function')
-            window.playerCodeLoaded()
+            window.playerCodeLoaded();
+        // display the sim speed controls
+        document.getElementById('simSpeedPanel').style.visibility = 'visible';
     }, 1000);
 };
 

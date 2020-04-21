@@ -1,5 +1,6 @@
 class SimSettings {
     static stepsPerSecond = 30;
+    static stepMultiplicator = 1;
     static totalRounds = 7300; // @30FPS = 4 minutes
     static antLimit = 50;
     static antHillRadius = 25;

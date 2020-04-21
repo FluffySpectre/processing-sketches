@@ -3,6 +3,7 @@ body {
     margin: 0;
     background-color: #333;
     font-family: sans-serif;
+    overflow: hidden;
 }
 
 #editorContainer {
@@ -19,6 +20,7 @@ body {
     top: 0;
     width: 50%;
     height: 100%;
+    overflow: hidden;
 }
 
 #runButton {

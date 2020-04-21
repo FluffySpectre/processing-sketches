@@ -34,11 +34,16 @@ function playerCodeLoaded() {
     }
 }
 
+function onSimSpeedChanged(selectedSpeed: number) {
+    let speeds = [1, 2, 4, 8, 16];
+    SimSettings.stepMultiplicator = selectedSpeed >= 0 && selectedSpeed < speeds.length ? speeds[selectedSpeed] : 1;
+}
+
 function setup() {
     frameRate(SimSettings.stepsPerSecond);
 
-    let s = windowWidth < windowHeight ? windowWidth : windowHeight;
-    var cnv = createCanvas(s - 40, s - 20);
+    let s = 800;
+    var cnv = createCanvas(s, s);
     cnv.style('display', 'block');
 
     colonyNameUI = select('#colonyName');
@@ -48,9 +53,10 @@ function setup() {
     pointsValue = select('#pointsValue');
 }
 
-function windowResized() {
-    resizeCanvas(windowWidth, windowWidth);
-}
+// function windowResized() {
+//     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
+//     resizeCanvas(s - 40, s - 20);
+// }
 
 function draw() {
     angleMode(DEGREES);
@@ -66,12 +72,15 @@ function draw() {
         return;
     }
 
-    if (environment.currentRound < SimSettings.totalRounds) {
-        environment.step();
-    } else {
-        // simulation ended
-        simulationEnd = true;
+    for (let i = 0; i < SimSettings.stepMultiplicator; i++) {
+        if (environment.currentRound < SimSettings.totalRounds) {
+            environment.step();
+        } else {
+            // simulation ended
+            simulationEnd = true;
+        }
     }
+
     environment.render();
 
     // update stats ui

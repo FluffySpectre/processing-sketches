@@ -26,7 +26,7 @@
     #statsPanel {
       position: relative;
       width: 100%;
-      height: 5rem;
+      height: 4rem;
       background-color: #333;
     }
     .stats-box {
@@ -74,6 +74,17 @@
       right: 5px;
     }
 
+    #simSpeedPanel {
+      position: relative;
+      width: 100%;
+      height: calc(3rem - 1rem);
+      visibility: hidden;
+      padding-top: 1rem;
+    }
+    #simSpeedLabel {
+      color: white;
+    }
+
     canvas {
       position: relative;
     }
@@ -81,6 +92,17 @@
 </head>
 
 <body>
+  <div id="simSpeedPanel">
+    <label id="simSpeedLabel" for="simSpeeds">Sim Speed:</label>
+    <select id="simSpeedsSelect" name="simSpeeds" onchange="simSpeedChanged(this.selectedIndex)">
+      <option>Standard Speed (1x)</option>
+      <option>Supersonic Speed (2x)</option>
+      <option>Light Speed (4x)</option>
+      <option>Ridiculous Speed (8x)</option>
+      <option>Ludicrous Speed (16x)</option>
+    </select>
+  </div>
+
   <div id="statsPanel">
     <div class="stats-info-box">
       <div class="colony-label">Colony Name</div>
