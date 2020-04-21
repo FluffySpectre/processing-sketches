@@ -4,6 +4,8 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap">
+
   <link rel="stylesheet" data-name="vs/editor/editor.main"
     href="./node_modules/monaco-editor/min/vs/editor/editor.main.css">
 
@@ -23,8 +25,10 @@
   </div>
   <div id="editorContainer"></div>
   <div id="simContainer">
-    <div id="simHint" class="sim-hint"><p>Click "Run" to test your ants!</p></div>
+    <div id="simHint" class="sim-hint"><p>Click <span class="run-span">"Run"</span> to test your ants!</p></div>
   </div>
+
+  <div id="madeBy">AntSim &copy; 2020 Björn Bosse</div>
 
   <script>var require = { paths: { 'vs': './node_modules/monaco-editor/min/vs' } };</script>
   <script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
