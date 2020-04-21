@@ -63,7 +63,14 @@ body {
     font-size: 1.5rem;
 }
 .sim-hint .run-span {
-    color: #a42;
+    color: white;
+    background: #a42;
+    cursor: pointer;
+    padding: 8px 20px;
+    border: 1px solid #88361b;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .upload-btn-wrapper {
