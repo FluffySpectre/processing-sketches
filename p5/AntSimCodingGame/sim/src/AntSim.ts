@@ -34,6 +34,10 @@ function playerCodeLoaded() {
     }
 }
 
+function playerCodeError() {
+    playerCodeValid = false;   
+}
+
 function onSimSpeedChanged(selectedSpeed: number) {
     let speeds = [1, 2, 4, 8, 16];
     SimSettings.stepMultiplicator = selectedSpeed >= 0 && selectedSpeed < speeds.length ? speeds[selectedSpeed] : 1;
