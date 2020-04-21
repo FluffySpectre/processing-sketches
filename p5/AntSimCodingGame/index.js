@@ -1,3 +1,6 @@
+// GLOBALS
+var codeDownloadUrl = null;
+
 // WINDOW RESIZING
 function resizeEditor() {
     codeEditor.layout();
@@ -16,15 +19,29 @@ fetch('ant-template.js')
 var codeEditor = monaco.editor.create(document.getElementById('editorContainer'), {
     value: '',
     language: 'javascript',
-    theme: "vs-dark",
+    theme: 'vs-dark',
     minimap: {
         enabled: false
     },
+});
+codeEditor.onDidChangeModelContent(function (e) {
+    // update the download link with the changed code
+    var text = codeEditor.getValue();
+    var data = new Blob([text], { type: 'text/javascript' });
+    if (codeDownloadUrl !== null) {
+        // cleanup old url
+        window.URL.revokeObjectURL(codeDownloadUrl);
+    }
+    codeDownloadUrl = window.URL.createObjectURL(data);
+    document.getElementById('codeDownloadLink').href = codeDownloadUrl;
 });
 
 var runContainer = document.getElementById('simContainer');
 var runIframe = null, runIframeHeight = 0;
 function run() {
+    // hide sim hint text
+    document.getElementById('simHint').style.display = 'none';
+
     if (runIframe) {
         // unload old iframe
         runContainer.removeChild(runIframe);

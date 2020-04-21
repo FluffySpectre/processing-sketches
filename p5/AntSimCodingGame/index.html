@@ -11,14 +11,19 @@
 </head>
 
 <body>
+  <div id="codeToolbarContainer">
+    <button class="btn" id="runButton" onclick="run()">Run &#9658;</button>
+
+    <div class="upload-btn-wrapper">
+      <button class="btn">Load File</button>
+      <input type="file" id="codeUpload" name="myfile" accept=".js" onchange="codeUploaded()" />
+    </div>
+
+    <a id="codeDownloadLink" class="download-btn" download="PlayerAnt.js" href="">Download Code</a>
+  </div>
   <div id="editorContainer"></div>
-  <div id="simContainer"></div>
-
-  <button class="btn" id="runButton" onclick="run()">Run &#9658;</button>
-
-  <div class="upload-btn-wrapper">
-    <button class="btn ubtn">Load File</button>
-    <input type="file" id="codeUpload" name="myfile" accept=".js" onchange="codeUploaded()" />
+  <div id="simContainer">
+    <div id="simHint" class="sim-hint"><p>Click "Run" to test your ants!</p></div>
   </div>
 
   <script>var require = { paths: { 'vs': './node_modules/monaco-editor/min/vs' } };</script>
