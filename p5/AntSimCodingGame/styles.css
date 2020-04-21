@@ -51,14 +51,15 @@ body {
 }
 .sim-hint {
     position: absolute;
-    width: 100%;
+    width: 25rem;
     height: 100%;
     display: table;
+    margin-left: calc(50% - 12.5rem);
 }
 .sim-hint p {
     display: table-cell;
     vertical-align: middle;
-    text-align: center;
+    text-align: left;
     color: #666;
     font-size: 1.5rem;
 }
