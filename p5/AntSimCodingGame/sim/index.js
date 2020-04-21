@@ -9,9 +9,7 @@ window.load = function (js) {
         try {
             geval(js);
         } catch (err) {
-            var pre = document.createElement('pre');
-            pre.appendChild(document.createTextNode(err));
-            document.body.insertBefore(pre, document.body.firstChild);
+            console.log('[ANTSIM_COMPILER]', err);
         }
     }
 
