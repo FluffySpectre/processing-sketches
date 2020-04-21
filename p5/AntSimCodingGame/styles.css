@@ -36,7 +36,9 @@ body {
     width: 6rem;
     height: 3rem;
     color: white;
-    background-color: #4f8cbd;
+    /* background-color: #4f8cbd; */
+    background: #a42;
+    border-color: #88361b;
     padding: 8px 20px;
 }
 .sim-hint {
@@ -59,11 +61,11 @@ body {
     float: left;
 }
 .btn {
-    border: 1px solid gray;
-    color: gray;
-    background-color: white;
+    border: 1px solid #dedede;
+    color: #444;
+    background: linear-gradient(#fff, #f9f9f9);
     padding: 8px 20px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 16px;
     font-weight: bold;
     height: 3rem;
@@ -79,11 +81,11 @@ body {
 }
 
 .download-btn {
-    border: 1px solid gray;
-    color: gray;
-    background-color: white;
+    border: 1px solid #dedede;
+    color: #444;
+    background: linear-gradient(#fff, #f9f9f9);
     padding: 14px 20px;
-    border-radius: 8px;
+    border-radius: 4px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;

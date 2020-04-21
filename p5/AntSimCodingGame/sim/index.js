@@ -28,28 +28,29 @@ if (receivedJS) {
 }
 
 
-// const sandboxProxies = new WeakMap()
+// import { compileCode, expose } from './libraries/es.es6.min.js';
 
-// function compileCode(src) {
-//     src = 'with (sandbox) {' + src + '}';
-//     const code = new Function('sandbox', src);
+// var geval = eval;
 
-//     return function (sandbox) {
-//         if (!sandboxProxies.has(sandbox)) {
-//             const sandboxProxy = new Proxy(sandbox, { has, get });
-//             sandboxProxies.set(sandbox, sandboxProxy);
-//         }
-//         return code(sandboxProxies.get(sandbox));
+// window.load = function (js) {
+//     if (js) {
+//         const code = compileCode('console.log(BaseAnt)');
+//         expose('console', 'Math', 'p5', 'BaseAnt');
+//         code({num: 1.8}); // logs 2 to the console
+
+//         // try {
+//         //     geval(js);
+//         // } catch (err) {
+//         //     console.log(err);
+//         // }
 //     }
-// }
 
-// function has(target, key) {
-//     return true;
-// }
+//     setTimeout(function () {
+//         if (typeof window.playerCodeLoaded === 'function')
+//             window.playerCodeLoaded()
+//     }, 1000);
+// };
 
-// function get(target, key) {
-//     if (key === Symbol.unscopables) return undefined;
-//     return target[key];
+// if (receivedJS) {
+//     window.load(receivedJS);
 // }
-
-// compileCode('var t = 100; console.log(random(100));')({ console: console, random: (x) => { return random(x) } });
