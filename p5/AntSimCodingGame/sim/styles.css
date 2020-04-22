@@ -9,7 +9,7 @@ body {
 
 #statsPanel {
     position: relative;
-    width: 100%;
+    width: 800px;
     height: 4rem;
     background-color: #333;
 }
