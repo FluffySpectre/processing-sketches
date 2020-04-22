@@ -8,13 +8,33 @@ function resizeEditor() {
 window.addEventListener('resize', this.resizeEditor);
 
 // CODE EDITOR SETUP
-fetch('ant-template.js')
-    .then((response) => {
-        return response.text()
-    })
-    .then((data) => {
-        codeEditor.setValue(data);
-    });
+function createDependencyProposals(range) {
+    // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor)
+    return [
+        {
+            label: 'this.goToTarget',
+            kind: monaco.languages.CompletionItemKind.Function,
+            documentation: "Let the ant move to a target.",
+            insertText: 'this.goToTarget(',
+            range: range
+        },
+    ];
+}
+
+monaco.languages.registerCompletionItemProvider('javascript', {
+    provideCompletionItems: function (model, position) {
+        var word = model.getWordUntilPosition(position);
+        var range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+        };
+        return {
+            suggestions: createDependencyProposals(range)
+        };
+    }
+});
 
 var codeEditor = monaco.editor.create(document.getElementById('editorContainer'), {
     value: '',
@@ -23,6 +43,8 @@ var codeEditor = monaco.editor.create(document.getElementById('editorContainer')
     minimap: {
         enabled: false
     },
+    fontSize: 16,
+    lineNumbers: 'on',
 });
 codeEditor.onDidChangeModelContent(function (e) {
     // update the download link with the changed code
@@ -35,6 +57,14 @@ codeEditor.onDidChangeModelContent(function (e) {
     codeDownloadUrl = window.URL.createObjectURL(data);
     document.getElementById('codeDownloadLink').href = codeDownloadUrl;
 });
+
+fetch('ant-template.js')
+    .then((response) => {
+        return response.text()
+    })
+    .then((data) => {
+        codeEditor.setValue(data);
+    });
 
 var runContainer = document.getElementById('simContainer');
 var runIframe = null, runIframeHeight = 0;
