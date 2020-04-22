@@ -35,7 +35,7 @@ class PlayerAnt extends BaseAnt {
     }
     
     spotsBug(bug) {
-        if (Coordinate.distance(this.coordinate, bug.coordinate) < 25) {
+        if (Coordinate.distance(this, bug) < 25) {
             this.drop();
             this.goAwayFromTarget(bug, 50);
         }
@@ -73,6 +73,6 @@ class PlayerAnt extends BaseAnt {
     tick() {
         if (!this.target || this.currentLoad <= 0)
             return;
-        this.setMarker(Coordinate.directionAngle(this.coordinate, this.target.coordinate) - 180, 25);
+        this.setMarker(Coordinate.directionAngle(this, this.target) - 180, 25);
     }
 }

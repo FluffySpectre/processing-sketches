@@ -101,7 +101,7 @@ function draw() {
         let selectionRadius = 15;
         let nearestObject: any = null, nearestObjectDist = Number.MAX_SAFE_INTEGER;
         for (let s of environment.sugarHills) {
-            let fDist = Coordinate.distance(mouseCoord, s.coordinate);
+            let fDist = Coordinate.distance(mouseCoord, s);
             if (s && fDist < selectionRadius) {
                 if (fDist < nearestObjectDist) {
                     nearestObjectDist = fDist;
@@ -110,7 +110,7 @@ function draw() {
             }
         }
         for (let f of environment.fruits) {
-            let fDist = Coordinate.distance(mouseCoord, f.coordinate);
+            let fDist = Coordinate.distance(mouseCoord, f);
             if (f && fDist < selectionRadius) {
                 if (fDist < nearestObjectDist) {
                     nearestObjectDist = fDist;
@@ -122,11 +122,11 @@ function draw() {
         if (nearestObject) {
             showInfoDuration = showInfoMaxDuration;
             showInfoObject = nearestObject;
-            showInfoPosition = nearestObject.coordinate.position;
+            showInfoPosition = nearestObject.position;
         } else {
             for (let i=0; i<environment.bugs.insects.length; i++) {
                 let b = environment.bugs.insects[i] as Bug;
-                let bDist = Coordinate.distance(mouseCoord, b.coordinate);
+                let bDist = Coordinate.distance(mouseCoord, b);
                 if (b && bDist < selectionRadius) {
                     if (bDist < nearestObjectDist) {
                         nearestObjectDist = bDist;
@@ -137,7 +137,7 @@ function draw() {
 
             for (let i=0; i<environment.playerColony.insects.length; i++) {
                 let a = environment.playerColony.insects[i] as BaseAnt;
-                let aDist = Coordinate.distance(mouseCoord, a.coordinate);
+                let aDist = Coordinate.distance(mouseCoord, a);
                 if (a && aDist < selectionRadius) {
                     if (aDist < nearestObjectDist) {
                         nearestObjectDist = aDist;
@@ -149,7 +149,7 @@ function draw() {
             if (nearestObject) {
                 showInfoDuration = showInfoMaxDuration;
                 showInfoObject = nearestObject;
-                showInfoPosition = nearestObject.coordinate.position;
+                showInfoPosition = nearestObject.position;
             }
         }
     }

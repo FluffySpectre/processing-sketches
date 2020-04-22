@@ -6,6 +6,6 @@ class Sugar extends Food {
     render() {
         stroke(100);
         fill(250);
-        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius * 2);
+        ellipse(this.position.x, this.position.y, this.radius * 2);
     }
 }

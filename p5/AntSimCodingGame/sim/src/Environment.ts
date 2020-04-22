@@ -85,7 +85,7 @@ class Environment {
                 if (a.target instanceof Bug) {
                       let targetBug = a.target as Bug;
                       if (targetBug.vitality > 0) {
-                        if (Coordinate.distance(a.coordinate, a.target.coordinate) < SimSettings.battleRange) {
+                        if (Coordinate.distance(a, a.target) < SimSettings.battleRange) {
                             targetBug.vitality -= a.attack;
                             if (targetBug.vitality <= 0) {
                                 this.bugs.eatenInsects.push(targetBug);
@@ -219,7 +219,7 @@ class Environment {
 
     antAndSugar(ant: BaseAnt) {
         for (let s of this.sugarHills) {
-            let num = Coordinate.distance(ant.coordinate, s.coordinate);
+            let num = Coordinate.distance(ant, s);
             if (ant.target !== s && num <= ant.viewRange) {
                 ant.spotsSugar(s);
             }
@@ -228,7 +228,7 @@ class Environment {
 
     antAndFruit(ant: BaseAnt) {
         for (let f of this.fruits) {
-            let num = Coordinate.distance(ant.coordinate, f.coordinate);
+            let num = Coordinate.distance(ant, f);
             if (ant.target !== f && num <= ant.viewRange)
                 ant.spotsFruit(f);
         }
@@ -267,7 +267,7 @@ class Environment {
         for (let newM of this.playerColony.newMarker) {
             let alreadyAMarker = false;
             for (let m of this.playerColony.marker) {
-                if (Coordinate.distanceMidPoints(m.coordinate, newM.coordinate) < SimSettings.markerDistance) {
+                if (Coordinate.distanceMidPoints(m, newM) < SimSettings.markerDistance) {
                     alreadyAMarker = true;
                     break;
                 }
@@ -291,16 +291,21 @@ class Environment {
                 if (a.target === f || a.remainingRotation !== 0)
                     continue;
 
-                dx += a.currentSpeed * Math.cos(a.coordinate.direction * Math.PI / 180.0);
-                dy += a.currentSpeed * Math.sin(a.coordinate.direction * Math.PI / 180.0);
+                dx += a.currentSpeed * Math.cos(a.direction * Math.PI / 180.0);
+                dy += a.currentSpeed * Math.sin(a.direction * Math.PI / 180.0);
                 load += a.currentLoad;
             }
             load = Math.min(Math.floor(0.0 + load * SimSettings.fruitLoadMultiplier), f.amount);
             dx = dx * load / f.amount / f.carriers.length;
             dy = dy * load / f.amount / f.carriers.length;
-            f.coordinate = Coordinate.withDeltas(f.coordinate, dx, dy);
+
+            let newFruitCoord = Coordinate.withDeltas(f, dx, dy);
+            f.position = newFruitCoord.position;
+            f.direction = newFruitCoord.direction;
             for (let a of f.carriers) {
-                a.coordinate = Coordinate.withDeltas(a.coordinate, dx, dy);
+                let newCarrierCoord = Coordinate.withDeltas(a, dx, dy);
+                a.position = newCarrierCoord.position;
+                a.direction = newCarrierCoord.direction;
             }
         }
     }
@@ -333,7 +338,7 @@ class Environment {
 
     removeFruit() {
         for (let f of this.fruits) {
-            if (Coordinate.distanceMidPoints(f.coordinate, this.playerColony.antHill.coordinate) <= 5) {
+            if (Coordinate.distanceMidPoints(f, this.playerColony.antHill) <= 5) {
                 this.playerColony.statistics.collectedFood += f.amount;
                 f.amount = 0;
                 for (let a of f.carriers) {
@@ -389,7 +394,7 @@ class Environment {
         for (let b of this.bugs.insects) {
             if (b === insect) continue; // ignore ourself
 
-            let distSqr = Coordinate.distanceSqr(insect.coordinate, b.coordinate);
+            let distSqr = Coordinate.distanceSqr(insect, b);
             if (distSqr <= insect.viewRange * insect.viewRange) {
                 if (distSqr < nearestBugDist) {
                     nearestBugDist = distSqr;
@@ -408,7 +413,7 @@ class Environment {
             if (a === insect) continue; // ignore ourself
 
             // distanceSqr is used here because of performance reasons
-            let distSqr = Coordinate.distanceSqr(insect.coordinate, a.coordinate);
+            let distSqr = Coordinate.distanceSqr(insect, a);
             if (distSqr <= insect.viewRange * insect.viewRange) {
                 if (distSqr < nearestAntDist) {
                     nearestAntDist = distSqr;
@@ -431,7 +436,7 @@ class Environment {
             if (a === insect) continue; // ignore ourself
 
             // distanceSqr is used here because of performance reasons
-            let distSqr = Coordinate.distanceSqr(insect.coordinate, a.coordinate);
+            let distSqr = Coordinate.distanceSqr(insect, a);
             if (distSqr <= SimSettings.battleRange * SimSettings.battleRange) {
                 battleAnts.push(a);
             }
@@ -443,8 +448,8 @@ class Environment {
         let nearestMarker = null;
         let nearestMarkerDist = Number.MAX_SAFE_INTEGER;
         for (let m of this.playerColony.marker) {
-            let mDist = Coordinate.distanceMidPoints(insect.coordinate, m.coordinate);
-            if (mDist - insect.coordinate.radius - m.coordinate.radius <= 0 && mDist < nearestMarkerDist && insect.smelledMarker.indexOf(m) === -1) {
+            let mDist = Coordinate.distanceMidPoints(insect, m);
+            if (mDist - insect.radius - m.radius <= 0 && mDist < nearestMarkerDist && insect.smelledMarker.indexOf(m) === -1) {
                 nearestMarkerDist = mDist;
                 nearestMarker = m;
             }
@@ -454,7 +459,7 @@ class Environment {
 
     getRandomPoint() {
         let rp = createVector(random(20, width - 20), random(20, height - 20));
-        while (rp.dist(this.playerColony.antHill.coordinate.position) < 25) {
+        while (rp.dist(this.playerColony.antHill.position) < 25) {
             rp = createVector(random(20, width - 20), random(20, height - 20));
         }
         return rp;

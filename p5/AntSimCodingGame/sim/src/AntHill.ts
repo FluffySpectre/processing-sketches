@@ -1,13 +1,13 @@
-class AntHill {
-    coordinate: Coordinate;
+/// <reference path="Coordinate.ts"/>
 
+class AntHill extends Coordinate {
     constructor(x: number, y: number, radius: number) {
-        this.coordinate = new Coordinate(x, y, radius);
+        super(x, y, radius);
     }
 
     render() {
         stroke(100);
         fill(222, 184, 135, 255);
-        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius*2, this.coordinate.radius*2);
+        ellipse(this.position.x, this.position.y, this.radius*2, this.radius*2);
     }
 }

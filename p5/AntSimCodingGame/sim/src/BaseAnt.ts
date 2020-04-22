@@ -58,7 +58,7 @@ class BaseAnt extends Insect {
     // rendering
     render() {
         push();
-        translate(this.coordinate.position.x, this.coordinate.position.y);
+        translate(this.position.x, this.position.y);
 
         if (this.debugMessage) {
             fill(20);
@@ -73,7 +73,7 @@ class BaseAnt extends Insect {
             ellipse(0, 0, this.viewRange*2);
         }
 
-        rotate(this.coordinate.direction);
+        rotate(this.direction);
         noStroke();
         fill(this.colour);
         rect(-3, -1.5, 6, 3);

@@ -1,12 +1,12 @@
-class Marker {
+class Marker extends Coordinate {
     information: number;
-    coordinate: Coordinate;
     private age: number = 0;
     private maxAge: number;
     private spread: number;
 
-    constructor(coordinate: Coordinate, spread: number) {
-        this.coordinate = coordinate;
+    constructor(x: number, y: number, spread: number) {
+        super(x, y, 0);
+
         this.maxAge = SimSettings.markerMaximumAge;
         if (spread < 0) {
             spread = 0;
@@ -26,13 +26,13 @@ class Marker {
 
     update() {
         this.age++;
-        this.coordinate.radius = SimSettings.markerSizeMinimum;
-        this.coordinate.radius += this.spread * this.age / this.maxAge;
+        this.radius = SimSettings.markerSizeMinimum;
+        this.radius += this.spread * this.age / this.maxAge;
     }
     
     render() {
         noStroke();
         fill(240, 240, 10, map(this.age, 0, this.maxAge, 128, 0));
-        ellipse(this.coordinate.position.x, this.coordinate.position.y, this.coordinate.radius*2);
+        ellipse(this.position.x, this.position.y, this.radius*2);
     }
 }

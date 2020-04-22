@@ -1,11 +1,12 @@
-class Insect {
+/// <reference path="Coordinate.ts"/>
+
+class Insect extends Coordinate {
     colony: Colony;
     casteIndex: number;
     remainingDistance: number;
     remainingRotation: number;
     reached: boolean;
     traveledDistance: number;
-    coordinate: Coordinate;
     currentSpeed: number;
     carriedFruit: Fruit;
     debugMessage: string;
@@ -15,7 +16,9 @@ class Insect {
     casteCount: number;
     bugCount: number;
 
-    constructor() { }
+    constructor() {
+        super(0, 0, 0);
+    }
 
     init(colony: Colony, availableInsects: {[key: string]: number}) {
         this.colony = colony;
@@ -36,13 +39,16 @@ class Insect {
         this.colonyCount = 0;
         this.casteCount = 0;
 
-        // if we got an anthill spawn there, otheriwise at a random position on the map
-        if (this.colony.antHill)
-            this.coordinate = new Coordinate(this.colony.antHill.coordinate.position.x, this.colony.antHill.coordinate.position.y, 5);
-        else
-            this.coordinate = new Coordinate(random(0, width), random(0, height), 5);
+        // if we got an anthill spawn there, otherwise at a random position on the map
+        if (this.colony.antHill) {
+            this.position = createVector(this.colony.antHill.position.x, this.colony.antHill.position.y);
+            this.radius = 5;
+        } else {
+            this.position = createVector(random(0, width), random(0, height));
+            this.radius = 5;
+        }
 
-        this.coordinate.direction = random(0, 359);
+        this.direction = random(0, 359);
     }
 
     // getter/setter
@@ -114,10 +120,6 @@ class Insect {
     }
     private attackVal: number;
 
-    get direction() {
-        return this.coordinate.direction;
-    }
-
     get caste() {
         return this.colony.castes[this.casteIndex].name;
     }
@@ -125,7 +127,7 @@ class Insect {
     get distanceToAntHill() {
         let d = Number.MAX_SAFE_INTEGER;
         if (this.colony.antHill) {
-            let d2 = Coordinate.distanceMidPoints(this.coordinate, this.colony.antHill.coordinate);
+            let d2 = Coordinate.distanceMidPoints(this, this.colony.antHill);
             if (d2 < d) {
                 d = d2;
             }
@@ -149,15 +151,15 @@ class Insect {
     move() {
         if (this.remainingRotation !== 0) {
             if (Math.abs(this.remainingRotation) < this.rotationSpeed) {
-                this.coordinate.direction += this.remainingRotation;
+                this.direction += this.remainingRotation;
                 this.remainingRotation = 0;
             }
             else if (this.remainingRotation >= this.rotationSpeed) {
-                this.coordinate.direction += this.rotationSpeed;
+                this.direction += this.rotationSpeed;
                 this.remainingRotation = Coordinate.clampAngle(this.remainingRotation - this.rotationSpeed);
             }
             else if (this.remainingRotation <= -this.rotationSpeed) {
-                this.coordinate.direction -= this.rotationSpeed;
+                this.direction -= this.rotationSpeed;
                 this.remainingRotation = Coordinate.clampAngle(this.remainingRotation + this.rotationSpeed);
             }
         }
@@ -167,15 +169,15 @@ class Insect {
                 this.remainingDistance -= steps;
                 this.traveledDistance += steps;
 
-                this.coordinate.position.x += steps * Math.cos(this.coordinate.direction * Math.PI / 180.0);
-                this.coordinate.position.y += steps * Math.sin(this.coordinate.direction * Math.PI / 180.0);
+                this.position.x += steps * Math.cos(this.direction * Math.PI / 180.0);
+                this.position.y += steps * Math.sin(this.direction * Math.PI / 180.0);
             }
         }
         else if (this.target !== null) {
-            let d = Coordinate.distanceMidPoints(this.coordinate, this.target.coordinate);
+            let d = Coordinate.distanceMidPoints(this, this.target);
             this.reached = d <= 5;
             if (!this.reached) {
-                let dir = Coordinate.directionAngle(this.coordinate, this.target.coordinate);
+                let dir = Coordinate.directionAngle(this, this.target);
                 if (d < this.viewRange || this.carriedFruit) {
                     this.remainingDistance = d;
                 }
@@ -187,33 +189,33 @@ class Insect {
             }
         }
 
-        if (this.coordinate.position.x < 0) {
-            this.coordinate.position.x = -this.coordinate.position.x;
-            if (this.coordinate.direction > 90 && this.coordinate.direction <= 180)
-                this.coordinate.direction = 180 - this.coordinate.direction;
-            else if (this.coordinate.direction > 180 && this.coordinate.direction < 270)
-                this.coordinate.direction = 540 - this.coordinate.direction;
+        if (this.position.x < 0) {
+            this.position.x = -this.position.x;
+            if (this.direction > 90 && this.direction <= 180)
+                this.direction = 180 - this.direction;
+            else if (this.direction > 180 && this.direction < 270)
+                this.direction = 540 - this.direction;
         }
-        else if (this.coordinate.position.x > width) {
-            this.coordinate.position.x = width - this.coordinate.position.x;
-            if (this.coordinate.direction >= 0 && this.coordinate.direction < 90)
-                this.coordinate.direction = 180 - this.coordinate.direction;
-            else if (this.coordinate.direction > 270 && this.coordinate.direction < 360)
-                this.coordinate.direction = 540 - this.coordinate.direction;
+        else if (this.position.x > width) {
+            this.position.x = width - this.position.x;
+            if (this.direction >= 0 && this.direction < 90)
+                this.direction = 180 - this.direction;
+            else if (this.direction > 270 && this.direction < 360)
+                this.direction = 540 - this.direction;
         }
-        if (this.coordinate.position.y < 0) {
-            this.coordinate.position.y = -this.coordinate.position.y;
-            // if (this.coordinate.direction <= 180 || this.coordinate.direction >= 360)
+        if (this.position.y < 0) {
+            this.position.y = -this.position.y;
+            // if (this.direction <= 180 || this.direction >= 360)
             //     return;
-            this.coordinate.direction = 360 - this.coordinate.direction;
+            this.direction = 360 - this.direction;
         }
         else {
-            if (this.coordinate.position.y <= height)
+            if (this.position.y <= height)
                 return;
-            this.coordinate.position.y = height - this.coordinate.position.y;
-            if (this.coordinate.direction <= 0 || this.coordinate.direction >= 180)
+            this.position.y = height - this.position.y;
+            if (this.direction <= 0 || this.direction >= 180)
                 return;
-            this.coordinate.direction = 360 - this.coordinate.direction;
+            this.direction = 360 - this.direction;
         }
     }
 
@@ -230,7 +232,7 @@ class Insect {
         this.target = target;
     }
     goAwayFromTarget(target: any, distance: number) {
-        this.turnToDirection(Coordinate.directionAngle(this.coordinate, target.coordinate) + 180);
+        this.turnToDirection(Coordinate.directionAngle(this, target) + 180);
         this.goForward(distance);
     }
     goHome() {
@@ -246,11 +248,11 @@ class Insect {
         this.remainingRotation = Coordinate.clampAngle(angle);
     }
     turnToTarget(target: any) {
-        if (!target || !target.coordinate) return;
-        this.remainingRotation = Coordinate.clampAngle(Coordinate.directionAngle(this.coordinate, target.coordinate) - this.coordinate.direction);
+        if (!target || !target) return;
+        this.remainingRotation = Coordinate.clampAngle(Coordinate.directionAngle(this, target) - this.direction);
     }
     turnToDirection(direction: number) {
-        this.remainingRotation = Coordinate.clampAngle(direction - this.coordinate.direction);
+        this.remainingRotation = Coordinate.clampAngle(direction - this.direction);
     }
     turnAround() {
         if (this.remainingRotation > 0) this.remainingRotation = 180;
@@ -259,7 +261,7 @@ class Insect {
     // food
     take(food: Food) {
         if (food instanceof Sugar) {
-            if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) <= 5) {
+            if (Coordinate.distanceMidPoints(this, food) <= 5) {
                 let num = Math.min(this.maxLoad - this.currentLoad, food.amount);
                 this.currentLoad += num;
                 food.amount -= num;
@@ -269,7 +271,7 @@ class Insect {
                 return;
             if (this.carriedFruit)
                 this.drop();
-            if (Coordinate.distanceMidPoints(this.coordinate, food.coordinate) > 5)
+            if (Coordinate.distanceMidPoints(this, food) > 5)
                 return;
             this.stop();
             this.carriedFruit = food;
@@ -298,7 +300,8 @@ class Insect {
     setMarker(information: number, spread: number) {
         if (!spread || Number(spread) === NaN || spread < 0)
             spread = 0;
-        let m = new Marker(this.coordinate.copy(), spread);
+        let coord = this.copy();
+        let m = new Marker(coord.position.x, coord.position.y, spread);
         m.information = information;
         this.colony.newMarker.push(m);
         this.smelledMarker.push(m);
