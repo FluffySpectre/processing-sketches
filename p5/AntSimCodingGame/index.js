@@ -1,5 +1,7 @@
 // GLOBALS
 var codeDownloadUrl = null;
+var saveIndicatorTimeoutId = null;
+var saveTimeoutId = null;
 
 // WINDOW RESIZING
 function resizeEditor() {
@@ -7,12 +9,32 @@ function resizeEditor() {
 }
 window.addEventListener('resize', this.resizeEditor);
 
+// SAVE
+window.addEventListener('keydown', function(e) {
+    if (e.keyCode == 83 && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault();
+        
+        saveCode();
+    }
+}, false);
+function saveCode() {
+    if (saveIndicatorTimeoutId !== null)
+        clearTimeout(saveIndicatorTimeoutId);
+    document.getElementById('codeSaveIndicator').classList.add('show');
+    saveIndicatorTimeoutId = setTimeout(function() {
+        document.getElementById('codeSaveIndicator').classList.remove('show');
+    }, 1000);
+
+    // save the code to localStorage
+    localStorage.setItem('code', codeEditor.getValue());
+}
+
 // CODE EDITOR SETUP
 function createDependencyProposals(range) {
     // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor)
     return [
         {
-            label: 'this.goToTarget',
+            label: 'goToTarget',
             kind: monaco.languages.CompletionItemKind.Function,
             documentation: "Let the ant move to a target.",
             insertText: 'this.goToTarget(',
@@ -56,15 +78,26 @@ codeEditor.onDidChangeModelContent(function (e) {
     }
     codeDownloadUrl = window.URL.createObjectURL(data);
     document.getElementById('codeDownloadLink').href = codeDownloadUrl;
+
+    // wait a bit and then auto-save the code
+    if (saveTimeoutId !== null)
+        clearTimeout(saveTimeoutId);
+    saveTimeoutId = setTimeout(function() { saveCode(); }, 1000);
 });
 
-fetch('ant-template.js')
-    .then((response) => {
-        return response.text()
-    })
-    .then((data) => {
-        codeEditor.setValue(data);
-    });
+// restore saved code or start with the default template
+var c = localStorage.getItem('code');
+if (c) {
+    codeEditor.setValue(c);
+} else {
+    fetch('ant-template.js')
+        .then((response) => {
+            return response.text()
+        })
+        .then((data) => {
+            codeEditor.setValue(data);
+        });
+}
 
 var runContainer = document.getElementById('simContainer');
 var runIframe = null, runIframeHeight = 0;

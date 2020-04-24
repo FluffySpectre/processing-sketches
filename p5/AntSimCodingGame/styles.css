@@ -26,6 +26,22 @@ body {
     padding-top: 5px;
 }
 
+#codeSaveIndicator {
+    position: absolute;
+    top: 4rem;
+    left: calc(50% - 4.5rem);
+    width: 3rem;
+    height: 3rem;
+    color: white;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    font-size: 18px;
+}
+#codeSaveIndicator.show {
+    opacity: 1;
+}
+
 #editorContainer {
     position: relative;
     width: 50%;
