@@ -197,7 +197,7 @@ class Insect extends Coordinate {
                 this.direction = 540 - this.direction;
         }
         else if (this.position.x > width) {
-            this.position.x = width - this.position.x;
+            this.position.x = width;
             if (this.direction >= 0 && this.direction < 90)
                 this.direction = 180 - this.direction;
             else if (this.direction > 270 && this.direction < 360)
@@ -205,14 +205,12 @@ class Insect extends Coordinate {
         }
         if (this.position.y < 0) {
             this.position.y = -this.position.y;
-            // if (this.direction <= 180 || this.direction >= 360)
-            //     return;
             this.direction = 360 - this.direction;
         }
         else {
             if (this.position.y <= height)
                 return;
-            this.position.y = height - this.position.y;
+            this.position.y = height;
             if (this.direction <= 0 || this.direction >= 180)
                 return;
             this.direction = 360 - this.direction;
