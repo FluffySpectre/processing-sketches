@@ -41,6 +41,10 @@ body {
 #codeSaveIndicator.show {
     opacity: 1;
 }
+label {
+    color: white;
+    user-select: none;
+}
 
 #editorContainer {
     position: relative;

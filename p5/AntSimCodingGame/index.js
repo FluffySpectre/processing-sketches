@@ -2,6 +2,7 @@
 var codeDownloadUrl = null;
 var saveIndicatorTimeoutId = null;
 var saveTimeoutId = null;
+var autoSaveEnabled = false;
 
 // WINDOW RESIZING
 function resizeEditor() {
@@ -27,6 +28,12 @@ function saveCode() {
 
     // save the code to localStorage
     localStorage.setItem('code', codeEditor.getValue());
+}
+function autoSaveCheckClick() {
+    var checkBox = document.getElementById('autoSaveCheck');
+    if (checkBox.checked) autoSaveEnabled = true;
+    else autoSaveEnabled = false;
+    localStorage.setItem('auto-save', autoSaveEnabled);
 }
 
 // CODE EDITOR SETUP
@@ -79,10 +86,12 @@ codeEditor.onDidChangeModelContent(function (e) {
     codeDownloadUrl = window.URL.createObjectURL(data);
     document.getElementById('codeDownloadLink').href = codeDownloadUrl;
 
-    // wait a bit and then auto-save the code
-    if (saveTimeoutId !== null)
-        clearTimeout(saveTimeoutId);
-    saveTimeoutId = setTimeout(function() { saveCode(); }, 1000);
+    if (autoSaveEnabled) {
+        // wait a bit and then auto-save the code
+        if (saveTimeoutId !== null)
+            clearTimeout(saveTimeoutId);
+        saveTimeoutId = setTimeout(function() { saveCode(); }, 1000);
+    }
 });
 
 // restore saved code or start with the default template
@@ -97,6 +106,12 @@ if (c) {
         .then((data) => {
             codeEditor.setValue(data);
         });
+}
+// restore the auto save flag
+var autoSav = localStorage.getItem('auto-save');
+if (autoSav === 'true') {
+    autoSaveEnabled = true;
+    document.getElementById('autoSaveCheck').checked = true;
 }
 
 var runContainer = document.getElementById('simContainer');
