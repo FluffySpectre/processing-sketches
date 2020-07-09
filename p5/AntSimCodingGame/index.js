@@ -72,7 +72,7 @@ var codeEditor = monaco.editor.create(document.getElementById('editorContainer')
     minimap: {
         enabled: false
     },
-    fontSize: 16,
+    fontSize: 14,
     lineNumbers: 'on',
 });
 codeEditor.onDidChangeModelContent(function (e) {
@@ -114,7 +114,7 @@ if (autoSav === 'true') {
     document.getElementById('autoSaveCheck').checked = true;
 }
 
-var runContainer = document.getElementById('simContainer');
+var runContainer = document.getElementById('sim');
 var runIframe = null, runIframeHeight = 0;
 function run() {
     // hide sim hint text
@@ -167,3 +167,31 @@ function codeUploaded() {
     });
     reader.readAsText(file);
 }
+
+// TABS
+function openTab(tabName) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName('content-tab');
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = 'none';
+    }
+    tablinks = document.getElementsByClassName('tab');
+    for (i = 0; i < x.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(' is-active', '');
+    }
+    document.getElementById(tabName).style.display = 'block';
+
+    var tabElem = document.getElementById(tabName + 'Tab');
+    if (tabElem)
+        tabElem.className += ' is-active';
+}
+
+window.Split(['#leftContainer', '#rightContainer'], {
+    sizes: [50, 50],
+    minSize: [500, 600],
+    onDrag: function() {
+        resizeEditor();
+    }
+});
+
+resizeEditor();

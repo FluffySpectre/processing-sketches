@@ -1,8 +1,7 @@
 body {
     padding: 0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 20px;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
     margin: 0;
     font-family: 'Roboto', sans-serif;
 }
@@ -94,7 +93,7 @@ canvas {
 
 select {
     display: block;
-    font-size: 16px;
+    font-size: 14px;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     color: #444;
@@ -128,4 +127,5 @@ select option {
 
 #simSpeedsSelect {
     width: 14rem;
+    height: 3rem;
 }
