@@ -77,6 +77,15 @@ label {
     align-items: center;
 }
 
+#autoSaveCheck {
+    margin-left: 0.5rem;
+}
+#autoSaveCheckLabel {
+    -webkit-user-select: none;
+    user-select: none;
+    margin-left: 0.5rem;
+}
+
 #runButton {
     width: 6rem;
     height: 100%;
@@ -107,6 +116,8 @@ label {
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
 }
 .sim-hint p {
     text-align: left;
