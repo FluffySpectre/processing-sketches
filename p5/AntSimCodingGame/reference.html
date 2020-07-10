@@ -66,9 +66,73 @@
 </head>
 
 <body>
-  <h1>PlayerAnt</h1>
-
   <script>
+    var apiPlayerInfo = {
+      title: '',
+      items: [{
+        title: 'Properties',
+        description: '',
+        itemKeyTitle: 'Property',
+        itemDescriptionTitle: 'Description',
+        items: [{
+            title: 'name',
+            description: 'Your name or nickname.'
+          },
+          {
+            title: 'colonyName',
+            description: 'The name of your ant colony.'
+          },
+          {
+            title: 'castes',
+            description: 'An array of the different castes in your colony. Look at <a href="#Caste">Caste</a> for the object structure.'
+          }
+        ]
+      },
+      {
+        title: 'Caste',
+        description: '',
+        itemKeyTitle: 'Property',
+        itemDescriptionTitle: 'Description',
+        items: [{
+            title: 'name',
+            description: 'The name of the caste.'
+          },
+          {
+            title: 'color',
+            description: 'The color of the ants. The allowed spelling styles are: red, rgb(255,0,0), #ff0000.'
+          },
+          {
+            title: 'speed',
+            description: 'Determines how many steps an ant can take per round.'
+          },
+          {
+            title: 'rotationSpeed',
+            description: 'Determines how many degrees an ant can turn per round. While an ant is turning it cannot move.'
+          },
+          {
+            title: 'load',
+            description: 'Determines how many units of food an ant can carry. When an ant is carrying something, its attack value drops to 0. When an ant is fully loaded, its movement speed is cut in half.'
+          },
+          {
+            title: 'range',
+            description: 'Determines how many steps an ant can take before it dies. Once an ant has travelled a third of its range, it gets tired. This doesn’t have an effect on the other skills, though.'
+          },
+          {
+            title: 'viewRange',
+            description: 'Determines how far an ant can see. It’s measured in steps. It doesn’t matter if the object is in front of or behind the ant.'
+          },
+          {
+            title: 'vitality',
+            description: 'Determines how many hit points an ant has left. If the ant returns to the anthill, its hit points are recharged.'
+          },
+          {
+            title: 'attack',
+            description: 'Determines how many hit points are deducted from an opponent per round when an ant is fighting it.'
+          },
+        ]
+      }]
+    };
+
     var apiEvents = {
       title: 'Events',
       items: [{
@@ -414,6 +478,14 @@
       ]
     };
 
+    function renderTitle(title) {
+      var body = document.body;
+
+      var titleElem = document.createElement('h1');
+      titleElem.innerHTML = title;
+      body.appendChild(titleElem);
+    }
+
     function renderAPICategory(data) {
       var body = document.body;
 
@@ -457,6 +529,10 @@
       body.appendChild(spacer);
     }
 
+    renderTitle('PLAYER_INFO');
+    renderAPICategory(apiPlayerInfo);
+
+    renderTitle('PlayerAnt');
     renderAPICategory(apiEvents);
     renderAPICategory(apiMethods);
     renderAPICategory(apiProperties);
