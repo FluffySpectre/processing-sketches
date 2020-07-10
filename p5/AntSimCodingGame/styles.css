@@ -161,6 +161,7 @@ label {
 
 #tabs {
     width: 100%;
+    height: 100%;
 }
 .content-tab {
     width: 100%;
@@ -176,6 +177,7 @@ label {
     height: calc(100% - var(--top-bar-height));
     padding: 1rem;
     padding-left: 0;
+    padding-bottom: 0;
 }
 
 /* splitter stuff */
