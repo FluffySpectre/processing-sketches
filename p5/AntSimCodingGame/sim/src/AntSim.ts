@@ -2,6 +2,8 @@ let environment: Environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
 let simulationEnd = false;
+let simulationPlay = true;
+let simulationStep = false;
 
 // stats ui
 let colonyNameUI: p5.Element, foodValueUI: p5.Element, deadAntsValueUI: p5.Element, killedBugsValueUI: p5.Element, pointsValue: p5.Element;
@@ -11,11 +13,11 @@ let showInfoDuration = 0;
 let showInfoObject: any = null;
 let showInfoPosition: p5.Vector = null;
 
-function playerCodeLoaded() {
+function playerCodeLoaded(playerInfoObj: any) {
     playerCodeValid = true;
 
     // @ts-ignore check the playerinfo values
-    let playerInfo = PlayerInfo.fromObject(PLAYER_INFO);
+    let playerInfo = PlayerInfo.fromObject(playerInfoObj);
     for (let c of playerInfo.castes) {
         let abilitySum = c.speed + c.rotationSpeed + c.attack + c.load + c.range + c.viewRange + c.vitality;
         if (abilitySum !== 0) {
@@ -38,6 +40,23 @@ function playerCodeError() {
     playerCodeValid = false;   
 }
 
+function onMessage(evt: MessageEvent) {
+    if (evt.data.type === 'playerCodeLoaded') {
+        playerCodeLoaded(evt.data.param);
+    } else if (evt.data.type === 'playerCodeError') {
+        playerCodeError();
+    } else if (evt.data.type === 'simSpeedChanged') {
+        onSimSpeedChanged(evt.data.param);
+    } else if (evt.data.type === 'pause') {
+        simulationPlay = false;
+    } else if (evt.data.type === 'play') {
+        simulationPlay = true;
+    } else if (evt.data.type === 'step') {
+        simulationPlay = false;
+        simulationStep = true;
+    }
+}
+
 function onSimSpeedChanged(selectedSpeed: number) {
     let speeds = [1, 2, 4, 8, 16];
     SimSettings.stepMultiplicator = selectedSpeed >= 0 && selectedSpeed < speeds.length ? speeds[selectedSpeed] : 1;
@@ -47,7 +66,7 @@ function setup() {
     frameRate(SimSettings.stepsPerSecond);
 
     let s = 800;
-    var cnv = createCanvas(s, s);
+    let cnv = createCanvas(s, s);
     cnv.style('display', 'block');
 
     colonyNameUI = select('#colonyName');
@@ -55,6 +74,9 @@ function setup() {
     deadAntsValueUI = select('#deadAntsValue');
     killedBugsValueUI = select('#killedBugsValue');
     pointsValue = select('#pointsValue');
+
+    // listen for post messages
+    window.addEventListener('message', onMessage, false);
 }
 
 // function windowResized() {
@@ -76,12 +98,15 @@ function draw() {
         return;
     }
 
-    for (let i = 0; i < SimSettings.stepMultiplicator; i++) {
-        if (environment.currentRound < SimSettings.totalRounds) {
-            environment.step();
-        } else {
-            // simulation ended
-            simulationEnd = true;
+    if (simulationPlay || simulationStep) {
+        simulationStep = false;
+        for (let i = 0; i < SimSettings.stepMultiplicator; i++) {
+            if (environment.currentRound < SimSettings.totalRounds) {
+                environment.step();
+            } else {
+                // simulation ended
+                simulationEnd = true;
+            }
         }
     }
 

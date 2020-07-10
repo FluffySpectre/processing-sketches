@@ -1,5 +1,35 @@
+var simPlaying = true;
+
+function pauseSim() {
+    window.postMessage({ type: 'pause' }, '*');
+
+    simPlaying = false;
+    updatePlayPauseButtons();
+}
+
+function playSim() {
+    window.postMessage({ type: 'play' }, '*');
+
+    simPlaying = true;
+    updatePlayPauseButtons();
+}
+
+function stepSim() {
+    window.postMessage({ type: 'step' }, '*');
+}
+
+function updatePlayPauseButtons() {
+    document.getElementById('pauseButton').style.display = simPlaying ? 'block' : 'none';
+    document.getElementById('playButton').style.display = !simPlaying ? 'block' : 'none';
+
+    if (simPlaying)
+        document.getElementById('stepButton').setAttribute('disabled', 'true');
+    else
+        document.getElementById('stepButton').removeAttribute('disabled');
+}
+
 function simSpeedChanged(simSpeed) {
-    onSimSpeedChanged(simSpeed);
+    window.postMessage({ type: 'simSpeedChanged', param: simSpeed }, '*');
 }
 
 var geval = eval;
@@ -11,7 +41,7 @@ window.load = function (js) {
         try {
             geval(js);
         } catch (err) {
-            console.log('[ANTSIM_COMPILER]', err);
+            console.error('[ANTSIM_COMPILER]', err);
             compileFailed = true;
             compileErr = err;
         }
@@ -19,13 +49,12 @@ window.load = function (js) {
 
     setTimeout(function () {
         if (!compileFailed) {
-            if (typeof window.playerCodeLoaded === 'function')
-                window.playerCodeLoaded();
+            window.postMessage({ type: 'playerCodeLoaded', param: PLAYER_INFO }, '*');
+            
             // display the sim speed controls
             document.getElementById('simSpeedPanel').style.visibility = 'visible';
         } else {
-            if (typeof window.playerCodeError === 'function')
-                window.playerCodeError(compileErr);
+            window.postMessage({ type: 'playerCodeError', param: compileErr }, '*');
         }
     }, 1000);
 };
@@ -33,31 +62,3 @@ window.load = function (js) {
 if (receivedJS) {
     window.load(receivedJS);
 }
-
-
-// import { compileCode, expose } from './libraries/es.es6.min.js';
-
-// var geval = eval;
-
-// window.load = function (js) {
-//     if (js) {
-//         const code = compileCode('console.log(BaseAnt)');
-//         expose('console', 'Math', 'p5', 'BaseAnt');
-//         code({num: 1.8}); // logs 2 to the console
-
-//         // try {
-//         //     geval(js);
-//         // } catch (err) {
-//         //     console.log(err);
-//         // }
-//     }
-
-//     setTimeout(function () {
-//         if (typeof window.playerCodeLoaded === 'function')
-//             window.playerCodeLoaded()
-//     }, 1000);
-// };
-
-// if (receivedJS) {
-//     window.load(receivedJS);
-// }

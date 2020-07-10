@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap">
-  
+  <link rel="stylesheet" href="../libraries/bulma.min.css">
+
   <link rel="stylesheet" href="./styles.css">
 
   <script type="text/javascript">
@@ -20,14 +21,23 @@
 
 <body>
   <div id="simSpeedPanel">
-    <!-- <label id="simSpeedLabel" for="simSpeeds">Sim Speed:</label> -->
-    <select id="simSpeedsSelect" name="simSpeeds" onchange="simSpeedChanged(this.selectedIndex)">
-      <option>Standard Speed (1x)</option>
-      <option>Supersonic Speed (2x)</option>
-      <option>Light Speed (4x)</option>
-      <option>Ridiculous Speed (8x)</option>
-      <option>Ludicrous Speed (16x)</option>
-    </select>
+    <div class="buttons has-addons small-margin-right">
+      <button class="button" id="pauseButton" onclick="pauseSim()">Pause</button>
+      <button class="button" id="playButton" style="display: none;" onclick="playSim()">Play</button>
+      <button class="button" id="stepButton" disabled="true" onclick="stepSim()">Step</button>
+    </div>
+
+    <div class="control">
+      <div class="select">
+        <select onchange="simSpeedChanged(this.selectedIndex)">
+          <option>Standard Speed (1x)</option>
+          <option>Supersonic Speed (2x)</option>
+          <option>Light Speed (4x)</option>
+          <option>Ridiculous Speed (8x)</option>
+          <option>Ludicrous Speed (16x)</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <div id="statsPanel">

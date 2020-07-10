@@ -1,5 +1,5 @@
 :root {
-    --top-bar-height: 3rem;
+    --top-bar-height: 2.5rem;
 }
 
 html, body {
@@ -100,7 +100,7 @@ label {
 
 #editorContainer {
     width: 100%;
-    height: calc(100% - var(--top-bar-height) - 5px);
+    height: calc(100% - var(--top-bar-height));
     position: relative;
     padding-top: 5px;
 }
@@ -123,7 +123,7 @@ label {
 }
 .sim-hint p {
     text-align: left;
-    color: #666;
+    color: white;
     font-size: 1.5rem;
 }
 .sim-hint .run-span {
