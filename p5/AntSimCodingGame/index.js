@@ -186,11 +186,19 @@ function openTab(tabName) {
         tabElem.className += ' is-active';
 }
 
-window.Split(['#leftContainer', '#rightContainer'], {
-    sizes: [50, 50],
+// CONTAINER SPLITTING (CODE EDITOR / SIMULATION)
+var splitSizes = [50, 50]; // default split of 50%
+var savedSplitSizesJSON = localStorage.getItem('split');
+if (savedSplitSizesJSON)
+    splitSizes = JSON.parse(savedSplitSizesJSON);
+var split = window.Split(['#leftContainer', '#rightContainer'], {
+    sizes: splitSizes,
     minSize: [500, 600],
     onDrag: function() {
         resizeEditor();
+
+        // save split sizes
+        localStorage.setItem('split', JSON.stringify(split.getSizes()));
     }
 });
 
