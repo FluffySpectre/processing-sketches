@@ -13,7 +13,7 @@ class PlayerAnt extends BaseAnt {
 
     waits() {
         this.goForward(40);
-        this.turnByDegrees(random(-10, 10));
+        this.turnByDegrees(RandomNumber.number(-10, 10));
     }
     
     spotsBug(bug) {

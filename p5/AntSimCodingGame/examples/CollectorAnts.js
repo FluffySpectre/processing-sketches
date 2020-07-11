@@ -16,7 +16,7 @@ class PlayerAnt extends BaseAnt {
     }
 
     waits() {
-        this.turnByDegrees(random(-45, 45));
+        this.turnByDegrees(RandomNumber.number(-45, 45));
         this.goForward(this.viewRange*2);
     }
     
