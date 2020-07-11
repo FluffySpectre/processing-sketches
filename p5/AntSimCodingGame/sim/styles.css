@@ -94,15 +94,15 @@ canvas {
 
 #pauseButton {
     /* background-color: lime; */
-    width: 6rem;
+    width: 5rem;
     height: 2.5rem;
 }
 #playButton {
-    width: 6rem;
+    width: 5rem;
     height: 2.5rem;
 }
 #stepButton {
-    width: 6rem;
+    width: 5rem;
     height: 2.5rem;
 }
 .buttons:not(:last-child) {

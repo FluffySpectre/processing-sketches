@@ -22,9 +22,21 @@
 <body>
   <div id="simSpeedPanel">
     <div class="buttons has-addons small-margin-right">
-      <button class="button has-text-weight-light" id="pauseButton" onclick="pauseSim()">Pause</button>
-      <button class="button has-text-weight-light" id="playButton" style="display: none;" onclick="playSim()">Play</button>
-      <button class="button has-text-weight-light" id="stepButton" disabled="true" onclick="stepSim()">Step</button>
+      <button class="button has-text-weight-light" id="pauseButton" onclick="pauseSim()" title="Pause simulation">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M14,19H18V5H14M6,19H10V5H6V19Z" />
+        </svg>
+      </button>
+      <button class="button has-text-weight-light" id="playButton" style="display: none;" onclick="playSim()" title="Play simulation">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+        </svg>
+      </button>
+      <button class="button has-text-weight-light" id="stepButton" disabled="true" onclick="stepSim()" title="Simulate one round">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12" />
+        </svg>
+      </button>
     </div>
 
     <div class="control">
