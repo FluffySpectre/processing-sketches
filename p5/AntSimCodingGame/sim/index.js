@@ -16,16 +16,14 @@ function playSim() {
 
 function stepSim() {
     window.postMessage({ type: 'step' }, '*');
+
+    simPlaying = false;
+    updatePlayPauseButtons();
 }
 
 function updatePlayPauseButtons() {
     document.getElementById('pauseButton').style.display = simPlaying ? 'block' : 'none';
     document.getElementById('playButton').style.display = !simPlaying ? 'block' : 'none';
-
-    if (simPlaying)
-        document.getElementById('stepButton').setAttribute('disabled', 'true');
-    else
-        document.getElementById('stepButton').removeAttribute('disabled');
 }
 
 function simSpeedChanged(simSpeed) {
