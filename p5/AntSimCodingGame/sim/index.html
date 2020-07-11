@@ -22,14 +22,14 @@
 <body>
   <div id="simSpeedPanel">
     <div class="buttons has-addons small-margin-right">
-      <button class="button" id="pauseButton" onclick="pauseSim()">Pause</button>
-      <button class="button" id="playButton" style="display: none;" onclick="playSim()">Play</button>
-      <button class="button" id="stepButton" disabled="true" onclick="stepSim()">Step</button>
+      <button class="button has-text-weight-light" id="pauseButton" onclick="pauseSim()">Pause</button>
+      <button class="button has-text-weight-light" id="playButton" style="display: none;" onclick="playSim()">Play</button>
+      <button class="button has-text-weight-light" id="stepButton" disabled="true" onclick="stepSim()">Step</button>
     </div>
 
     <div class="control">
       <div class="select">
-        <select onchange="simSpeedChanged(this.selectedIndex)">
+        <select class="has-text-weight-light" onchange="simSpeedChanged(this.selectedIndex)">
           <option>Standard Speed (1x)</option>
           <option>Supersonic Speed (2x)</option>
           <option>Light Speed (4x)</option>
