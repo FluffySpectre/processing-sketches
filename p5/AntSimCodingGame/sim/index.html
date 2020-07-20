@@ -16,10 +16,11 @@
     };
   </script>
 
+  <script src="libraries/p5.min.js"></script>
   <script src="build/build.js"></script>
 </head>
 
-<body>
+<body oncontextmenu="return false;">
   <div id="simSpeedPanel">
     <div class="buttons has-addons small-margin-right">
       <button class="button has-text-weight-light" id="pauseButton" onclick="pauseSim()" title="Pause simulation">
@@ -47,6 +48,13 @@
           <option>Light Speed (4x)</option>
           <option>Ridiculous Speed (8x)</option>
           <option>Ludicrous Speed (16x)</option>
+        </select>
+      </div>
+
+      <div class="select">
+        <select class="has-text-weight-light" onchange="rendererChanged(this.selectedIndex)">
+          <option>2D</option>
+          <option selected>3D</option>
         </select>
       </div>
     </div>

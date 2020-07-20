@@ -30,6 +30,10 @@ function simSpeedChanged(simSpeed) {
     window.postMessage({ type: 'simSpeedChanged', param: simSpeed }, '*');
 }
 
+function rendererChanged(renderer) {
+    window.postMessage({ type: 'rendererChanged', param: renderer }, '*');
+}
+
 var geval = eval;
 
 window.load = function (js) {

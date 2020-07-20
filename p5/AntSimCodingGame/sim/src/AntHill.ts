@@ -5,9 +5,11 @@ class AntHill extends Coordinate {
         super(x, y, radius);
     }
 
-    render() {
-        stroke(100);
-        fill(222, 184, 135, 255);
-        ellipse(this.position.x, this.position.y, this.radius*2, this.radius*2);
+    getState(): AntHillState {
+        return {
+            positionX: this.position.x,
+            positionY: this.position.y,
+            radius: this.radius
+        };
     }
 }

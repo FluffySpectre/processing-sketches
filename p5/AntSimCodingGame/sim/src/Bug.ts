@@ -11,15 +11,14 @@ class Bug extends Insect {
         this.colour = 'blue';
     }
 
-    render() {
-        push();
-        translate(this.position.x, this.position.y);
-
-        rotate(this.direction);
-        noStroke();
-        fill(this.colour);
-        rect(-4, -2.5, 8, 5);
-
-        pop();
+    getState(): BugState {
+        return { 
+            positionX: this.position.x,
+            positionY: this.position.y,
+            direction: this.direction,
+            radius: this.radius,
+            vitality: this.vitality,
+            colour: this.colour
+        };
     }
 }

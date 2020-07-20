@@ -29,10 +29,15 @@ class Marker extends Coordinate {
         this.radius = SimSettings.markerSizeMinimum;
         this.radius += this.spread * this.age / this.maxAge;
     }
-    
-    render() {
-        noStroke();
-        fill(240, 240, 10, map(this.age, 0, this.maxAge, 128, 0));
-        ellipse(this.position.x, this.position.y, this.radius*2);
+
+    getState(): MarkerState {
+        return { 
+            positionX: this.position.x,
+            positionY: this.position.y,
+            radius: this.radius,
+            direction: this.direction,
+            age: this.age,
+            maxAge: this.maxAge
+        };
     }
 }

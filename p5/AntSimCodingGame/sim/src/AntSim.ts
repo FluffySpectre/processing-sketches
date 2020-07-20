@@ -1,3 +1,6 @@
+const canvasSize = 800;
+
+let renderer: Renderer;
 let environment: Environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
@@ -12,6 +15,8 @@ let showInfoMaxDuration = 5;
 let showInfoDuration = 0;
 let showInfoObject: any = null;
 let showInfoPosition: p5.Vector = null;
+let objectInfoName: string;
+let objectInfoValue: string;
 
 function playerCodeLoaded(playerInfoObj: any) {
     playerCodeValid = true;
@@ -54,6 +59,8 @@ function onMessage(evt: MessageEvent) {
     } else if (evt.data.type === 'step') {
         simulationPlay = false;
         simulationStep = true;
+    } else if (evt.data.type === 'rendererChanged') {
+        onRendererChanged(evt.data.param);
     }
 }
 
@@ -62,12 +69,20 @@ function onSimSpeedChanged(selectedSpeed: number) {
     SimSettings.stepMultiplicator = selectedSpeed >= 0 && selectedSpeed < speeds.length ? speeds[selectedSpeed] : 1;
 }
 
+function onRendererChanged(selectedRenderer: number) {
+    if (selectedRenderer === 0) {
+        renderer = new Renderer2D(canvasSize, canvasSize);
+    } else if (selectedRenderer === 1) {
+        renderer = new Renderer3D(canvasSize, canvasSize);
+    }
+}
+
 function setup() {
     frameRate(SimSettings.stepsPerSecond);
 
-    let s = 800;
-    let cnv = createCanvas(s, s);
-    cnv.style('display', 'block');
+    renderer = new Renderer3D(canvasSize, canvasSize);
+
+    angleMode(DEGREES);
 
     colonyNameUI = select('#colonyName');
     foodValueUI = select('#foodValue');
@@ -79,15 +94,7 @@ function setup() {
     window.addEventListener('message', onMessage, false);
 }
 
-// function windowResized() {
-//     let s = windowWidth < windowHeight ? windowWidth : windowHeight;
-//     resizeCanvas(s - 40, s - 20);
-// }
-
 function draw() {
-    angleMode(DEGREES);
-    background(245, 222, 179);
-
     if (!playerCodeValid) {
         drawMessage('There are errors in your code. Please check the console.', '#f00');
         return;
@@ -98,6 +105,7 @@ function draw() {
         return;
     }
 
+    // simulate
     if (simulationPlay || simulationStep) {
         simulationStep = false;
         for (let i = 0; i < SimSettings.stepMultiplicator; i++) {
@@ -110,7 +118,21 @@ function draw() {
         }
     }
 
-    environment.render();
+    handleSelection();
+
+    // render
+    if (renderer) {
+        const simState = environment.getState();
+        if (objectInfoName) {
+            simState.selectionState = {
+                selectedObjectPositionX: showInfoPosition.x,
+                selectedObjectPositionY: showInfoPosition.y,
+                selectedObjectName: objectInfoName,
+                selectedObjectInfo: objectInfoValue,
+            };
+        }
+        renderer.render(simState);
+    }
 
     // update stats ui
     if (frameCount % SimSettings.stepsPerSecond === 0) {
@@ -120,6 +142,12 @@ function draw() {
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
 
+    if (simulationEnd) {
+        drawMessage('Simulation finished!', '#fff');
+    }
+}
+
+function handleSelection() {
     if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
         let mouseCoord = new Coordinate(mouseX, mouseY, 0);
 
@@ -179,27 +207,29 @@ function draw() {
         }
     }
 
-    if (simulationEnd) {
-        drawMessage('Simulation finished!', '#fff');
-    }
-
-    if (SimSettings.displayDebugLabels) {
-        fill(20);
-        textSize(12);
-        text('FPS: ' + Math.floor(frameRate()), 10, 20);
-        text('Round: ' + environment.currentRound, 10, 36);
-    }
-
+    objectInfoName = null;
+    objectInfoValue = null;
     if (showInfoDuration > 0) {
         showInfoDuration--;
-        if (showInfoObject instanceof Sugar)
-            drawInfo('Sugar', 'Amount: ' + showInfoObject.amount.toString(), showInfoPosition);
-        else if (showInfoObject instanceof Fruit)
-            drawInfo('Apple', 'Amount: ' + showInfoObject.amount.toString(), showInfoPosition);
-        else if (showInfoObject instanceof BaseAnt)
-            drawInfo('Ant ' + showInfoObject.name, 'Vitality: ' + showInfoObject.vitality.toString(), showInfoPosition);
-        else if (showInfoObject instanceof Bug)
-            drawInfo('Bug', 'Vitality: ' + showInfoObject.vitality.toString(), showInfoPosition);
+
+        switch (true) {
+            case showInfoObject instanceof Sugar:
+                objectInfoName = 'Sugar';
+                objectInfoValue = 'Amount: ' + showInfoObject.amount.toString();
+                break;
+            case showInfoObject instanceof Fruit:
+                objectInfoName = 'Apple';
+                objectInfoValue = 'Amount: ' + showInfoObject.amount.toString();
+                break;
+            case showInfoObject instanceof BaseAnt:
+                objectInfoName = 'Ant';
+                objectInfoValue = 'Vitality: ' + showInfoObject.vitality.toString();
+                break;
+            case showInfoObject instanceof Bug:
+                objectInfoName = 'Bug';
+                objectInfoValue = 'Vitality: ' + showInfoObject.vitality.toString();
+                break;
+        }
     }
 }
 
@@ -210,13 +240,4 @@ function drawMessage(msg: string, textColor: string) {
     textSize(24);
     fill(textColor);
     text(msg, width/2-textWidth(msg)/2, height/2-12);
-}
-
-function drawInfo(firstLine: string, secondLine: string, position: p5.Vector) {
-    fill(20);
-    textSize(12);
-    let tw = textWidth(firstLine);
-    text(firstLine, position.x - tw / 2, position.y - 32);
-    let tw2 = textWidth(secondLine);
-    text(secondLine, position.x - tw2 / 2, position.y - 16);
 }

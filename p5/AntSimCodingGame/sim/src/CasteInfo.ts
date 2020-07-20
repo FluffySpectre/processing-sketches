@@ -22,4 +22,18 @@ class CasteInfo {
         ci.attack = Number.isInteger(obj.attack) ? obj.attack : 0;
         return ci;
     }
+
+    getState(): CasteState {
+        return {
+            name: this.name,
+            color: this.color,
+            speed: this.speed,
+            rotationSpeed: this.rotationSpeed,
+            load: this.load,
+            range: this.range,
+            viewRange: this.viewRange,
+            vitality: this.vitality,
+            attack: this.attack
+        };
+    }
 }

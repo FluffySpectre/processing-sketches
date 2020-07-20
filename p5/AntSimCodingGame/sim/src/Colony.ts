@@ -104,8 +104,34 @@ class Colony {
         this.antsInCaste[insect.casteIndex]--;
     }
 
-    render() {
-        if (this.antHill) 
-            this.antHill.render();
+    getState(): ColonyState {
+        const antStates = [];
+        for (let a of this.insects) {
+            antStates.push((a as BaseAnt).getState());
+        }
+
+        const markerStates = [];
+        for (let m of this.marker) {
+            markerStates.push(m.getState());
+        }
+
+        const casteStates = [];
+        for (let c of this.castes) {
+            casteStates.push(c.getState());
+        }
+
+        return {
+            antStates: antStates,
+            antHillState: this.antHill.getState(),
+            markerStates: markerStates,
+            casteStates: casteStates,
+            colonyName: this.playerInfo.colonyName,
+            playerName: this.playerInfo.name,
+            starvedAnts: this.statistics.starvedAnts,
+            eatenAnts: this.statistics.eatenAnts,
+            collectedFood: this.statistics.collectedFood,
+            killedBugs: this.statistics.killedBugs,
+            points: this.statistics.points
+        };
     }
 }

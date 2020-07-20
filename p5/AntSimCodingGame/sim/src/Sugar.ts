@@ -3,9 +3,12 @@ class Sugar extends Food {
         super(x, y, amount);
     }
 
-    render() {
-        stroke(100);
-        fill(250);
-        ellipse(this.position.x, this.position.y, this.radius * 2);
+    getState(): SugarState {
+        return {
+            positionX: this.position.x,
+            positionY: this.position.y,
+            radius: this.radius,
+            amount: this.amount
+        };
     }
 }

@@ -217,9 +217,6 @@ class Insect extends Coordinate {
         }
     }
 
-    // rendering
-    render() {}
-
     // player commands
     // moving
     goForward(distance: number) {

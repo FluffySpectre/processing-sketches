@@ -7,6 +7,7 @@ class Environment {
     fruitDelay: number;
     bugDelay: number;
     currentRound: number;
+    currentSimState: SimState;
 
     constructor(playerInfo: PlayerInfo, randSeed: number) {
         if (randSeed !== 0) randomSeed(randSeed);
@@ -120,27 +121,28 @@ class Environment {
         this.removeBugs();
         this.healBugs();
         this.spawnBug();
+
+        // generate the new simulation state
+        this.generateSimState();
     }
 
-    // this is the main render loop of this simulation
-    render() {
-        for (let a of this.playerColony.insects) {
-            a.render();
-        }
+    generateSimState() {
+        const newSimState = new SimState();
+        newSimState.colonyState = this.playerColony.getState();
         for (let b of this.bugs.insects) {
-            b.render();
+            newSimState.bugStates.push((b as Bug).getState());
         }
         for (let s of this.sugarHills) {
-            s.render();
+            newSimState.sugarStates.push(s.getState());
         }
         for (let f of this.fruits) {
-            f.render();
+            newSimState.fruitStates.push(f.getState());
         }
-        for (let m of this.playerColony.marker) {
-            m.render();
-        }
+        this.currentSimState = newSimState;
+    }
 
-        this.playerColony.render();
+    getState() {
+        return this.currentSimState;
     }
 
     spawnAnt() {

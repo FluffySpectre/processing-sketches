@@ -55,34 +55,40 @@ class BaseAnt extends Insect {
     hasDied(death: string) { }
     tick() { }
 
-    // rendering
-    render() {
-        push();
-        translate(this.position.x, this.position.y);
-
-        if (this.debugMessage) {
-            fill(20);
-            textSize(12);
-            let tw = textWidth(this.debugMessage);
-            text(this.debugMessage, -tw / 2, -14);
+    getState(): AntState {
+        let targetType = TargetType.None;
+        switch (true) {
+            case this.target instanceof Sugar:
+                targetType = TargetType.Sugar;
+                break;
+            case this.target instanceof Fruit:
+                targetType = TargetType.Fruit;
+                break;
+            case this.target instanceof Bug:
+                targetType = TargetType.Bug;
+                break;
+            case this.target instanceof AntHill:
+                targetType = TargetType.Anthill;
+                break;
+            case this.target instanceof Marker:
+                targetType = TargetType.Marker;
+                break;
         }
-
-        if (SimSettings.displayDebugLabels) {
-            noStroke();
-            fill(20, 15);
-            ellipse(0, 0, this.viewRange*2);
-        }
-
-        rotate(this.direction);
-        noStroke();
-        fill(this.colour);
-        rect(-3, -1.5, 6, 3);
-
-        if (this.currentLoad > 0 && !this.carriedFruit) {
-            fill(250);
-            rect(-2.5, -2.5, 5, 5);
-        }
-
-        pop();
+        return {
+            casteIndex: this.casteIndex,
+            positionX: this.position.x,
+            positionY: this.position.y,
+            radius: this.radius,
+            direction: this.direction,
+            colour: this.colour,
+            targetPositionX: this.target ? this.target.position.x : -1,
+            targetPositionY: this.target ? this.target.position.y : -1,
+            targetType: targetType,
+            vitality: this.vitality,
+            load: this.currentLoad,
+            loadType: !this.carriedFruit && this.currentLoad <= 0 ? LoadType.None : this.carriedFruit ? LoadType.Fruit : LoadType.Sugar,
+            viewRange: this.viewRange,
+            debugMessage: this.debugMessage
+        };
     }
 }

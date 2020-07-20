@@ -25,16 +25,13 @@ class Fruit extends Food {
         return num * SimSettings.fruitLoadMultiplier < this.amount;
     }
 
-    render() {
-        stroke(100);
-        fill(10, 230, 10);
-        ellipse(this.position.x, this.position.y, this.radius * 2);
-
-        if (SimSettings.displayDebugLabels && this.carriers.length > 0) {
-            fill(20);
-            textSize(12);
-            let tw = textWidth(this.carriers.length.toString());
-            text(this.carriers.length.toString(), this.position.x - tw / 2, this.position.y - 14);
-        }
+    getState(): FruitState {
+        return { 
+            positionX: this.position.x,
+            positionY: this.position.y,
+            amount: this.amount,
+            radius: this.radius,
+            carriers: this.carriers.length
+        };
     }
 }
