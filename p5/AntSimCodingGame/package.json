@@ -5,8 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": "https://bitbucket.org/bjoernbosse/processing-sketches.git",
   "author": "Björn Bosse",
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "monaco-editor": "0.20.0"
   }
