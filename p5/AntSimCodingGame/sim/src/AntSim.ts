@@ -4,6 +4,7 @@ let renderer: Renderer;
 let environment: Environment;
 let playerCodeAvailable = false;
 let playerCodeValid = true;
+let playerInfo: PlayerInfo;
 let simulationEnd = false;
 let simulationPlay = true;
 let simulationStep = false;
@@ -22,7 +23,7 @@ function playerCodeLoaded(playerInfoObj: any) {
     playerCodeValid = true;
 
     // @ts-ignore check the playerinfo values
-    let playerInfo = PlayerInfo.fromObject(playerInfoObj);
+    playerInfo = PlayerInfo.fromObject(playerInfoObj);
     for (let c of playerInfo.castes) {
         let abilitySum = c.speed + c.rotationSpeed + c.attack + c.load + c.range + c.viewRange + c.vitality;
         if (abilitySum !== 0) {
@@ -32,12 +33,7 @@ function playerCodeLoaded(playerInfoObj: any) {
     }
 
     if (playerCodeValid) {
-        SimSettings.displayDebugLabels = playerInfo.debug;
-        environment = new Environment(playerInfo, 0);
-
-        playerCodeAvailable = true;
-
-        colonyNameUI.html(playerInfo.colonyName);
+        startSimulation();
     }
 }
 
@@ -59,6 +55,8 @@ function onMessage(evt: MessageEvent) {
     } else if (evt.data.type === 'step') {
         simulationPlay = false;
         simulationStep = true;
+    }  else if (evt.data.type === 'restart') {
+        startSimulation();
     } else if (evt.data.type === 'rendererChanged') {
         onRendererChanged(evt.data.param);
     }
@@ -75,6 +73,23 @@ function onRendererChanged(selectedRenderer: number) {
     } else if (selectedRenderer === 1) {
         renderer = new Renderer3D(canvasSize, canvasSize);
     }
+}
+
+function startSimulation() {
+    SimSettings.displayDebugLabels = playerInfo.debug;
+    environment = new Environment(playerInfo, 0);
+
+    playerCodeAvailable = true;
+    simulationPlay = true;
+    simulationStep = false;
+    simulationEnd = false;
+
+    colonyNameUI.html(playerInfo.colonyName);
+}
+
+function onSimulationEnd() {
+    window.postMessage({ type: 'simEnded' }, '*');
+    simulationEnd = true;
 }
 
 function setup() {
@@ -113,7 +128,7 @@ function draw() {
                 environment.step();
             } else {
                 // simulation ended
-                simulationEnd = true;
+                onSimulationEnd();
             }
         }
     }

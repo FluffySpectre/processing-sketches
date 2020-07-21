@@ -1,29 +1,38 @@
-var simPlaying = true;
+var simState = 'playing';
 
 function pauseSim() {
     window.postMessage({ type: 'pause' }, '*');
 
-    simPlaying = false;
+    simState = 'paused';
     updatePlayPauseButtons();
 }
 
 function playSim() {
     window.postMessage({ type: 'play' }, '*');
 
-    simPlaying = true;
+    simState = 'playing';
     updatePlayPauseButtons();
 }
 
 function stepSim() {
     window.postMessage({ type: 'step' }, '*');
 
-    simPlaying = false;
+    simState = 'paused';
+    updatePlayPauseButtons();
+}
+
+function restartSim() {
+    window.postMessage({ type: 'restart' }, '*');
+
+    simState = 'playing';
     updatePlayPauseButtons();
 }
 
 function updatePlayPauseButtons() {
-    document.getElementById('pauseButton').style.display = simPlaying ? 'block' : 'none';
-    document.getElementById('playButton').style.display = !simPlaying ? 'block' : 'none';
+    document.getElementById('pauseButton').style.display = simState === 'playing' ? 'block' : 'none';
+    document.getElementById('playButton').style.display = simState === 'paused' ? 'block' : 'none';
+    document.getElementById('restartButton').style.display = simState === 'ended' ? 'block' : 'none';
+    document.getElementById('stepButton').style.display = simState === 'ended' ? 'none' : 'block';
 }
 
 function simSpeedChanged(simSpeed) {
@@ -32,6 +41,13 @@ function simSpeedChanged(simSpeed) {
 
 function rendererChanged(renderer) {
     window.postMessage({ type: 'rendererChanged', param: renderer }, '*');
+}
+
+function receiveMessage(event) {
+    if (event.data.type === 'simEnded') {
+        simState = 'ended';
+        updatePlayPauseButtons();
+    }
 }
 
 var geval = eval;
@@ -60,6 +76,8 @@ window.load = function (js) {
         }
     }, 1000);
 };
+
+window.addEventListener('message', receiveMessage, false);
 
 if (receivedJS) {
     window.load(receivedJS);
