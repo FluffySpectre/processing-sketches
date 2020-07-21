@@ -1,13 +1,25 @@
 class Renderer3D implements Renderer {
+    private models: Array<p5.Geometry>;
     private cam: p5.Camera;
 
     constructor(canvasWidth: number, canvasHeight: number) {
+        this.loadModels();
+
         const cnv = createCanvas(canvasWidth, canvasHeight, WEBGL);
         cnv.style('display', 'block');
 
         this.cam = createCamera();
         this.cam.move(0, -canvasWidth*0.75, canvasWidth*0.05);
         this.cam.lookAt(0, 0, 0);
+    }
+
+    private loadModels() {
+        // load model with normalise parameter set to true
+        this.models = [];
+        this.models.push(loadModel('assets/ant.obj', true));
+        this.models.push(loadModel('assets/bug.obj', true));
+        this.models.push(loadModel('assets/apple.obj', true));
+        this.models.push(loadModel('assets/anthill.obj', true));
     }
 
     render(state: SimState) {
@@ -32,7 +44,7 @@ class Renderer3D implements Renderer {
         // render ants
         for (const antState of state.colonyState.antStates) {
             push();
-            translate(antState.positionX, antState.positionY, 1);
+            translate(antState.positionX, antState.positionY, 2.3);
     
             if (antState.debugMessage) {
                 fill(20);
@@ -49,11 +61,16 @@ class Renderer3D implements Renderer {
     
             rotateZ(antState.direction);
             noStroke();
+            push();
+            scale(0.04);
+            rotateX(90);
+            rotateY(180);
             fill(antState.colour);
-            box(6, 3, 2);
+            model(this.models[0]);
+            pop();
     
             if (antState.loadType === LoadType.Sugar) {
-                translate(0, 0, 2.5);
+                translate(0, 0, 3);
                 fill(250);
                 box(3, 3, 3);
             }
@@ -64,12 +81,16 @@ class Renderer3D implements Renderer {
         // render bugs
         for (const bugState of state.bugStates) {
             push();
-            translate(bugState.positionX, bugState.positionY, 2);
+            translate(bugState.positionX, bugState.positionY, 3);
 
             rotateZ(bugState.direction);
             noStroke();
+
+            scale(0.05);
+            rotateX(90);
+            rotateY(90);
             fill(bugState.colour);
-            box(8, 5, 4);
+            model(this.models[1]);
 
             pop();
         }
@@ -94,8 +115,13 @@ class Renderer3D implements Renderer {
 
             noStroke()
             fill(10, 230, 10);
-            sphere(fruitState.radius);
-    
+
+            push();
+            scale(fruitState.radius * 0.01);
+            rotateX(90);
+            model(this.models[2]);
+            pop();
+
             if (SimSettings.displayDebugLabels && fruitState.carriers > 0) {
                 fill(20);
                 textSize(12);
@@ -109,13 +135,15 @@ class Renderer3D implements Renderer {
         // render the anthill
         push();
         
-        translate(state.colonyState.antHillState.positionX, state.colonyState.antHillState.positionY, state.colonyState.antHillState.radius / 2);
+        translate(state.colonyState.antHillState.positionX, state.colonyState.antHillState.positionY, state.colonyState.antHillState.radius / 2 * 1.2);
 
         noStroke();
         fill(222, 184, 135);
+
+        scale(state.colonyState.antHillState.radius * 0.01);
         rotateX(90);
-        cylinder(state.colonyState.antHillState.radius, state.colonyState.antHillState.radius);
-        
+        model(this.models[3]);
+
         pop();
 
         // render marker
