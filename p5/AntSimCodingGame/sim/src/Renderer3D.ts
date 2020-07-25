@@ -9,7 +9,8 @@ class Renderer3D implements Renderer {
         cnv.style('display', 'block');
 
         this.cam = createCamera();
-        this.cam.move(0, -canvasWidth*0.75, canvasWidth*0.05);
+        this.cam.setPosition(0, 0, 0);
+        this.cam.move(0, -canvasWidth * 0.865, 0.001);
         this.cam.lookAt(0, 0, 0);
     }
 
@@ -24,6 +25,8 @@ class Renderer3D implements Renderer {
 
     render(state: SimState) {
         background(50, 140, 193);
+
+        blendMode(ADD);
 
         // @ts-ignore
         orbitControl(2, 2, -0.05);
@@ -54,9 +57,12 @@ class Renderer3D implements Renderer {
             }
     
             if (SimSettings.displayDebugLabels) {
+                push();
+                translate(0, 0, 0.1);
                 noStroke();
                 fill(20, 15);
                 ellipse(0, 0, antState.viewRange*2);
+                pop();
             }
     
             rotateZ(antState.direction);
