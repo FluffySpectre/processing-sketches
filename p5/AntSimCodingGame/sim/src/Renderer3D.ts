@@ -141,7 +141,7 @@ class Renderer3D implements Renderer {
         // render the anthill
         push();
         
-        translate(state.colonyState.antHillState.positionX, state.colonyState.antHillState.positionY, state.colonyState.antHillState.radius / 2 * 1.2);
+        translate(state.colonyState.antHillState.positionX, state.colonyState.antHillState.positionY, state.colonyState.antHillState.radius / 2);
 
         noStroke();
         fill(222, 184, 135);
