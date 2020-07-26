@@ -156,10 +156,6 @@ function draw() {
         killedBugsValueUI.html(environment.playerColony.statistics.killedBugs.toString());
         pointsValue.html(environment.playerColony.statistics.points.toString());
     }
-
-    if (simulationEnd) {
-        drawMessage('Simulation finished!', '#fff');
-    }
 }
 
 function handleSelection() {
