@@ -12,8 +12,9 @@ window.addEventListener('resize', this.resizeEditor);
 
 // SAVE
 window.addEventListener('keydown', function(e) {
-    if (e.keyCode == 83 && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+    if (e.key == 's' && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
         e.preventDefault();
+        e.stopPropagation();
         
         saveCode();
     }
