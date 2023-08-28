@@ -2,16 +2,25 @@ class Renderer3D implements Renderer {
     private models: Array<p5.Geometry>;
     private cam: p5.Camera;
 
+    private textGraphics: p5.Graphics;
+
     constructor(canvasWidth: number, canvasHeight: number) {
         this.loadModels();
 
         const cnv = createCanvas(canvasWidth, canvasHeight, WEBGL);
+        // (cnv as any).drawingContext.disable((cnv as any).drawingContext.DEPTH_TEST);
         cnv.style('display', 'block');
 
         this.cam = createCamera();
         this.cam.setPosition(0, 0, 0);
         this.cam.move(0, -canvasWidth * 0.865, 0.001);
         this.cam.lookAt(0, 0, 0);
+
+        // this.textGraphics = createGraphics(100, 60);
+        // this.textGraphics.fill(0);
+        // this.textGraphics.textAlign(CENTER);
+        // this.textGraphics.textSize(16);
+        // this.textGraphics.text('p5.js is cool!', 50, 30);
     }
 
     private loadModels() {
@@ -26,7 +35,7 @@ class Renderer3D implements Renderer {
     render(state: SimState) {
         background(50, 140, 193);
 
-        blendMode(ADD);
+        blendMode(BLEND);
 
         // @ts-ignore
         orbitControl(2, 2, -0.05);
@@ -162,5 +171,9 @@ class Renderer3D implements Renderer {
             sphere(markerState.radius);
             pop();
         }
+
+        // translate(width/2, height/2+50, 0.1);
+        // texture(this.textGraphics);
+        // plane(50, 30, 1, 1);
     }
 }

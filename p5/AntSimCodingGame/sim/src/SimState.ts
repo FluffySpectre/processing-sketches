@@ -95,19 +95,11 @@ interface MarkerState {
     maxAge: number;
 }
 
-interface SelectionState {
-    selectedObjectName: string;
-    selectedObjectInfo: string;
-    selectedObjectPositionX: number;
-    selectedObjectPositionY: number;
-}
-
 class SimState {
     colonyState: ColonyState;
     bugStates: BugState[];
     sugarStates: SugarState[];
     fruitStates: FruitState[];
-    selectionState: SelectionState;
 
     constructor() {
         this.bugStates = [];

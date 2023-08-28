@@ -108,29 +108,11 @@ class Renderer2D implements Renderer {
         }
 
         // render ui
-        if (state.selectionState) {
-            this.drawInfo(
-                state.selectionState.selectedObjectName,
-                state.selectionState.selectedObjectInfo,
-                state.selectionState.selectedObjectPositionX,
-                state.selectionState.selectedObjectPositionY
-            );
-        }
-
         if (SimSettings.displayDebugLabels) {
             fill(20);
             textSize(12);
             text('FPS: ' + Math.floor(frameRate()), 10, 20);
             text('Round: ' + environment.currentRound, 10, 36);
         }
-    }
-
-    private drawInfo(firstLine: string, secondLine: string, positionX: number, positionY: number) {
-        fill(20);
-        textSize(12);
-        let tw = textWidth(firstLine);
-        text(firstLine, positionX - tw / 2, positionY - 32);
-        let tw2 = textWidth(secondLine);
-        text(secondLine, positionX - tw2 / 2, positionY - 16);
     }
 }

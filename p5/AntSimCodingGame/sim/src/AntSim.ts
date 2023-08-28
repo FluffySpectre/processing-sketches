@@ -12,12 +12,9 @@ let simulationStep = false;
 // stats ui
 let colonyNameUI: p5.Element, foodValueUI: p5.Element, deadAntsValueUI: p5.Element, killedBugsValueUI: p5.Element, pointsValue: p5.Element;
 
-let showInfoMaxDuration = 5;
-let showInfoDuration = 0;
-let showInfoObject: any = null;
-let showInfoPosition: p5.Vector = null;
-let objectInfoName: string;
-let objectInfoValue: string;
+// info ui
+let infoText: p5.Element;
+let lastDrawMessage = '';
 
 function playerCodeLoaded(playerInfoObj: any) {
     playerCodeValid = true;
@@ -105,11 +102,16 @@ function setup() {
     killedBugsValueUI = select('#killedBugsValue');
     pointsValue = select('#pointsValue');
 
+    infoText = select('#infoText');
+
     // listen for post messages
     window.addEventListener('message', onMessage, false);
 }
 
 function draw() {
+    // clear message
+    drawMessage('', '#000');
+
     if (!playerCodeValid) {
         drawMessage('There are errors in your code. Please check the console.', '#f00');
         return;
@@ -133,19 +135,9 @@ function draw() {
         }
     }
 
-    handleSelection();
-
     // render
     if (renderer) {
         const simState = environment.getState();
-        if (objectInfoName) {
-            simState.selectionState = {
-                selectedObjectPositionX: showInfoPosition.x,
-                selectedObjectPositionY: showInfoPosition.y,
-                selectedObjectName: objectInfoName,
-                selectedObjectInfo: objectInfoValue,
-            };
-        }
         renderer.render(simState);
     }
 
@@ -158,97 +150,10 @@ function draw() {
     }
 }
 
-function handleSelection() {
-    if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
-        let mouseCoord = new Coordinate(mouseX, mouseY, 0);
-
-        let selectionRadius = 15;
-        let nearestObject: any = null, nearestObjectDist = Number.MAX_SAFE_INTEGER;
-        for (let s of environment.sugarHills) {
-            let fDist = Coordinate.distance(mouseCoord, s);
-            if (s && fDist < selectionRadius) {
-                if (fDist < nearestObjectDist) {
-                    nearestObjectDist = fDist;
-                    nearestObject = s;
-                }
-            }
-        }
-        for (let f of environment.fruits) {
-            let fDist = Coordinate.distance(mouseCoord, f);
-            if (f && fDist < selectionRadius) {
-                if (fDist < nearestObjectDist) {
-                    nearestObjectDist = fDist;
-                    nearestObject = f;
-                }
-            }
-        }
-
-        if (nearestObject) {
-            showInfoDuration = showInfoMaxDuration;
-            showInfoObject = nearestObject;
-            showInfoPosition = nearestObject.position;
-        } else {
-            for (let i=0; i<environment.bugs.insects.length; i++) {
-                let b = environment.bugs.insects[i] as Bug;
-                let bDist = Coordinate.distance(mouseCoord, b);
-                if (b && bDist < selectionRadius) {
-                    if (bDist < nearestObjectDist) {
-                        nearestObjectDist = bDist;
-                        nearestObject = b;
-                    }
-                }
-            }
-
-            for (let i=0; i<environment.playerColony.insects.length; i++) {
-                let a = environment.playerColony.insects[i] as BaseAnt;
-                let aDist = Coordinate.distance(mouseCoord, a);
-                if (a && aDist < selectionRadius) {
-                    if (aDist < nearestObjectDist) {
-                        nearestObjectDist = aDist;
-                        nearestObject = a;
-                    }
-                }
-            }
-
-            if (nearestObject) {
-                showInfoDuration = showInfoMaxDuration;
-                showInfoObject = nearestObject;
-                showInfoPosition = nearestObject.position;
-            }
-        }
-    }
-
-    objectInfoName = null;
-    objectInfoValue = null;
-    if (showInfoDuration > 0) {
-        showInfoDuration--;
-
-        switch (true) {
-            case showInfoObject instanceof Sugar:
-                objectInfoName = 'Sugar';
-                objectInfoValue = 'Amount: ' + showInfoObject.amount.toString();
-                break;
-            case showInfoObject instanceof Fruit:
-                objectInfoName = 'Apple';
-                objectInfoValue = 'Amount: ' + showInfoObject.amount.toString();
-                break;
-            case showInfoObject instanceof BaseAnt:
-                objectInfoName = 'Ant';
-                objectInfoValue = 'Vitality: ' + showInfoObject.vitality.toString();
-                break;
-            case showInfoObject instanceof Bug:
-                objectInfoName = 'Bug';
-                objectInfoValue = 'Vitality: ' + showInfoObject.vitality.toString();
-                break;
-        }
-    }
-}
-
 function drawMessage(msg: string, textColor: string) {
-    noStroke();
-    fill(20, 180);
-    rect(0, 0, width, height);
-    textSize(24);
-    fill(textColor);
-    text(msg, width/2-textWidth(msg)/2, height/2-12);
+    if (lastDrawMessage === msg) return;
+
+    lastDrawMessage = msg;
+    infoText.style('color', textColor);
+    infoText.html(msg);
 }
